@@ -1,0 +1,51 @@
+{
+ "code": "[[216,8,16]]",
+ "genome": {
+  "l": 18,
+  "m": 6,
+  "A": [
+   [
+    0,
+    5
+   ],
+   [
+    1,
+    0
+   ],
+   [
+    12,
+    0
+   ]
+  ],
+  "B": [
+   [
+    0,
+    1
+   ],
+   [
+    2,
+    0
+   ],
+   [
+    3,
+    0
+   ]
+  ]
+ },
+ "result": "minimum distance proven exact",
+ "d": 16,
+ "solver_status": "Optimization terminated successfully. (HiGHS Status 7: Optimal)",
+ "seconds": 1392.6,
+ "side_solved": "Z-type",
+ "method": "MILP (scipy.optimize.milp / HiGHS): minimise |x| s.t. H_X x = 0 mod 2 and L_X[j].x = 1 mod 2 for at least one j; mod-2 constraints linearised with integer slacks; translation symmetry used to require the support to touch torus cell 0 (left or right block).",
+ "symmetry": "d_X = d_Z verified for this code: the qubit relabelling (L,c)<->(R,-c) maps rowspace(H_Z) onto rowspace(H_X) (checked by GF(2) rank), so one side suffices.",
+ "environment": {
+  "scipy": "1.17.1",
+  "numpy": "2.4.4",
+  "python": "3.11.15",
+  "cpu": "\t: Intel(R) Xeon(R) Processor @ 2.10GHz"
+ },
+ "date": "2026-09-26",
+ "validated_on": "Solver reproduced published exact distances of [[72,12,6]] (0.1 s), [[90,8,10]] (6.8 s), [[144,12,12]] gross (35 s).",
+ "reproduce": "python -m qec_search.exact_distance --genome '{\"l\":18,\"m\":6,\"A\":[[0,5],[1,0],[12,0]],\"B\":[[0,1],[2,0],[3,0]]}' --claimed 16"
+}

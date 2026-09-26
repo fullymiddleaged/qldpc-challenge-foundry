@@ -1,0 +1,9 @@
+{
+  "python.defaultInterpreterPath": "${workspaceFolder}/lab/.venv/Scripts/python.exe",
+  "python.testing.pytestEnabled": true,
+  "python.testing.cwd": "${workspaceFolder}/lab",
+  "python.testing.pytestArgs": ["tests"],
+  "files.exclude": {"**/__pycache__": true, "**/*.egg-info": true},
+  "files.watcherExclude": {"**/.worktrees/**": true},
+  "search.exclude": {".worktrees": true}
+}

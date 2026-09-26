@@ -1,0 +1,267 @@
+  warning: notes/682-172-72.md exceeds 10240 bytes; truncating on render
+
+2D-local bilayer / weight ≤ 4
+  216 codes, 172 nondominated, best kd2/n 2.00
+  at n <= 300, 62 entries to get past; the ones to beat:
+    [[144,2,12]] w=4 kd2/n=2.00
+    [[16,2,4]] w=4 kd2/n=2.00
+    [[256,2,16]] w=4 kd2/n=2.00
+    [[36,2,6]] w=4 kd2/n=2.00
+    [[4,2,2]] w=4 kd2/n=2.00
+    [[64,2,8]] w=4 kd2/n=2.00
+    [[84,2,9]] w=4 kd2/n=1.93
+    [[112,2,10]] w=4 kd2/n=1.79
+    [[63,2,7]] w=4 kd2/n=1.56
+    [[12,2,3]] w=4 kd2/n=1.50
+
+2D-local bilayer / weight ≤ 6
+  357 codes, 237 nondominated, best kd2/n 19.20
+  at n <= 300, 125 entries to get past; the ones to beat:
+    [[300,8,20]] w=6 kd2/n=10.67
+    [[280,6,22]] w=6 kd2/n=10.37
+    [[264,8,18]] w=6 kd2/n=9.82
+    [[252,12,14]] w=6 kd2/n=9.33
+    [[168,6,16]] w=6 kd2/n=9.14
+    [[192,12,12]] w=6 kd2/n=9.00
+    [[240,8,16]] w=6 kd2/n=8.53
+    [[238,6,18]] w=6 kd2/n=8.17
+    [[154,6,14]] w=6 kd2/n=7.64
+    [[108,8,10]] w=6 kd2/n=7.41
+
+2D-local bilayer / weight ≤ 8
+  437 codes, 280 nondominated, best kd2/n 19.20
+  at n <= 300, 163 entries to get past; the ones to beat:
+    [[112,12,12]] w=8 kd2/n=15.43
+    [[104,8,12]] w=8 kd2/n=11.08
+    [[300,8,20]] w=6 kd2/n=10.67
+    [[280,6,22]] w=6 kd2/n=10.37
+    [[230,16,12]] w=8 kd2/n=10.02
+    [[264,8,18]] w=6 kd2/n=9.82
+    [[104,6,13]] w=8 kd2/n=9.75
+    [[62,12,7]] w=8 kd2/n=9.48
+    [[252,12,14]] w=6 kd2/n=9.33
+    [[196,15,11]] w=8 kd2/n=9.26
+
+2D-local bilayer / any weight
+  449 codes, 286 nondominated, best kd2/n 20.00
+  at n <= 300, 169 entries to get past; the ones to beat:
+    [[150,30,10]] w=9 kd2/n=20.00
+    [[112,12,12]] w=8 kd2/n=15.43
+    [[104,8,12]] w=8 kd2/n=11.08
+    [[300,8,20]] w=6 kd2/n=10.67
+    [[54,16,6]] w=18 kd2/n=10.67
+    [[280,6,22]] w=6 kd2/n=10.37
+    [[230,16,12]] w=8 kd2/n=10.02
+    [[264,8,18]] w=6 kd2/n=9.82
+    [[104,6,13]] w=8 kd2/n=9.75
+    [[62,12,7]] w=8 kd2/n=9.48
+
+2D-local single / weight ≤ 4
+  213 codes, 169 nondominated, best kd2/n 2.00
+  at n <= 300, 59 entries to get past; the ones to beat:
+    [[16,2,4]] w=4 kd2/n=2.00
+    [[256,2,16]] w=4 kd2/n=2.00
+    [[36,2,6]] w=4 kd2/n=2.00
+    [[4,2,2]] w=4 kd2/n=2.00
+    [[64,2,8]] w=4 kd2/n=2.00
+    [[63,2,7]] w=4 kd2/n=1.56
+    [[12,2,3]] w=4 kd2/n=1.50
+    [[8,3,2]] w=4 kd2/n=1.50
+    [[12,4,2]] w=4 kd2/n=1.33
+    [[291,15,5]] w=4 kd2/n=1.29
+
+2D-local single / weight ≤ 6
+  258 codes, 199 nondominated, best kd2/n 5.09
+  at n <= 300, 82 entries to get past; the ones to beat:
+    [[300,8,13]] w=6 kd2/n=4.51
+    [[25,7,4]] w=6 kd2/n=4.48
+    [[276,8,12]] w=6 kd2/n=4.17
+    [[16,4,4]] w=6 kd2/n=4.00
+    [[249,8,11]] w=6 kd2/n=3.89
+    [[207,8,10]] w=6 kd2/n=3.86
+    [[178,8,9]] w=6 kd2/n=3.64
+    [[36,8,4]] w=6 kd2/n=3.56
+    [[36,14,3]] w=6 kd2/n=3.50
+    [[49,19,3]] w=6 kd2/n=3.49
+
+2D-local single / weight ≤ 8
+  266 codes, 207 nondominated, best kd2/n 6.00
+  at n <= 300, 90 entries to get past; the ones to beat:
+    [[16,6,4]] w=8 kd2/n=6.00
+    [[25,9,4]] w=8 kd2/n=5.76
+    [[36,12,4]] w=8 kd2/n=5.33
+    [[300,8,13]] w=6 kd2/n=4.51
+    [[25,7,4]] w=6 kd2/n=4.48
+    [[15,7,3]] w=8 kd2/n=4.20
+    [[276,8,12]] w=6 kd2/n=4.17
+    [[16,4,4]] w=6 kd2/n=4.00
+    [[249,8,11]] w=6 kd2/n=3.89
+    [[207,8,10]] w=6 kd2/n=3.86
+
+2D-local single / any weight
+  267 codes, 208 nondominated, best kd2/n 6.40
+  at n <= 300, 91 entries to get past; the ones to beat:
+    [[20,8,4]] w=10 kd2/n=6.40
+    [[16,6,4]] w=8 kd2/n=6.00
+    [[25,9,4]] w=8 kd2/n=5.76
+    [[36,12,4]] w=8 kd2/n=5.33
+    [[300,8,13]] w=6 kd2/n=4.51
+    [[25,7,4]] w=6 kd2/n=4.48
+    [[15,7,3]] w=8 kd2/n=4.20
+    [[276,8,12]] w=6 kd2/n=4.17
+    [[16,4,4]] w=6 kd2/n=4.00
+    [[249,8,11]] w=6 kd2/n=3.89
+
+unrestricted / weight ≤ 4
+  236 codes, 180 nondominated, best kd2/n 2.00
+  at n <= 300, 67 entries to get past; the ones to beat:
+    [[100,2,10]] w=4 kd2/n=2.00
+    [[144,2,12]] w=4 kd2/n=2.00
+    [[16,2,4]] w=4 kd2/n=2.00
+    [[196,2,14]] w=4 kd2/n=2.00
+    [[256,2,16]] w=4 kd2/n=2.00
+    [[36,2,6]] w=4 kd2/n=2.00
+    [[4,2,2]] w=4 kd2/n=2.00
+    [[64,2,8]] w=4 kd2/n=2.00
+    [[226,2,15]] w=4 kd2/n=1.99
+    [[170,2,13]] w=4 kd2/n=1.99
+
+unrestricted / weight ≤ 6
+  671 codes, 415 nondominated, best kd2/n 30.48
+  at n <= 300, 237 entries to get past; the ones to beat:
+    [[288,16,16]] w=6 kd2/n=14.22
+    [[254,14,16]] w=6 kd2/n=14.11
+    [[288,12,18]] w=6 kd2/n=13.50
+    [[248,10,18]] w=6 kd2/n=13.06
+    [[192,12,14]] w=6 kd2/n=12.25
+    [[210,10,16]] w=6 kd2/n=12.19
+    [[252,12,16]] w=6 kd2/n=12.19
+    [[144,12,12]] w=6 kd2/n=12.00
+    [[192,16,12]] w=6 kd2/n=12.00
+    [[270,8,20]] w=6 kd2/n=11.85
+
+unrestricted / weight ≤ 8
+  1134 codes, 668 nondominated, best kd2/n 106.11
+  at n <= 300, 422 entries to get past; the ones to beat:
+    [[232,62,12]] w=8 kd2/n=38.48
+    [[184,50,10]] w=8 kd2/n=27.17
+    [[288,24,18]] w=8 kd2/n=27.00
+    [[192,20,16]] w=8 kd2/n=26.67
+    [[240,16,20]] w=8 kd2/n=26.67
+    [[224,22,16]] w=8 kd2/n=25.14
+    [[288,18,20]] w=8 kd2/n=25.00
+    [[210,26,14]] w=8 kd2/n=24.27
+    [[288,12,24]] w=8 kd2/n=24.00
+    [[168,20,14]] w=8 kd2/n=23.33
+
+unrestricted / any weight
+  1443 codes, 868 nondominated, best kd2/n 1456.85
+  at n <= 300, 488 entries to get past; the ones to beat:
+    [[256,110,16]] w=16 kd2/n=110.00
+    [[254,58,21]] w=16 kd2/n=100.70
+    [[254,44,24]] w=16 kd2/n=99.78
+    [[254,70,18]] w=18 kd2/n=89.29
+    [[254,72,17]] w=16 kd2/n=81.92
+    [[254,42,22]] w=13 kd2/n=80.03
+    [[254,44,21]] w=12 kd2/n=76.39
+    [[276,98,14]] w=12 kd2/n=69.59
+    [[210,24,24]] w=20 kd2/n=65.83
+    [[258,32,22]] w=10 kd2/n=60.03
+
+1443 codes across 12 populated cells. A code counts in every cell it qualifies for (the classes nest), so these counts overlap by design.
+Nondominated means no other code in the cell beats it on all of n, k, d and check weight at once, which is what earns a record star.
+  building submission... n=288 k=8 w=6
+  searching for distance witnesses (20000 RIS trials)...
+  distance (RIS upper bound) d<=20  (d_X<=20, d_Z<=20)
+  verifying (CSS / k / weight / witnesses / locality)...
+  OK  verified. score kd^2/n = 11.111
+
+--dry-run: would write /content/qldpc-challenge/codes/288-8-20.json
+  code         [[288,8,20]]
+  score        kd^2/n = 11.111
+  checks       max weight 6 (weight-6)
+  locality     local-2d-bilayer
+  track cells  2D-local bilayer / weight ≤ 6, 2D-local bilayer / weight ≤ 8, 2D-local bilayer / any weight, unrestricted / weight ≤ 6, unrestricted / weight ≤ 8, unrestricted / any weight
+  distance     d <= 20 (upper_bound)
+               X: <= 20 (upper_bound, witness found)  |  Z: <= 20 (upper_bound, witness found)
+  authors      @fullymiddleaged
+  family       bivariate-bicycle
+  model        claude-opus-5-5
+  construction Bivariate bicycle code on Z_24 x Z_6: A = y + x^3 + x^4, B = y^3 + x + x^8. Found by evolutionary search (qec-search); bilayer layout (max check diameter 6.708) found by simulated annealing from a folded-torus start.
+  next         --json prints the full document; drop --dry-run to write
+  building submission... n=288 k=12 w=6
+  searching for distance witnesses (20000 RIS trials)...
+  distance (RIS upper bound) d<=16  (d_X<=16, d_Z<=16)
+  verifying (CSS / k / weight / witnesses / locality)...
+  OK  verified. score kd^2/n = 10.667
+
+--dry-run: would write /content/qldpc-challenge/codes/288-12-16.json
+  code         [[288,12,16]]
+  score        kd^2/n = 10.667
+  checks       max weight 6 (weight-6)
+  locality     local-2d-bilayer
+  track cells  2D-local bilayer / weight ≤ 6, 2D-local bilayer / weight ≤ 8, 2D-local bilayer / any weight, unrestricted / weight ≤ 6, unrestricted / weight ≤ 8, unrestricted / any weight
+  distance     d <= 16 (upper_bound)
+               X: <= 16 (upper_bound, witness found)  |  Z: <= 16 (upper_bound, witness found)
+  authors      @fullymiddleaged
+  family       bivariate-bicycle
+  model        claude-opus-5-5
+  construction Bivariate bicycle code on Z_24 x Z_6: A = y^3 + x + x^14, B = y + y^2 + x^3. Found by evolutionary search (qec-search); bilayer layout (max check diameter 7.000) found by simulated annealing from a folded-torus start.
+  next         --json prints the full document; drop --dry-run to write
+  building submission... n=216 k=8 w=6
+  searching for distance witnesses (20000 RIS trials)...
+  distance (RIS upper bound) d<=16  (d_X<=16, d_Z<=16)
+  verifying (CSS / k / weight / witnesses / locality)...
+  OK  verified. score kd^2/n = 9.481
+
+--dry-run: would write /content/qldpc-challenge/codes/216-8-16.json
+  code         [[216,8,16]]
+  score        kd^2/n = 9.481
+  checks       max weight 6 (weight-6)
+  locality     local-2d-bilayer
+  track cells  2D-local bilayer / weight ≤ 6, 2D-local bilayer / weight ≤ 8, 2D-local bilayer / any weight, unrestricted / weight ≤ 6, unrestricted / weight ≤ 8, unrestricted / any weight
+  distance     d <= 16 (upper_bound)
+               X: <= 16 (upper_bound, witness found)  |  Z: <= 16 (upper_bound, witness found)
+  authors      @fullymiddleaged
+  family       bivariate-bicycle
+  model        claude-opus-5-5
+  construction Bivariate bicycle code on Z_18 x Z_6: A = y^5 + x + x^12, B = y + x^2 + x^3. Found by evolutionary search (qec-search); bilayer layout (max check diameter 7.000) found by simulated annealing from a folded-torus start.
+  next         --json prints the full document; drop --dry-run to write
+  building submission... n=144 k=8 w=6
+  searching for distance witnesses (20000 RIS trials)...
+  distance (RIS upper bound) d<=12  (d_X<=12, d_Z<=12)
+  verifying (CSS / k / weight / witnesses / locality)...
+  OK  verified. score kd^2/n = 8.0
+
+--dry-run: would write /content/qldpc-challenge/codes/144-8-12.json
+  code         [[144,8,12]]
+  score        kd^2/n = 8.0
+  checks       max weight 6 (weight-6)
+  locality     local-2d-bilayer
+  track cells  2D-local bilayer / weight ≤ 6, 2D-local bilayer / weight ≤ 8, 2D-local bilayer / any weight, unrestricted / weight ≤ 6, unrestricted / weight ≤ 8, unrestricted / any weight
+  distance     d <= 12 (upper_bound)
+               X: <= 12 (upper_bound, witness found)  |  Z: <= 12 (upper_bound, witness found)
+  authors      @fullymiddleaged
+  family       bivariate-bicycle
+  model        claude-opus-5-5
+  construction Bivariate bicycle code on Z_12 x Z_6: A = y + x^3 + x^10, B = y^3 + x + x^2. Found by evolutionary search (qec-search); bilayer layout (max check diameter 6.708) found by simulated annealing from a folded-torus start.
+  next         --json prints the full document; drop --dry-run to write
+  building submission... n=144 k=12 w=6
+  searching for distance witnesses (20000 RIS trials)...
+  distance (RIS upper bound) d<=12  (d_X<=12, d_Z<=12)
+  verifying (CSS / k / weight / witnesses / locality)...
+  OK  verified. score kd^2/n = 12.0
+
+--dry-run: would write /content/qldpc-challenge/codes/144-12-12.json
+  code         [[144,12,12]]
+  score        kd^2/n = 12.0
+  checks       max weight 6 (weight-6)
+  locality     local-2d-bilayer
+  track cells  2D-local bilayer / weight ≤ 6, 2D-local bilayer / weight ≤ 8, 2D-local bilayer / any weight, unrestricted / weight ≤ 6, unrestricted / weight ≤ 8, unrestricted / any weight
+  distance     d <= 12 (upper_bound)
+               X: <= 12 (upper_bound, witness found)  |  Z: <= 12 (upper_bound, witness found)
+  authors      @fullymiddleaged
+  family       bivariate-bicycle
+  model        claude-opus-5-5
+  construction IBM gross code (Bravyi et al., Nature 627, 778 (2024)), A = x^3 + y + y^2, B = y^3 + x + x^2 on Z_12 x Z_6. Bilayer layout (max check diameter 6.708) found by simulated annealing (qec-search).
+  next         --json prints the full document; drop --dry-run to write
