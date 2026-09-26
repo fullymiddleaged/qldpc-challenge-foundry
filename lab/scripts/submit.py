@@ -83,7 +83,7 @@ def main(argv=None):
     ap.add_argument("name", help="candidate name, e.g. bb_216_8_16_18x6")
     ap.add_argument("--handle", required=True, help="your GitHub handle, e.g. @fullymiddleaged")
     ap.add_argument("--manifest", default=str(LAB / "results/candidates/manifest.json"))
-    ap.add_argument("--model", default="claude-opus-5-5", help="AI model credited on the entry ('' to omit)")
+    ap.add_argument("--model", default="Claude Opus 5.5", help="exact AI model version credited on the entry ('' to omit)")
     ap.add_argument("--family", default="bivariate-bicycle")
     ap.add_argument("--note", type=Path, help="research note (notes/<n>-<k>-<d>.md) to ship with the code")
     ap.add_argument("--circuits", action="store_true", help="let the challenge tool run its circuit simulation (slow)")
