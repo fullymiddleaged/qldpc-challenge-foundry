@@ -30,3 +30,9 @@ python scripts/submit.py <candidate> --handle @you             # dry run through
 | [[288,8,20]] | 2D-local bilayer, w ≤ 6 | ≤ 20 (proof pending) | hold |
 
 Heavy runs: `colab/`. Files: `results/candidates/`, proofs: `results/proofs/`, checker logs: `results/logs/`.
+
+## License
+Code (`qec_search/`, `scripts/`, `tests/`, notebooks) is under the [Apache License 2.0](LICENSE). Notes, docs and results data (`notes/`, `docs/`, `results/`) are under [CC BY 4.0](LICENSES/CC-BY-4.0.txt). Both allow reuse, including commercial reuse, provided you give credit. [NOTICE](NOTICE) has the full scope and the third-party material (IBM's gross code is included only as a reference). Everything outside `lab/` belongs to upstream and is licensed there.
+
+## How to cite
+Use [CITATION.cff](CITATION.cff) (GitHub's "Cite this repository" reads it when it's at the repo root, so please copy it by hand from here).

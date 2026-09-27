@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2026 Pete Salmond
+# SPDX-License-Identifier: Apache-2.0
 """Find a 2D bilayer layout for a code so it qualifies for the qLDPC
 Challenge's "2D-local bilayer" cells.
 

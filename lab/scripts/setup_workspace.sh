@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# SPDX-FileCopyrightText: 2026 Pete Salmond
+# SPDX-License-Identifier: Apache-2.0
 # One-time setup for the lab inside our fork of unitaryfoundation/qldpc-challenge.
 #
 #   usage:  bash lab/scripts/setup_workspace.sh        (from anywhere in the fork)

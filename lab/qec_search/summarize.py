@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2026 Pete Salmond
+# SPDX-License-Identifier: Apache-2.0
 """Turn a run directory into a compact report to send back to Claude.
 
     python -m qec_search.summarize runs/run1 [runs/run2 ...]

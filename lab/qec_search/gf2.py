@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2026 Pete Salmond
+# SPDX-License-Identifier: Apache-2.0
 """Small GF(2) linear-algebra toolkit on numpy uint8 arrays.
 
 Everything here is pure numpy so it runs anywhere. Matrices are 2-D arrays

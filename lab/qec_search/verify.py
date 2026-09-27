@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2026 Pete Salmond
+# SPDX-License-Identifier: Apache-2.0
 """Slow loop: circuit-level evaluation of the best candidates (needs stim + ldpc).
 
     python -m qec_search.verify runs/run1 --top 5 --ps 0.003,0.002

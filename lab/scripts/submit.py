@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2026 Pete Salmond
+# SPDX-License-Identifier: Apache-2.0
 """Submit one code to the qLDPC Challenge from this fork.
 
     python lab/scripts/submit.py bb_216_8_16_18x6 --handle @yourhandle            # dry run (default)

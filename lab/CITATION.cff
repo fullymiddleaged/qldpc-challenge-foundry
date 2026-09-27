@@ -1,0 +1,19 @@
+cff-version: 1.2.0
+message: >-
+  If you use this software or its results, please cite it as below.
+  Code is Apache-2.0; notes and results data are CC-BY-4.0 (see NOTICE).
+type: software
+title: "qldpc-lab: search, layout and distance certification of quantum LDPC codes"
+authors:
+  - given-names: Pete
+    family-names: Salmond
+    alias: fullymiddleaged
+repository-code: "https://github.com/fullymiddleaged/qldpc-challenge-foundry/tree/main/lab"
+license: Apache-2.0
+version: 0.1.0
+date-released: "2026-09-27"
+keywords:
+  - quantum error correction
+  - quantum LDPC codes
+  - bivariate bicycle codes
+  - minimum distance certification

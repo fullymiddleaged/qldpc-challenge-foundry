@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2026 Pete Salmond
+# SPDX-License-Identifier: Apache-2.0
 """Reference BB codes from Bravyi et al., "High-threshold and low-overhead
 fault-tolerant quantum memory", Nature 627, 778 (2024), Table 3.
 

@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2026 Pete Salmond
+# SPDX-License-Identifier: Apache-2.0
 """Resumable, adaptive exact-distance certification of BB candidates, in the encoding of upstream's
 verify/sat_certify.py.
 

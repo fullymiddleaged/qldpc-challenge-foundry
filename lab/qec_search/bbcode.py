@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2026 Pete Salmond
+# SPDX-License-Identifier: Apache-2.0
 """Bivariate bicycle (BB) codes, the family behind IBM's gross code.
 
 A BB code lives on an l x m torus. Let x = S_l (x) I_m and y = I_l (x) S_m,

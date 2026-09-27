@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2026 Pete Salmond
+# SPDX-License-Identifier: Apache-2.0
 """Run this first on any new machine:  python -m qec_search.selftest
 
 Checks, in order:

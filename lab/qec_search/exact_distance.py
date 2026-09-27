@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2026 Pete Salmond
+# SPDX-License-Identifier: Apache-2.0
 """Certify the minimum distance of a CSS code with an integer program.
 
 The information-set search only ever finds logicals, so it gives an upper

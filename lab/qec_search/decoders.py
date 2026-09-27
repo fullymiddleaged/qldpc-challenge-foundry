@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2026 Pete Salmond
+# SPDX-License-Identifier: Apache-2.0
 """Decoders.
 
 Preferred backend: the `ldpc` package (Roffe et al.), whose BP-OSD is the

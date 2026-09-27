@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2026 Pete Salmond
+# SPDX-License-Identifier: Apache-2.0
 """Scoring a code.
 
 Two levels, mirroring the fast/slow loop used in recent code-discovery work:

@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2026 Pete Salmond
+# SPDX-License-Identifier: Apache-2.0
 """Run the test suite without pytest:  python tests/run_all.py"""
 import sys
 import time

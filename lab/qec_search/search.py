@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2026 Pete Salmond
+# SPDX-License-Identifier: Apache-2.0
 """Evolutionary search over bivariate bicycle codes.
 
     python -m qec_search.search --hours 2 --out runs/run1

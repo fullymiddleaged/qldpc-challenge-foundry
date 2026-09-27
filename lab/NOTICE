@@ -1,0 +1,36 @@
+qldpc-lab
+Copyright 2026 Pete Salmond
+
+This directory (lab/) is our own research project. It sits inside a fork of
+unitaryfoundation/qldpc-challenge, whose files outside lab/ are Copyright 2026
+Unitary Foundation and licensed separately under the root LICENSE.
+
+Licensing of lab/
+-----------------
+Code is licensed under the Apache License, Version 2.0 (lab/LICENSE):
+  qec_search/, scripts/, tests/, colab/*.ipynb, pyproject.toml, .gitignore
+
+Research content is licensed under Creative Commons Attribution 4.0
+International (lab/LICENSES/CC-BY-4.0.txt):
+  notes/, docs/, results/ (code matrices, layouts, distance proofs, logs),
+  and the Markdown files in lab/ (README.md, HANDOFF.md, CLAUDE.md, colab/README.md)
+
+Both licences allow reuse, including commercial reuse, provided you credit the
+work. Please cite it as described in lab/CITATION.cff.
+
+Third-party material
+--------------------
+- results/candidates/ibm_gross_144_12_12.npz is the [[144,12,12]] gross code of
+  Bravyi et al., "High-threshold and low-overhead fault-tolerant quantum memory",
+  Nature 627, 778 (2024), arXiv:2308.07915. It is included only as a reference
+  baseline. It is not our work, and the CC-BY-4.0 grant above does not cover it.
+- qec_search/known_codes.py reproduces code parameters and polynomials from the
+  same paper (Table 3), with attribution in the file.
+- scripts/certify_upstream.py loads Unitary Foundation's verify/sat_certify.py
+  (Apache-2.0) at runtime from the enclosing repository; no upstream code is
+  copied into lab/.
+
+Contributions sent upstream
+---------------------------
+Codes, notes and tooling that we submit to unitaryfoundation/qldpc-challenge
+enter that repository under its Apache-2.0 licence (section 5 of the licence).

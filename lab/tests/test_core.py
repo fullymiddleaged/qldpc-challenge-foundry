@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2026 Pete Salmond
+# SPDX-License-Identifier: Apache-2.0
 """Core regression tests. Run with `pytest -q`, or without pytest via
 `python tests/run_all.py`. Everything here is pure numpy/scipy (no stim or
 ldpc needed) and finishes in about a minute."""

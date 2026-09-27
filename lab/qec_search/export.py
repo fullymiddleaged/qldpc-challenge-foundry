@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2026 Pete Salmond
+# SPDX-License-Identifier: Apache-2.0
 """Export the best distinct codes from a run as .npz files for the
 Unitary Foundation qLDPC Challenge submission tool (`./qldpc submit x.npz`).
 

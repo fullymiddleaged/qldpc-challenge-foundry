@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2026 Pete Salmond
+# SPDX-License-Identifier: Apache-2.0
 """Stim circuits for circuit-level evaluation of any CSS code.
 
 The schedule is deliberately generic rather than hand-optimised: all X checks
