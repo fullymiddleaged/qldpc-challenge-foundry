@@ -1,0 +1,102 @@
+{
+ "candidate": "bb_216_8_16_18x6.npz",
+ "claimed_d": 16,
+ "cube_bits": 2,
+ "sides": [
+  "X"
+ ],
+ "xz_duality": true,
+ "translation_symmetry": true,
+ "method": "upstream verify/sat_certify.py selector encoding + torus-translation clause, adaptive cubes",
+ "cubes": {
+  "X|-1,109,-2,-3": {
+   "status": "SPLIT",
+   "secs": 600.1
+  },
+  "X|-1,109,2,3": {
+   "status": "SPLIT",
+   "secs": 600.0
+  },
+  "X|-1,109,-2,3": {
+   "status": "SPLIT",
+   "secs": 600.1
+  },
+  "X|-1,109,2,-3": {
+   "status": "SPLIT",
+   "secs": 600.6
+  },
+  "X|1,-2,-3": {
+   "status": "SPLIT",
+   "secs": 600.1
+  },
+  "X|1,-2,3": {
+   "status": "SPLIT",
+   "secs": 600.1
+  },
+  "X|1,2,-3": {
+   "status": "SPLIT",
+   "secs": 600.1
+  },
+  "X|1,2,3": {
+   "status": "SPLIT",
+   "secs": 600.1
+  },
+  "X|-1,109,2,3,4": {
+   "status": "UNSAT",
+   "secs": 203.2
+  },
+  "X|-1,109,-2,-3,4": {
+   "status": "SPLIT",
+   "secs": 600.1
+  },
+  "X|-1,109,-2,-3,-4": {
+   "status": "SPLIT",
+   "secs": 600.1
+  },
+  "X|-1,109,2,3,-4": {
+   "status": "SPLIT",
+   "secs": 600.2
+  },
+  "X|-1,109,-2,3,4": {
+   "status": "SPLIT",
+   "secs": 600.1
+  },
+  "X|-1,109,-2,3,-4": {
+   "status": "SPLIT",
+   "secs": 600.2
+  },
+  "X|-1,109,2,-3,4": {
+   "status": "SPLIT",
+   "secs": 600.2
+  },
+  "X|-1,109,2,-3,-4": {
+   "status": "SPLIT",
+   "secs": 600.1
+  },
+  "X|1,-2,-3,4": {
+   "status": "SPLIT",
+   "secs": 600.2
+  },
+  "X|1,-2,-3,-4": {
+   "status": "SPLIT",
+   "secs": 600.0
+  },
+  "X|1,-2,3,4": {
+   "status": "SPLIT",
+   "secs": 600.1
+  },
+  "X|1,-2,3,-4": {
+   "status": "SPLIT",
+   "secs": 600.1
+  },
+  "X|1,2,-3,4": {
+   "status": "SPLIT",
+   "secs": 600.1
+  },
+  "X|1,2,3,4": {
+   "status": "UNSAT",
+   "secs": 231.1
+  }
+ },
+ "updated": "2026-09-27T12:30:57"
+}

@@ -1,0 +1,46 @@
+{
+ "candidate": "bb_288_12_16_24x6.npz",
+ "claimed_d": 16,
+ "cube_bits": 2,
+ "sides": [
+  "X"
+ ],
+ "xz_duality": true,
+ "translation_symmetry": true,
+ "method": "upstream verify/sat_certify.py selector encoding + torus-translation clause, adaptive cubes",
+ "cubes": {
+  "X|-1,145,2,3": {
+   "status": "UNSAT",
+   "secs": 587.0
+  },
+  "X|-1,145,-2,-3": {
+   "status": "SPLIT",
+   "secs": 600.1
+  },
+  "X|-1,145,2,-3": {
+   "status": "SPLIT",
+   "secs": 600.1
+  },
+  "X|-1,145,-2,3": {
+   "status": "SPLIT",
+   "secs": 600.4
+  },
+  "X|1,-2,-3": {
+   "status": "SPLIT",
+   "secs": 600.1
+  },
+  "X|1,-2,3": {
+   "status": "SPLIT",
+   "secs": 600.1
+  },
+  "X|1,2,-3": {
+   "status": "SPLIT",
+   "secs": 600.1
+  },
+  "X|1,2,3": {
+   "status": "SPLIT",
+   "secs": 600.1
+  }
+ },
+ "updated": "2026-09-27T11:57:06"
+}
