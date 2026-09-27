@@ -79,6 +79,14 @@ def min_logical_weight(h_commute: np.ndarray, dual_logicals: np.ndarray, upper: 
     return out
 
 
+def check_witness(code: CSSCode, support: list[int]) -> bool:
+    """True if the support is a nontrivial Z-type logical: commutes with H_X, anticommutes with some X logical."""
+    x = np.zeros(code.n, dtype=np.int64)
+    x[support] = 1
+    lx, _ = code.logicals
+    return not ((code.hx.astype(np.int64) @ x) & 1).any() and bool(((lx.astype(np.int64) @ x) & 1).any())
+
+
 def certify_bb(code: CSSCode, l: int, m: int, upper: int | None = None, time_limit: float = 600.0,
                verbose: bool = False) -> dict:
     lx, lz = code.logicals
@@ -106,7 +114,9 @@ def main(argv=None):
     # no upper cap: scipy only reports the proven bound at the time limit if the
     # solver holds some solution, and without the cap it finds one quickly
     r = certify_bb(code, g.l, g.m, upper=None, time_limit=args.hours * 3600, verbose=True)
-    r.pop("witness", None)
+    # keep the witness so anyone can check the upper side without re-solving
+    if "witness" in r:
+        r["witness_valid"] = check_witness(code, r["witness"])
     r.update({"genome": g.to_json(), "claimed": args.claimed})
     if r["exact"]:
         verdict = f"PROVEN: minimum distance is exactly {r['best_weight']}"

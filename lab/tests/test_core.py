@@ -44,11 +44,19 @@ def test_split_code_is_detected():
 
 
 def test_exact_distance_milp_small_codes():
-    from qec_search.exact_distance import certify_bb
+    from qec_search.exact_distance import certify_bb, check_witness
     for idx, d in ((0, 6), (1, 10)):  # [[72,12,6]], [[90,8,10]]
         g = KNOWN[idx][1]
         r = certify_bb(build_bb(g), g.l, g.m, upper=None, time_limit=120)
         assert r["exact"] and r["best_weight"] == d
+        assert check_witness(build_bb(g), r["witness"])
+
+
+def test_check_witness_rejects_stabilisers_and_non_codewords():
+    from qec_search.exact_distance import check_witness
+    code = build_bb(KNOWN[0][1])
+    assert not check_witness(code, np.nonzero(code.hz[0])[0].tolist())  # stabiliser
+    assert not check_witness(code, [0])                                  # violates X checks
 
 
 def _independent_candidate_check(npz_path):

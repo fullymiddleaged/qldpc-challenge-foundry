@@ -14,6 +14,7 @@ Our own research code for **quantum LDPC codes** (bivariate bicycle / BB family 
 - Report: `python -m qec_search.summarize runs/<name>`
 - Export best codes + bilayer layouts: `python -m qec_search.export runs/<name> --layout --dest submissions/`
 - Prove exact distance: `python -m qec_search.exact_distance --genome '<json>' --claimed <d> --hours <h> --out results/proofs/<file>.json`
+- SAT certificate (upstream's encoding, resumable, from the repo root): `uv run --with pycryptosat --with python-sat python lab/scripts/certify_upstream.py <npz...> --d <d>`; progress: add `--status`
 - Leaderboard frontier: `(cd .. && uv run python cli/qldpc.py targets --n 300 --top 10)` (or `./qldpc` from Git Bash; set `PYTHONUTF8=1` on Windows)
 - Sync upstream: `git fetch upstream && git merge upstream/main` (the GitHub "Sync fork" button no longer works; Actions are disabled on the fork)
 - Submit (dry run → real): `python scripts/submit.py <candidate> --handle @<user> [--note <md>] [--for-real]`. It runs upstream's own `qldpc submit` in a worktree `.worktrees/<candidate>` detached at `upstream/main`, so a PR never carries `lab/`. Never run `qldpc submit --open-pr` from the fork's main: it branches from the current HEAD.

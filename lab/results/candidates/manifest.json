@@ -75,11 +75,12 @@
     ]
    ]
   },
-  "construction": "Bivariate bicycle code on Z_24 x Z_6: A = y^3 + x + x^14, B = y + y^2 + x^3. Found by an evolutionary search over BB polynomials. Minimum distance 16 proven exact by integer programming (HiGHS MILP with torus-translation symmetry breaking); see qldpc-lab results/proofs. Bilayer layout (max check diameter 7.000) found by simulated annealing from a folded-torus start.",
+  "construction": "Bivariate bicycle code on Z_24 x Z_6: A = y^3 + x + x^14, B = y + y^2 + x^3. Found by an evolutionary search over BB polynomials. Distance d <= 16 by witness; our own integer program (HiGHS MILP) found no lighter logical, which is not a board certificate (see the research note). Bilayer layout (max check diameter 7.000) found by simulated annealing from a folded-torus start.",
   "not_our_code": false,
   "status": "submit",
   "status_reason": "distance proven exact (16)",
-  "layers": 2
+  "layers": 2,
+  "provenance_notes": "Checked, not equivalent: verify/validate_candidate.py's dedup (exact fingerprint and WL signature) matched no board entry."
  },
  "bb_216_8_16_18x6": {
   "params": "[[216,8,16]]",
@@ -116,11 +117,12 @@
     ]
    ]
   },
-  "construction": "Bivariate bicycle code on Z_18 x Z_6: A = y^5 + x + x^12, B = y + x^2 + x^3. Found by an evolutionary search over BB polynomials. Minimum distance 16 proven exact by integer programming (HiGHS MILP with torus-translation symmetry breaking); see qldpc-lab results/proofs. Bilayer layout (max check diameter 7.000) found by simulated annealing from a folded-torus start.",
+  "construction": "Bivariate bicycle code on Z_18 x Z_6: A = y^5 + x + x^12, B = y + x^2 + x^3. Found by an evolutionary search over BB polynomials. Distance d <= 16 by witness; our own integer program (HiGHS MILP) found no lighter logical, which is not a board certificate (see the research note). Bilayer layout (max check diameter 7.000) found by simulated annealing from a folded-torus start.",
   "not_our_code": false,
   "status": "submit",
   "status_reason": "distance proven exact (16)",
-  "layers": 2
+  "layers": 2,
+  "provenance_notes": "Checked, not equivalent: verify/validate_candidate.py's dedup (exact fingerprint and WL signature) matched no board entry. It is also not [[216,8,14]]: that entry has a weight-14 logical, and this code has none lighter than 16."
  },
  "bb_144_8_12_12x6": {
   "params": "[[144,8,12]]",
