@@ -14,6 +14,8 @@ Our own research code for **quantum LDPC codes** (bivariate bicycle / BB family 
 - Report: `python -m qec_search.summarize runs/<name>`
 - Export best codes + bilayer layouts: `python -m qec_search.export runs/<name> --layout --dest submissions/`
 - Prove exact distance: `python -m qec_search.exact_distance --genome '<json>' --claimed <d> --hours <h> --out results/proofs/<file>.json`
+- Exact distance for any CSS code (orbital branching on Tanner-graph automorphisms, complete logical basis, resumable; needs `pip install -e .[cert]`): `python -m qec_search.certify_sym ../codes/<name>.json [--d <d>] [--depth 2] [--max-cpu-hours h]`; progress: `--status`. Supersedes `scripts/certify_upstream.py` (BB tori only)
+- Audit the board's SAT certificates (upstream `sat_certify._logicals` spans < k classes on 255/280 of them): `python scripts/audit_sat_certs.py [--recertify --max-cpu-hours 0.25]` from `lab/` or the root; results in `results/logs/sat_cert_audit.json`
 - SAT certificate (upstream's encoding, resumable, from the repo root): `uv run --with pycryptosat --with python-sat python lab/scripts/certify_upstream.py <npz...> --d <d>`; progress: add `--status`
 - Leaderboard frontier: `(cd .. && uv run python cli/qldpc.py targets --n 300 --top 10)` (or `./qldpc` from Git Bash; set `PYTHONUTF8=1` on Windows)
 - Sync upstream: `git fetch upstream && git merge upstream/main` (the GitHub "Sync fork" button no longer works; Actions are disabled on the fork)
@@ -25,6 +27,7 @@ Our own research code for **quantum LDPC codes** (bivariate bicycle / BB family 
   - `decoders.py` ldpc BP-OSD / numpy fallback · `evaluate.py` Monte Carlo · `circuits.py` Stim memory circuits (**not yet validated on real Stim output beyond the self-test**)
   - `search.py` evolutionary search · `summarize.py` report · `verify.py` circuit-level slow loop
   - `layout.py` bilayer layout by simulated annealing · `export.py` submission files · `exact_distance.py` MILP proof
+  - `automorphisms.py` Tanner-graph automorphisms (individualisation-refinement, every perm verified) · `certify_sym.py` symmetry-reduced SAT certifier
 - `results/candidates/` submission-ready `.npz` (hx, hz, coords) + `manifest.json` with a **status** per code
 - `results/proofs/` distance certificates · `results/logs/` checker + run logs · `colab/` Colab notebooks for heavy jobs (they clone the fork; see `colab/README.md`)
 - `scripts/` setup + submit · `tests/` regression tests

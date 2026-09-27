@@ -26,9 +26,10 @@ Third-party material
   baseline. It is not our work, and the CC-BY-4.0 grant above does not cover it.
 - qec_search/known_codes.py reproduces code parameters and polynomials from the
   same paper (Table 3), with attribution in the file.
-- scripts/certify_upstream.py loads Unitary Foundation's verify/sat_certify.py
-  (Apache-2.0) at runtime from the enclosing repository; no upstream code is
-  copied into lab/.
+- scripts/certify_upstream.py, scripts/audit_sat_certs.py and
+  qec_search/certify_sym.py load Unitary Foundation's verify/sat_certify.py and
+  verify/gf2.py (Apache-2.0) at runtime from the enclosing repository; no
+  upstream code is copied into lab/.
 
 Contributions sent upstream
 ---------------------------
