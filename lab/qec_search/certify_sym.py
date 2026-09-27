@@ -49,6 +49,7 @@ from .automorphisms import find_duality, qubit_orbits
 LAB = pathlib.Path(__file__).resolve().parents[1]
 ROOT = LAB.parent
 LOGS = LAB / "results" / "logs"
+REPLACE_RETRIES = 10
 
 
 def _upstream():
@@ -227,7 +228,14 @@ def save_status(path: pathlib.Path, st: dict) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     tmp = path.with_suffix(".tmp")
     tmp.write_text(json.dumps(st, indent=1))
-    os.replace(tmp, path)
+    for attempt in range(REPLACE_RETRIES):
+        try:
+            os.replace(tmp, path)
+            return
+        except PermissionError:                         # Windows: a watcher or indexer briefly holds the target open
+            if attempt == REPLACE_RETRIES - 1:
+                raise
+            time.sleep(0.2 * (attempt + 1))
 
 
 def _lower_priority() -> None:
@@ -257,8 +265,11 @@ def certify(codes: list[pathlib.Path], d_arg: int | None, depth: int, use_dualit
     def submit(ex, code, side, cube):
         return ex.submit(solve_cube, str(code), side, states[code]["claimed_d"], cube, tlim), (code, side, cube)
 
+    def over_budget(st: dict) -> bool:
+        return max_cpu_hours is not None and sum(c["secs"] for c in st["cubes"].values()) > max_cpu_hours * 3600
+
     with ProcessPoolExecutor(max_workers=workers, initializer=_lower_priority) as ex:
-        futs = dict(submit(ex, c, s, cube) for c in codes for s, cube in pending(states[c]))
+        futs = dict(submit(ex, c, s, cube) for c in codes if not over_budget(states[c]) for s, cube in pending(states[c]))
         if not quiet:
             print(f"{len(futs)} cubes queued on {workers} workers", flush=True)
         while futs:
@@ -269,8 +280,7 @@ def certify(codes: list[pathlib.Path], d_arg: int | None, depth: int, use_dualit
                 code, side, cube = futs.pop(f)
                 st, res = states[code], f.result()
                 if res["status"] == "TIMEOUT":
-                    spent = sum(c["secs"] for c in st["cubes"].values()) + res["secs"]
-                    if max_cpu_hours is not None and spent > max_cpu_hours * 3600:
+                    if over_budget(st):
                         continue                        # leave this cube pending
                     res["status"] = "SPLIT"
                     futs.update(submit(ex, code, side, ch) for ch in children(cube, st["n"]))

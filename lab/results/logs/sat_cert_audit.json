@@ -1,0 +1,5194 @@
+{
+ "updated": "2026-09-27T21:43:39",
+ "summary": {
+  "sat_certs": 280,
+  "deficient": 255,
+  "recertified": {
+   "PROVEN": 242,
+   "REFUTED": 0,
+   "in progress": 10
+  }
+ },
+ "codes": [
+  {
+   "code": "100-20-8.json",
+   "n": 100,
+   "k": 20,
+   "d": 8,
+   "family": "balanced-product",
+   "cert_solver": "CryptoMiniSat 5.14 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 0,
+    "Z": 20
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.004,
+    "status_file": "lab\\results\\logs\\100-20-8.sym_audit_d8.status.json"
+   }
+  },
+  {
+   "code": "101-5-5.json",
+   "n": 101,
+   "k": 5,
+   "d": 5,
+   "family": "topological",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 0,
+    "Z": 2
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\101-5-5.sym_audit_d5.status.json"
+   }
+  },
+  {
+   "code": "104-30-8.json",
+   "n": 104,
+   "k": 30,
+   "d": 8,
+   "family": "pair-partition-cpm",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 24,
+    "Z": 22
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.001,
+    "status_file": "lab\\results\\logs\\104-30-8.sym_audit_d8.status.json"
+   }
+  },
+  {
+   "code": "107-15-3.json",
+   "n": 107,
+   "k": 15,
+   "d": 3,
+   "family": "local-2d-single",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 4,
+    "Z": 4
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\107-15-3.sym_audit_d3.status.json"
+   }
+  },
+  {
+   "code": "108-20-4.json",
+   "n": 108,
+   "k": 20,
+   "d": 4,
+   "family": "topological",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 13,
+    "Z": 16
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\108-20-4.sym_audit_d4.status.json"
+   }
+  },
+  {
+   "code": "112-2-10.json",
+   "n": 112,
+   "k": 2,
+   "d": 10,
+   "family": "multivariate-bicycle",
+   "cert_solver": "CryptoMiniSat 5.14 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 2,
+    "Z": 1
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.003,
+    "status_file": "lab\\results\\logs\\112-2-10.sym_audit_d10.status.json"
+   }
+  },
+  {
+   "code": "114-44-3.json",
+   "n": 114,
+   "k": 44,
+   "d": 3,
+   "family": "hypergraph-product",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 20,
+    "Z": 37
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\114-44-3.sym_audit_d3.status.json"
+   }
+  },
+  {
+   "code": "119-34-5.json",
+   "n": 119,
+   "k": 34,
+   "d": 5,
+   "family": "topological",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 27,
+    "Z": 30
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\119-34-5.sym_audit_d5.status.json"
+   }
+  },
+  {
+   "code": "12-2-3.json",
+   "n": 12,
+   "k": 2,
+   "d": 3,
+   "family": "other",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 2,
+    "Z": 2
+   },
+   "deficient": false
+  },
+  {
+   "code": "12-2-4.json",
+   "n": 12,
+   "k": 2,
+   "d": 4,
+   "family": "other",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 2,
+    "Z": 2
+   },
+   "deficient": false
+  },
+  {
+   "code": "120-12-10.json",
+   "n": 120,
+   "k": 12,
+   "d": 10,
+   "family": "generalized-bicycle",
+   "cert_solver": "CryptoMiniSat 5.14 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 7,
+    "Z": 8
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.016,
+    "status_file": "lab\\results\\logs\\120-12-10.sym_audit_d10.status.json"
+   }
+  },
+  {
+   "code": "120-16-8.json",
+   "n": 120,
+   "k": 16,
+   "d": 8,
+   "family": "generalized-bicycle",
+   "cert_solver": "CryptoMiniSat 5.14 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 11,
+    "Z": 8
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\120-16-8.sym_audit_d8.status.json"
+   }
+  },
+  {
+   "code": "120-22-4.json",
+   "n": 120,
+   "k": 22,
+   "d": 4,
+   "family": "topological",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 16,
+    "Z": 19
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.005,
+    "status_file": "lab\\results\\logs\\120-22-4.sym_audit_d4.status.json"
+   }
+  },
+  {
+   "code": "120-24-8.json",
+   "n": 120,
+   "k": 24,
+   "d": 8,
+   "family": "lifted-product",
+   "cert_solver": "CryptoMiniSat 5.14 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 0,
+    "Z": 20
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.008,
+    "status_file": "lab\\results\\logs\\120-24-8.sym_audit_d8.status.json"
+   }
+  },
+  {
+   "code": "120-34-5.json",
+   "n": 120,
+   "k": 34,
+   "d": 5,
+   "family": "topological",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 27,
+    "Z": 30
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\120-34-5.sym_audit_d5.status.json"
+   }
+  },
+  {
+   "code": "120-8-12.json",
+   "n": 120,
+   "k": 8,
+   "d": 12,
+   "family": "bivariate-bicycle",
+   "cert_solver": "CryptoMiniSat 5.14 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 8,
+    "Z": 8
+   },
+   "deficient": false
+  },
+  {
+   "code": "121-1-11.json",
+   "n": 121,
+   "k": 1,
+   "d": 11,
+   "family": "local-2d-single",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 0,
+    "Z": 1
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.002,
+    "status_file": "lab\\results\\logs\\121-1-11.sym_audit_d11.status.json"
+   }
+  },
+  {
+   "code": "121-17-3.json",
+   "n": 121,
+   "k": 17,
+   "d": 3,
+   "family": "local-2d-single",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 4,
+    "Z": 5
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\121-17-3.sym_audit_d3.status.json"
+   }
+  },
+  {
+   "code": "123-3-7.json",
+   "n": 123,
+   "k": 3,
+   "d": 7,
+   "family": "local-2d-single",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 0,
+    "Z": 1
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\123-3-7.sym_audit_d7.status.json"
+   }
+  },
+  {
+   "code": "124-14-11.json",
+   "n": 124,
+   "k": 14,
+   "d": 11,
+   "family": "generalized-bicycle",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 9,
+    "Z": 14
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.003,
+    "status_file": "lab\\results\\logs\\124-14-11.sym_audit_d11.status.json"
+   }
+  },
+  {
+   "code": "126-6-5.json",
+   "n": 126,
+   "k": 6,
+   "d": 5,
+   "family": null,
+   "cert_solver": "CryptoMiniSat 5.14 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 0,
+    "Z": 1
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\126-6-5.sym_audit_d5.status.json"
+   }
+  },
+  {
+   "code": "128-13-10.json",
+   "n": 128,
+   "k": 13,
+   "d": 10,
+   "family": "generalized-bicycle",
+   "cert_solver": "CryptoMiniSat 5.14 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 6,
+    "Z": 7
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.103,
+    "status_file": "lab\\results\\logs\\128-13-10.sym_audit_d10.status.json"
+   }
+  },
+  {
+   "code": "135-19-3.json",
+   "n": 135,
+   "k": 19,
+   "d": 3,
+   "family": "local-2d-single",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 5,
+    "Z": 5
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\135-19-3.sym_audit_d3.status.json"
+   }
+  },
+  {
+   "code": "136-38-8.json",
+   "n": 136,
+   "k": 38,
+   "d": 8,
+   "family": "pair-partition-cpm",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 33,
+    "Z": 27
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\136-38-8.sym_audit_d8.status.json"
+   }
+  },
+  {
+   "code": "139-7-5.json",
+   "n": 139,
+   "k": 7,
+   "d": 5,
+   "family": null,
+   "cert_solver": "CryptoMiniSat 5.14 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 0,
+    "Z": 3
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\139-7-5.sym_audit_d5.status.json"
+   }
+  },
+  {
+   "code": "14-2-3.json",
+   "n": 14,
+   "k": 2,
+   "d": 3,
+   "family": "other",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 1,
+    "Z": 2
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\14-2-3.sym_audit_d3.status.json"
+   }
+  },
+  {
+   "code": "140-10-10.json",
+   "n": 140,
+   "k": 10,
+   "d": 10,
+   "family": "generalized-bicycle",
+   "cert_solver": "CryptoMiniSat 5.14 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 7,
+    "Z": 6
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.04,
+    "status_file": "lab\\results\\logs\\140-10-10.sym_audit_d10.status.json"
+   }
+  },
+  {
+   "code": "140-6-14.json",
+   "n": 140,
+   "k": 6,
+   "d": 14,
+   "family": "bivariate-bicycle",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 3,
+    "Z": 6
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.204,
+    "status_file": "lab\\results\\logs\\140-6-14.sym_audit_d14.status.json"
+   }
+  },
+  {
+   "code": "141-44-4.json",
+   "n": 141,
+   "k": 44,
+   "d": 4,
+   "family": "hypergraph-product",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 16,
+    "Z": 36
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\141-44-4.sym_audit_d4.status.json"
+   }
+  },
+  {
+   "code": "144-12-12.json",
+   "n": 144,
+   "k": 12,
+   "d": 12,
+   "family": "bivariate-bicycle",
+   "cert_solver": "CryptoMiniSat 5.14 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 6,
+    "Z": 6
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.006,
+    "status_file": "lab\\results\\logs\\144-12-12.sym_audit_d12.status.json"
+   }
+  },
+  {
+   "code": "144-16-10.json",
+   "n": 144,
+   "k": 16,
+   "d": 10,
+   "family": "bivariate-bicycle",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 12,
+    "Z": 16
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.036,
+    "status_file": "lab\\results\\logs\\144-16-10.sym_audit_d10.status.json"
+   }
+  },
+  {
+   "code": "144-18-9.json",
+   "n": 144,
+   "k": 18,
+   "d": 9,
+   "family": "bivariate-bicycle",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 15,
+    "Z": 14
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.003,
+    "status_file": "lab\\results\\logs\\144-18-9.sym_audit_d9.status.json"
+   }
+  },
+  {
+   "code": "144-2-12.json",
+   "n": 144,
+   "k": 2,
+   "d": 12,
+   "family": "multivariate-bicycle",
+   "cert_solver": "CryptoMiniSat 5.14 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 2,
+    "Z": 2
+   },
+   "deficient": false
+  },
+  {
+   "code": "146-18-4.json",
+   "n": 146,
+   "k": 18,
+   "d": 4,
+   "family": "bivariate-bicycle",
+   "cert_solver": "CryptoMiniSat 5.14 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 16,
+    "Z": 17
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.003,
+    "status_file": "lab\\results\\logs\\146-18-4.sym_audit_d4.status.json"
+   }
+  },
+  {
+   "code": "149-21-3.json",
+   "n": 149,
+   "k": 21,
+   "d": 3,
+   "family": "local-2d-single",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 6,
+    "Z": 5
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\149-21-3.sym_audit_d3.status.json"
+   }
+  },
+  {
+   "code": "150-30-10.json",
+   "n": 150,
+   "k": 30,
+   "d": 10,
+   "family": "balanced-product",
+   "cert_solver": "CryptoMiniSat 5.14 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 0,
+    "Z": 28
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.098,
+    "status_file": "lab\\results\\logs\\150-30-10.sym_audit_d10.status.json"
+   }
+  },
+  {
+   "code": "152-42-8.json",
+   "n": 152,
+   "k": 42,
+   "d": 8,
+   "family": "pair-partition-cpm",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 36,
+    "Z": 30
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.002,
+    "status_file": "lab\\results\\logs\\152-42-8.sym_audit_d8.status.json"
+   }
+  },
+  {
+   "code": "154-6-11.json",
+   "n": 154,
+   "k": 6,
+   "d": 11,
+   "family": "generalized-bicycle",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 3,
+    "Z": 6
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.002,
+    "status_file": "lab\\results\\logs\\154-6-11.sym_audit_d11.status.json"
+   }
+  },
+  {
+   "code": "16-4-4.json",
+   "n": 16,
+   "k": 4,
+   "d": 4,
+   "family": "other",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 4,
+    "Z": 4
+   },
+   "deficient": false
+  },
+  {
+   "code": "163-12-10.json",
+   "n": 163,
+   "k": 12,
+   "d": 10,
+   "family": "bivariate-bicycle",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 6,
+    "Z": 11
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.006,
+    "status_file": "lab\\results\\logs\\163-12-10.sym_audit_d10.status.json"
+   }
+  },
+  {
+   "code": "163-23-3.json",
+   "n": 163,
+   "k": 23,
+   "d": 3,
+   "family": "local-2d-single",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 6,
+    "Z": 6
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\163-23-3.sym_audit_d3.status.json"
+   }
+  },
+  {
+   "code": "164-12-10.json",
+   "n": 164,
+   "k": 12,
+   "d": 10,
+   "family": "bivariate-bicycle",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 6,
+    "Z": 11
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.007,
+    "status_file": "lab\\results\\logs\\164-12-10.sym_audit_d10.status.json"
+   }
+  },
+  {
+   "code": "168-8-5.json",
+   "n": 168,
+   "k": 8,
+   "d": 5,
+   "family": null,
+   "cert_solver": "CryptoMiniSat 5.14 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 3,
+    "Z": 0
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.007,
+    "status_file": "lab\\results\\logs\\168-8-5.sym_audit_d5.status.json"
+   }
+  },
+  {
+   "code": "170-16-10.json",
+   "n": 170,
+   "k": 16,
+   "d": 10,
+   "family": "generalized-bicycle",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 16,
+    "Z": 16
+   },
+   "deficient": false
+  },
+  {
+   "code": "170-34-8.json",
+   "n": 170,
+   "k": 34,
+   "d": 8,
+   "family": "lifted-product",
+   "cert_solver": "CryptoMiniSat 5.14 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 0,
+    "Z": 34
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.011,
+    "status_file": "lab\\results\\logs\\170-34-8.sym_audit_d8.status.json"
+   }
+  },
+  {
+   "code": "175-12-7.json",
+   "n": 175,
+   "k": 12,
+   "d": 7,
+   "family": "bivariate-bicycle",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 10,
+    "Z": 6
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.001,
+    "status_file": "lab\\results\\logs\\175-12-7.sym_audit_d7.status.json"
+   }
+  },
+  {
+   "code": "175-8-9.json",
+   "n": 175,
+   "k": 8,
+   "d": 9,
+   "family": "bivariate-bicycle",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 7,
+    "Z": 5
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.003,
+    "status_file": "lab\\results\\logs\\175-8-9.sym_audit_d9.status.json"
+   }
+  },
+  {
+   "code": "177-25-3.json",
+   "n": 177,
+   "k": 25,
+   "d": 3,
+   "family": "local-2d-single",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 6,
+    "Z": 7
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\177-25-3.sym_audit_d3.status.json"
+   }
+  },
+  {
+   "code": "177-9-5.json",
+   "n": 177,
+   "k": 9,
+   "d": 5,
+   "family": null,
+   "cert_solver": "CryptoMiniSat 5.14 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 0,
+    "Z": 4
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\177-9-5.sym_audit_d5.status.json"
+   }
+  },
+  {
+   "code": "178-24-13.json",
+   "n": 178,
+   "k": 24,
+   "d": 13,
+   "family": "generalized-bicycle",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 24,
+    "Z": 24
+   },
+   "deficient": false
+  },
+  {
+   "code": "18-4-3.json",
+   "n": 18,
+   "k": 4,
+   "d": 3,
+   "family": "other",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 4,
+    "Z": 2
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\18-4-3.sym_audit_d3.status.json"
+   }
+  },
+  {
+   "code": "180-36-8.json",
+   "n": 180,
+   "k": 36,
+   "d": 8,
+   "family": "lifted-product",
+   "cert_solver": "CryptoMiniSat 5.14 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 0,
+    "Z": 34
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.04,
+    "status_file": "lab\\results\\logs\\180-36-8.sym_audit_d8.status.json"
+   }
+  },
+  {
+   "code": "182-6-12.json",
+   "n": 182,
+   "k": 6,
+   "d": 12,
+   "family": "generalized-bicycle",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 3,
+    "Z": 6
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.006,
+    "status_file": "lab\\results\\logs\\182-6-12.sym_audit_d12.status.json"
+   }
+  },
+  {
+   "code": "184-50-10.json",
+   "n": 184,
+   "k": 50,
+   "d": 10,
+   "family": "pair-partition-cpm",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 39,
+    "Z": 36
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.009,
+    "status_file": "lab\\results\\logs\\184-50-10.sym_audit_d10.status.json"
+   }
+  },
+  {
+   "code": "190-38-8.json",
+   "n": 190,
+   "k": 38,
+   "d": 8,
+   "family": "lifted-product",
+   "cert_solver": "CryptoMiniSat 5.14 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 0,
+    "Z": 38
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.011,
+    "status_file": "lab\\results\\logs\\190-38-8.sym_audit_d8.status.json"
+   }
+  },
+  {
+   "code": "190-78-3.json",
+   "n": 190,
+   "k": 78,
+   "d": 3,
+   "family": "hypergraph-product",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 38,
+    "Z": 66
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\190-78-3.sym_audit_d3.status.json"
+   }
+  },
+  {
+   "code": "191-27-3.json",
+   "n": 191,
+   "k": 27,
+   "d": 3,
+   "family": "local-2d-single",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 7,
+    "Z": 7
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\191-27-3.sym_audit_d3.status.json"
+   }
+  },
+  {
+   "code": "195-39-8.json",
+   "n": 195,
+   "k": 39,
+   "d": 8,
+   "family": "lifted-product",
+   "cert_solver": "CryptoMiniSat 5.14 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 0,
+    "Z": 39
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.021,
+    "status_file": "lab\\results\\logs\\195-39-8.sym_audit_d8.status.json"
+   }
+  },
+  {
+   "code": "196-15-11.json",
+   "n": 196,
+   "k": 15,
+   "d": 11,
+   "family": "bivariate-bicycle",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 9,
+    "Z": 8
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.176,
+    "status_file": "lab\\results\\logs\\196-15-11.sym_audit_d11.status.json"
+   }
+  },
+  {
+   "code": "197-5-7.json",
+   "n": 197,
+   "k": 5,
+   "d": 7,
+   "family": "topological",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 0,
+    "Z": 2
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\197-5-7.sym_audit_d7.status.json"
+   }
+  },
+  {
+   "code": "198-8-9.json",
+   "n": 198,
+   "k": 8,
+   "d": 9,
+   "family": "bivariate-bicycle",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 5,
+    "Z": 5
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.003,
+    "status_file": "lab\\results\\logs\\198-8-9.sym_audit_d9.status.json"
+   }
+  },
+  {
+   "code": "20-8-2.json",
+   "n": 20,
+   "k": 8,
+   "d": 2,
+   "family": "generalized-bicycle",
+   "cert_solver": "CryptoMiniSat 5.14 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 4,
+    "Z": 5
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\20-8-2.sym_audit_d2.status.json"
+   }
+  },
+  {
+   "code": "20-8-4.json",
+   "n": 20,
+   "k": 8,
+   "d": 4,
+   "family": "other",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 7,
+    "Z": 7
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.001,
+    "status_file": "lab\\results\\logs\\20-8-4.sym_audit_d4.status.json"
+   }
+  },
+  {
+   "code": "201-15-11.json",
+   "n": 201,
+   "k": 15,
+   "d": 11,
+   "family": "bivariate-bicycle",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 9,
+    "Z": 8
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.057,
+    "status_file": "lab\\results\\logs\\201-15-11.sym_audit_d11.status.json"
+   }
+  },
+  {
+   "code": "202-10-5.json",
+   "n": 202,
+   "k": 10,
+   "d": 5,
+   "family": null,
+   "cert_solver": "CryptoMiniSat 5.14 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 0,
+    "Z": 2
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\202-10-5.sym_audit_d5.status.json"
+   }
+  },
+  {
+   "code": "203-3-9.json",
+   "n": 203,
+   "k": 3,
+   "d": 9,
+   "family": "local-2d-single",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 0,
+    "Z": 1
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\203-3-9.sym_audit_d9.status.json"
+   }
+  },
+  {
+   "code": "205-12-12.json",
+   "n": 205,
+   "k": 12,
+   "d": 12,
+   "family": "bivariate-bicycle",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 8,
+    "Z": 11
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.168,
+    "status_file": "lab\\results\\logs\\205-12-12.sym_audit_d12.status.json"
+   }
+  },
+  {
+   "code": "205-29-3.json",
+   "n": 205,
+   "k": 29,
+   "d": 3,
+   "family": "local-2d-single",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 8,
+    "Z": 7
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\205-29-3.sym_audit_d3.status.json"
+   }
+  },
+  {
+   "code": "210-12-10.json",
+   "n": 210,
+   "k": 12,
+   "d": 10,
+   "family": "generalized-bicycle",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 9,
+    "Z": 6
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.076,
+    "status_file": "lab\\results\\logs\\210-12-10.sym_audit_d10.status.json"
+   }
+  },
+  {
+   "code": "211-12-12.json",
+   "n": 211,
+   "k": 12,
+   "d": 12,
+   "family": "bivariate-bicycle",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 8,
+    "Z": 10
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "in progress",
+    "cpu_hours": 0.265,
+    "status_file": "lab\\results\\logs\\211-12-12.sym_audit_d12.status.json"
+   }
+  },
+  {
+   "code": "215-11-5.json",
+   "n": 215,
+   "k": 11,
+   "d": 5,
+   "family": null,
+   "cert_solver": "CryptoMiniSat 5.14 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 0,
+    "Z": 5
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\215-11-5.sym_audit_d5.status.json"
+   }
+  },
+  {
+   "code": "219-31-3.json",
+   "n": 219,
+   "k": 31,
+   "d": 3,
+   "family": "local-2d-single",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 8,
+    "Z": 8
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\219-31-3.sym_audit_d3.status.json"
+   }
+  },
+  {
+   "code": "23-3-3.json",
+   "n": 23,
+   "k": 3,
+   "d": 3,
+   "family": "local-2d-single",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 1,
+    "Z": 1
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\23-3-3.sym_audit_d3.status.json"
+   }
+  },
+  {
+   "code": "230-16-12.json",
+   "n": 230,
+   "k": 16,
+   "d": 12,
+   "family": "bivariate-bicycle",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 13,
+    "Z": 11
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "in progress",
+    "cpu_hours": 0.254,
+    "status_file": "lab\\results\\logs\\230-16-12.sym_audit_d12.status.json"
+   }
+  },
+  {
+   "code": "230-46-8.json",
+   "n": 230,
+   "k": 46,
+   "d": 8,
+   "family": "lifted-product",
+   "cert_solver": "CryptoMiniSat 5.14 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 0,
+    "Z": 46
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.023,
+    "status_file": "lab\\results\\logs\\230-46-8.sym_audit_d8.status.json"
+   }
+  },
+  {
+   "code": "233-33-3.json",
+   "n": 233,
+   "k": 33,
+   "d": 3,
+   "family": "local-2d-single",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 8,
+    "Z": 9
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\233-33-3.sym_audit_d3.status.json"
+   }
+  },
+  {
+   "code": "236-16-12.json",
+   "n": 236,
+   "k": 16,
+   "d": 12,
+   "family": "bivariate-bicycle",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 13,
+    "Z": 12
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "in progress",
+    "cpu_hours": 0.261,
+    "status_file": "lab\\results\\logs\\236-16-12.sym_audit_d12.status.json"
+   }
+  },
+  {
+   "code": "239-12-12-graft.json",
+   "n": 239,
+   "k": 12,
+   "d": 12,
+   "family": "bivariate-bicycle",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 6,
+    "Z": 11
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "in progress",
+    "cpu_hours": 0.261,
+    "status_file": "lab\\results\\logs\\239-12-12-graft.sym_audit_d12.status.json"
+   }
+  },
+  {
+   "code": "24-12-2.json",
+   "n": 24,
+   "k": 12,
+   "d": 2,
+   "family": "generalized-bicycle",
+   "cert_solver": "CryptoMiniSat 5.14 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 8,
+    "Z": 10
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\24-12-2.sym_audit_d2.status.json"
+   }
+  },
+  {
+   "code": "240-12-12.json",
+   "n": 240,
+   "k": 12,
+   "d": 12,
+   "family": "2bga-coset",
+   "cert_solver": "CryptoMiniSat 5.14 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 8,
+    "Z": 6
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.443,
+    "status_file": "lab\\results\\logs\\240-12-12.sym_audit_d12.status.json"
+   }
+  },
+  {
+   "code": "242-12-12.json",
+   "n": 242,
+   "k": 12,
+   "d": 12,
+   "family": "bivariate-bicycle",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 7,
+    "Z": 11
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "in progress",
+    "cpu_hours": 0.267,
+    "status_file": "lab\\results\\logs\\242-12-12.sym_audit_d12.status.json"
+   }
+  },
+  {
+   "code": "244-12-5.json",
+   "n": 244,
+   "k": 12,
+   "d": 5,
+   "family": "local-2d-single",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 0,
+    "Z": 4
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\244-12-5.sym_audit_d5.status.json"
+   }
+  },
+  {
+   "code": "247-35-3.json",
+   "n": 247,
+   "k": 35,
+   "d": 3,
+   "family": "local-2d-single",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 9,
+    "Z": 9
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\247-35-3.sym_audit_d3.status.json"
+   }
+  },
+  {
+   "code": "25-5-4.json",
+   "n": 25,
+   "k": 5,
+   "d": 4,
+   "family": "other",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 4,
+    "Z": 1
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\25-5-4.sym_audit_d4.status.json"
+   }
+  },
+  {
+   "code": "252-130-6.json",
+   "n": 252,
+   "k": 130,
+   "d": 6,
+   "family": "other",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 127,
+    "Z": 129
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.023,
+    "status_file": "lab\\results\\logs\\252-130-6.sym_audit_d6.status.json"
+   }
+  },
+  {
+   "code": "253-13-5.json",
+   "n": 253,
+   "k": 13,
+   "d": 5,
+   "family": null,
+   "cert_solver": "CryptoMiniSat 5.14 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 0,
+    "Z": 6
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\253-13-5.sym_audit_d5.status.json"
+   }
+  },
+  {
+   "code": "258-6-7.json",
+   "n": 258,
+   "k": 6,
+   "d": 7,
+   "family": "local-2d-single",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 0,
+    "Z": 2
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\258-6-7.sym_audit_d7.status.json"
+   }
+  },
+  {
+   "code": "259-12-14.json",
+   "n": 259,
+   "k": 12,
+   "d": 14,
+   "family": "tile",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 8,
+    "Z": 11
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "in progress",
+    "cpu_hours": 0.276,
+    "status_file": "lab\\results\\logs\\259-12-14.sym_audit_d14.status.json"
+   }
+  },
+  {
+   "code": "261-37-3.json",
+   "n": 261,
+   "k": 37,
+   "d": 3,
+   "family": "local-2d-single",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 10,
+    "Z": 9
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\261-37-3.sym_audit_d3.status.json"
+   }
+  },
+  {
+   "code": "265-8-12.json",
+   "n": 265,
+   "k": 8,
+   "d": 12,
+   "family": "bivariate-bicycle",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 6,
+    "Z": 6
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.055,
+    "status_file": "lab\\results\\logs\\265-8-12.sym_audit_d12.status.json"
+   }
+  },
+  {
+   "code": "271-7-7.json",
+   "n": 271,
+   "k": 7,
+   "d": 7,
+   "family": null,
+   "cert_solver": "CryptoMiniSat 5.14 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 0,
+    "Z": 3
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\271-7-7.sym_audit_d7.status.json"
+   }
+  },
+  {
+   "code": "275-39-3.json",
+   "n": 275,
+   "k": 39,
+   "d": 3,
+   "family": "local-2d-single",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 10,
+    "Z": 10
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\275-39-3.sym_audit_d3.status.json"
+   }
+  },
+  {
+   "code": "276-5-13.json",
+   "n": 276,
+   "k": 5,
+   "d": 13,
+   "family": "bivariate-bicycle",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 4,
+    "Z": 4
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.233,
+    "status_file": "lab\\results\\logs\\276-5-13.sym_audit_d13.status.json"
+   }
+  },
+  {
+   "code": "278-14-5.json",
+   "n": 278,
+   "k": 14,
+   "d": 5,
+   "family": null,
+   "cert_solver": "CryptoMiniSat 5.14 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 0,
+    "Z": 3
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\278-14-5.sym_audit_d5.status.json"
+   }
+  },
+  {
+   "code": "288-46-8.json",
+   "n": 288,
+   "k": 46,
+   "d": 8,
+   "family": "bivariate-bicycle",
+   "cert_solver": "CryptoMiniSat 5.14 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 36,
+    "Z": 36
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.006,
+    "status_file": "lab\\results\\logs\\288-46-8.sym_audit_d8.status.json"
+   }
+  },
+  {
+   "code": "288-48-8.json",
+   "n": 288,
+   "k": 48,
+   "d": 8,
+   "family": "bivariate-bicycle",
+   "cert_solver": "CryptoMiniSat 5.14 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 24,
+    "Z": 24
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.009,
+    "status_file": "lab\\results\\logs\\288-48-8.sym_audit_d8.status.json"
+   }
+  },
+  {
+   "code": "288-50-8.json",
+   "n": 288,
+   "k": 50,
+   "d": 8,
+   "family": "bivariate-bicycle",
+   "cert_solver": "CryptoMiniSat 5.14 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 36,
+    "Z": 36
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.018,
+    "status_file": "lab\\results\\logs\\288-50-8.sym_audit_d8.status.json"
+   }
+  },
+  {
+   "code": "289-41-3.json",
+   "n": 289,
+   "k": 41,
+   "d": 3,
+   "family": "local-2d-single",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 10,
+    "Z": 11
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\289-41-3.sym_audit_d3.status.json"
+   }
+  },
+  {
+   "code": "291-15-5.json",
+   "n": 291,
+   "k": 15,
+   "d": 5,
+   "family": "local-2d-single",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 2,
+    "Z": 1
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\291-15-5.sym_audit_d5.status.json"
+   }
+  },
+  {
+   "code": "292-18-8.json",
+   "n": 292,
+   "k": 18,
+   "d": 8,
+   "family": "bivariate-bicycle",
+   "cert_solver": "CryptoMiniSat 5.14 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 9,
+    "Z": 18
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\292-18-8.sym_audit_d8.status.json"
+   }
+  },
+  {
+   "code": "30-16-2.json",
+   "n": 30,
+   "k": 16,
+   "d": 2,
+   "family": "generalized-bicycle",
+   "cert_solver": "CryptoMiniSat 5.14 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 12,
+    "Z": 12
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\30-16-2.sym_audit_d2.status.json"
+   }
+  },
+  {
+   "code": "300-28-8.json",
+   "n": 300,
+   "k": 28,
+   "d": 8,
+   "family": "lifted-product",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 5,
+    "Z": 19
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.009,
+    "status_file": "lab\\results\\logs\\300-28-8.sym_audit_d8.status.json"
+   }
+  },
+  {
+   "code": "300-8-13.json",
+   "n": 300,
+   "k": 8,
+   "d": 13,
+   "family": "bivariate-bicycle",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 7,
+    "Z": 7
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "in progress",
+    "cpu_hours": 0.291,
+    "status_file": "lab\\results\\logs\\300-8-13.sym_audit_d13.status.json"
+   }
+  },
+  {
+   "code": "303-3-11.json",
+   "n": 303,
+   "k": 3,
+   "d": 11,
+   "family": "local-2d-single",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 0,
+    "Z": 1
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.002,
+    "status_file": "lab\\results\\logs\\303-3-11.sym_audit_d11.status.json"
+   }
+  },
+  {
+   "code": "303-43-3.json",
+   "n": 303,
+   "k": 43,
+   "d": 3,
+   "family": "local-2d-single",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 11,
+    "Z": 11
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\303-43-3.sym_audit_d3.status.json"
+   }
+  },
+  {
+   "code": "317-41-3.json",
+   "n": 317,
+   "k": 41,
+   "d": 3,
+   "family": "local-2d-single",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 9,
+    "Z": 11
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.036,
+    "status_file": "lab\\results\\logs\\317-41-3.sym_audit_d3.status.json"
+   }
+  },
+  {
+   "code": "317-45-3.json",
+   "n": 317,
+   "k": 45,
+   "d": 3,
+   "family": "local-2d-single",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 12,
+    "Z": 11
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\317-45-3.sym_audit_d3.status.json"
+   }
+  },
+  {
+   "code": "318-42-3.json",
+   "n": 318,
+   "k": 42,
+   "d": 3,
+   "family": "local-2d-single",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 11,
+    "Z": 10
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\318-42-3.sym_audit_d3.status.json"
+   }
+  },
+  {
+   "code": "323-43-3.json",
+   "n": 323,
+   "k": 43,
+   "d": 3,
+   "family": "local-2d-single",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 10,
+    "Z": 12
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.04,
+    "status_file": "lab\\results\\logs\\323-43-3.sym_audit_d3.status.json"
+   }
+  },
+  {
+   "code": "325-5-9.json",
+   "n": 325,
+   "k": 5,
+   "d": 9,
+   "family": "topological",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 0,
+    "Z": 2
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.002,
+    "status_file": "lab\\results\\logs\\325-5-9.sym_audit_d9.status.json"
+   }
+  },
+  {
+   "code": "326-44-3.json",
+   "n": 326,
+   "k": 44,
+   "d": 3,
+   "family": "local-2d-single",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 10,
+    "Z": 12
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\326-44-3.sym_audit_d3.status.json"
+   }
+  },
+  {
+   "code": "329-17-5.json",
+   "n": 329,
+   "k": 17,
+   "d": 5,
+   "family": "local-2d-single",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 2,
+    "Z": 1
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\329-17-5.sym_audit_d5.status.json"
+   }
+  },
+  {
+   "code": "331-47-3.json",
+   "n": 331,
+   "k": 47,
+   "d": 3,
+   "family": "local-2d-single",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 12,
+    "Z": 12
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\331-47-3.sym_audit_d3.status.json"
+   }
+  },
+  {
+   "code": "332-6-14.json",
+   "n": 332,
+   "k": 6,
+   "d": 14,
+   "family": "bivariate-bicycle",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 6,
+    "Z": 4
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "in progress",
+    "cpu_hours": 0.276,
+    "status_file": "lab\\results\\logs\\332-6-14.sym_audit_d14.status.json"
+   }
+  },
+  {
+   "code": "335-45-3.json",
+   "n": 335,
+   "k": 45,
+   "d": 3,
+   "family": "local-2d-single",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 12,
+    "Z": 10
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\335-45-3.sym_audit_d3.status.json"
+   }
+  },
+  {
+   "code": "34-2-7.json",
+   "n": 34,
+   "k": 2,
+   "d": 7,
+   "family": "generalized-bicycle",
+   "cert_solver": "CryptoMiniSat 5.14 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 2,
+    "Z": 2
+   },
+   "deficient": false
+  },
+  {
+   "code": "34-4-3.json",
+   "n": 34,
+   "k": 4,
+   "d": 3,
+   "family": null,
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 1,
+    "Z": 1
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\34-4-3.sym_audit_d3.status.json"
+   }
+  },
+  {
+   "code": "342-46-3.json",
+   "n": 342,
+   "k": 46,
+   "d": 3,
+   "family": "local-2d-single",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 12,
+    "Z": 11
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.047,
+    "status_file": "lab\\results\\logs\\342-46-3.sym_audit_d3.status.json"
+   }
+  },
+  {
+   "code": "344-8-7.json",
+   "n": 344,
+   "k": 8,
+   "d": 7,
+   "family": "local-2d-single",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 0,
+    "Z": 2
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.028,
+    "status_file": "lab\\results\\logs\\344-8-7.sym_audit_d7.status.json"
+   }
+  },
+  {
+   "code": "345-9-7.json",
+   "n": 345,
+   "k": 9,
+   "d": 7,
+   "family": null,
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 0,
+    "Z": 4
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.001,
+    "status_file": "lab\\results\\logs\\345-9-7.sym_audit_d7.status.json"
+   }
+  },
+  {
+   "code": "354-18-5.json",
+   "n": 354,
+   "k": 18,
+   "d": 5,
+   "family": "local-2d-single",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 2,
+    "Z": 2
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\354-18-5.sym_audit_d5.status.json"
+   }
+  },
+  {
+   "code": "36-4-3.json",
+   "n": 36,
+   "k": 4,
+   "d": 3,
+   "family": null,
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 2,
+    "Z": 1
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\36-4-3.sym_audit_d3.status.json"
+   }
+  },
+  {
+   "code": "36-6-4.json",
+   "n": 36,
+   "k": 6,
+   "d": 4,
+   "family": "other",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 3,
+    "Z": 3
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\36-6-4.sym_audit_d4.status.json"
+   }
+  },
+  {
+   "code": "36-9-4.json",
+   "n": 36,
+   "k": 9,
+   "d": 4,
+   "family": "other",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 6,
+    "Z": 5
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.002,
+    "status_file": "lab\\results\\logs\\36-9-4.sym_audit_d4.status.json"
+   }
+  },
+  {
+   "code": "360-48-3.json",
+   "n": 360,
+   "k": 48,
+   "d": 3,
+   "family": "local-2d-single",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 10,
+    "Z": 13
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.053,
+    "status_file": "lab\\results\\logs\\360-48-3.sym_audit_d3.status.json"
+   }
+  },
+  {
+   "code": "367-19-5.json",
+   "n": 367,
+   "k": 19,
+   "d": 5,
+   "family": null,
+   "cert_solver": "CryptoMiniSat 5.14 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 0,
+    "Z": 9
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\367-19-5.sym_audit_d5.status.json"
+   }
+  },
+  {
+   "code": "37-5-3.json",
+   "n": 37,
+   "k": 5,
+   "d": 3,
+   "family": "local-2d-single",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 2,
+    "Z": 1
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\37-5-3.sym_audit_d3.status.json"
+   }
+  },
+  {
+   "code": "370-50-3.json",
+   "n": 370,
+   "k": 50,
+   "d": 3,
+   "family": "local-2d-single",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 10,
+    "Z": 14
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.059,
+    "status_file": "lab\\results\\logs\\370-50-3.sym_audit_d3.status.json"
+   }
+  },
+  {
+   "code": "378-50-3.json",
+   "n": 378,
+   "k": 50,
+   "d": 3,
+   "family": "local-2d-single",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 12,
+    "Z": 12
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\378-50-3.sym_audit_d3.status.json"
+   }
+  },
+  {
+   "code": "379-51-3.json",
+   "n": 379,
+   "k": 51,
+   "d": 3,
+   "family": "local-2d-single",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 12,
+    "Z": 14
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\379-51-3.sym_audit_d3.status.json"
+   }
+  },
+  {
+   "code": "384-52-3.json",
+   "n": 384,
+   "k": 52,
+   "d": 3,
+   "family": "local-2d-single",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 16,
+    "Z": 12
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\384-52-3.sym_audit_d3.status.json"
+   }
+  },
+  {
+   "code": "388-20-5.json",
+   "n": 388,
+   "k": 20,
+   "d": 5,
+   "family": "local-2d-single",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 0,
+    "Z": 4
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\388-20-5.sym_audit_d5.status.json"
+   }
+  },
+  {
+   "code": "393-53-3.json",
+   "n": 393,
+   "k": 53,
+   "d": 3,
+   "family": "local-2d-single",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 14,
+    "Z": 12
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.083,
+    "status_file": "lab\\results\\logs\\393-53-3.sym_audit_d3.status.json"
+   }
+  },
+  {
+   "code": "398-54-3.json",
+   "n": 398,
+   "k": 54,
+   "d": 3,
+   "family": null,
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 15,
+    "Z": 13
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\398-54-3.sym_audit_d3.status.json"
+   }
+  },
+  {
+   "code": "40-10-4.json",
+   "n": 40,
+   "k": 10,
+   "d": 4,
+   "family": "topological",
+   "cert_solver": "CryptoMiniSat 5.14 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 7,
+    "Z": 9
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.001,
+    "status_file": "lab\\results\\logs\\40-10-4.sym_audit_d4.status.json"
+   }
+  },
+  {
+   "code": "40-12-4.json",
+   "n": 40,
+   "k": 12,
+   "d": 4,
+   "family": "generalized-bicycle",
+   "cert_solver": "CryptoMiniSat 5.14 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 8,
+    "Z": 8
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\40-12-4.sym_audit_d4.status.json"
+   }
+  },
+  {
+   "code": "40-2-8.json",
+   "n": 40,
+   "k": 2,
+   "d": 8,
+   "family": "generalized-bicycle",
+   "cert_solver": "CryptoMiniSat 5.14 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 2,
+    "Z": 2
+   },
+   "deficient": false
+  },
+  {
+   "code": "40-6-4.json",
+   "n": 40,
+   "k": 6,
+   "d": 4,
+   "family": "topological",
+   "cert_solver": "CryptoMiniSat 5.14 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 4,
+    "Z": 4
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.001,
+    "status_file": "lab\\results\\logs\\40-6-4.sym_audit_d4.status.json"
+   }
+  },
+  {
+   "code": "400-35-8.json",
+   "n": 400,
+   "k": 35,
+   "d": 8,
+   "family": "lifted-product",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 6,
+    "Z": 13
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.013,
+    "status_file": "lab\\results\\logs\\400-35-8.sym_audit_d8.status.json"
+   }
+  },
+  {
+   "code": "405-21-5.json",
+   "n": 405,
+   "k": 21,
+   "d": 5,
+   "family": "local-2d-single",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 2,
+    "Z": 3
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\405-21-5.sym_audit_d5.status.json"
+   }
+  },
+  {
+   "code": "405-55-3.json",
+   "n": 405,
+   "k": 55,
+   "d": 3,
+   "family": "local-2d-single",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 13,
+    "Z": 15
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\405-55-3.sym_audit_d3.status.json"
+   }
+  },
+  {
+   "code": "41-16-4.json",
+   "n": 41,
+   "k": 16,
+   "d": 4,
+   "family": null,
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 15,
+    "Z": 15
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\41-16-4.sym_audit_d4.status.json"
+   }
+  },
+  {
+   "code": "414-6-9.json",
+   "n": 414,
+   "k": 6,
+   "d": 9,
+   "family": "local-2d-single",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 0,
+    "Z": 2
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.002,
+    "status_file": "lab\\results\\logs\\414-6-9.sym_audit_d9.status.json"
+   }
+  },
+  {
+   "code": "418-10-7.json",
+   "n": 418,
+   "k": 10,
+   "d": 7,
+   "family": null,
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 0,
+    "Z": 2
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.001,
+    "status_file": "lab\\results\\logs\\418-10-7.sym_audit_d7.status.json"
+   }
+  },
+  {
+   "code": "419-11-7.json",
+   "n": 419,
+   "k": 11,
+   "d": 7,
+   "family": "local-2d-single",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 0,
+    "Z": 1
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\419-11-7.sym_audit_d7.status.json"
+   }
+  },
+  {
+   "code": "42-10-4.json",
+   "n": 42,
+   "k": 10,
+   "d": 4,
+   "family": "generalized-bicycle",
+   "cert_solver": "CryptoMiniSat 5.14 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 9,
+    "Z": 9
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\42-10-4.sym_audit_d4.status.json"
+   }
+  },
+  {
+   "code": "42-12-4.json",
+   "n": 42,
+   "k": 12,
+   "d": 4,
+   "family": "generalized-bicycle",
+   "cert_solver": "CryptoMiniSat 5.14 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 11,
+    "Z": 9
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.001,
+    "status_file": "lab\\results\\logs\\42-12-4.sym_audit_d4.status.json"
+   }
+  },
+  {
+   "code": "42-14-6.json",
+   "n": 42,
+   "k": 14,
+   "d": 6,
+   "family": "generalized-bicycle",
+   "cert_solver": "CryptoMiniSat 5.14 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 12,
+    "Z": 14
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\42-14-6.sym_audit_d6.status.json"
+   }
+  },
+  {
+   "code": "42-16-6.json",
+   "n": 42,
+   "k": 16,
+   "d": 6,
+   "family": "generalized-bicycle",
+   "cert_solver": "CryptoMiniSat 5.14 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 16,
+    "Z": 16
+   },
+   "deficient": false
+  },
+  {
+   "code": "42-6-6.json",
+   "n": 42,
+   "k": 6,
+   "d": 6,
+   "family": "generalized-bicycle",
+   "cert_solver": "CryptoMiniSat 5.14 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 4,
+    "Z": 4
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\42-6-6.sym_audit_d6.status.json"
+   }
+  },
+  {
+   "code": "423-3-13.json",
+   "n": 423,
+   "k": 3,
+   "d": 13,
+   "family": "local-2d-single",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 0,
+    "Z": 1
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.005,
+    "status_file": "lab\\results\\logs\\423-3-13.sym_audit_d13.status.json"
+   }
+  },
+  {
+   "code": "423-57-3.json",
+   "n": 423,
+   "k": 57,
+   "d": 3,
+   "family": "local-2d-single",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 13,
+    "Z": 15
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\423-57-3.sym_audit_d3.status.json"
+   }
+  },
+  {
+   "code": "430-22-5.json",
+   "n": 430,
+   "k": 22,
+   "d": 5,
+   "family": "local-2d-single",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 3,
+    "Z": 2
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\430-22-5.sym_audit_d5.status.json"
+   }
+  },
+  {
+   "code": "434-58-3.json",
+   "n": 434,
+   "k": 58,
+   "d": 3,
+   "family": "local-2d-single",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 15,
+    "Z": 13
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.089,
+    "status_file": "lab\\results\\logs\\434-58-3.sym_audit_d3.status.json"
+   }
+  },
+  {
+   "code": "435-59-3.json",
+   "n": 435,
+   "k": 59,
+   "d": 3,
+   "family": "local-2d-single",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 16,
+    "Z": 14
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.09,
+    "status_file": "lab\\results\\logs\\435-59-3.sym_audit_d3.status.json"
+   }
+  },
+  {
+   "code": "442-60-3.json",
+   "n": 442,
+   "k": 60,
+   "d": 3,
+   "family": "local-2d-single",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 16,
+    "Z": 13
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\442-60-3.sym_audit_d3.status.json"
+   }
+  },
+  {
+   "code": "443-23-5.json",
+   "n": 443,
+   "k": 23,
+   "d": 5,
+   "family": "local-2d-single",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 2,
+    "Z": 3
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\443-23-5.sym_audit_d5.status.json"
+   }
+  },
+  {
+   "code": "447-7-9.json",
+   "n": 447,
+   "k": 7,
+   "d": 9,
+   "family": null,
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 0,
+    "Z": 3
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.003,
+    "status_file": "lab\\results\\logs\\447-7-9.sym_audit_d9.status.json"
+   }
+  },
+  {
+   "code": "449-61-3.json",
+   "n": 449,
+   "k": 61,
+   "d": 3,
+   "family": "local-2d-single",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 13,
+    "Z": 17
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.05,
+    "status_file": "lab\\results\\logs\\449-61-3.sym_audit_d3.status.json"
+   }
+  },
+  {
+   "code": "45-16-4.json",
+   "n": 45,
+   "k": 16,
+   "d": 4,
+   "family": null,
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 16,
+    "Z": 16
+   },
+   "deficient": false
+  },
+  {
+   "code": "467-63-3.json",
+   "n": 467,
+   "k": 63,
+   "d": 3,
+   "family": "local-2d-single",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 17,
+    "Z": 15
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\467-63-3.sym_audit_d3.status.json"
+   }
+  },
+  {
+   "code": "477-65-3.json",
+   "n": 477,
+   "k": 65,
+   "d": 3,
+   "family": "local-2d-single",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 20,
+    "Z": 15
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\477-65-3.sym_audit_d3.status.json"
+   }
+  },
+  {
+   "code": "48-16-5.json",
+   "n": 48,
+   "k": 16,
+   "d": 5,
+   "family": null,
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 16,
+    "Z": 16
+   },
+   "deficient": false
+  },
+  {
+   "code": "48-6-3.json",
+   "n": 48,
+   "k": 6,
+   "d": 3,
+   "family": "other",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 1,
+    "Z": 1
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\48-6-3.sym_audit_d3.status.json"
+   }
+  },
+  {
+   "code": "481-25-5.json",
+   "n": 481,
+   "k": 25,
+   "d": 5,
+   "family": "local-2d-single",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 2,
+    "Z": 3
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\481-25-5.sym_audit_d5.status.json"
+   }
+  },
+  {
+   "code": "484-66-3.json",
+   "n": 484,
+   "k": 66,
+   "d": 3,
+   "family": "local-2d-single",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 16,
+    "Z": 18
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\484-66-3.sym_audit_d3.status.json"
+   }
+  },
+  {
+   "code": "485-5-11.json",
+   "n": 485,
+   "k": 5,
+   "d": 11,
+   "family": "topological",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 0,
+    "Z": 2
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.006,
+    "status_file": "lab\\results\\logs\\485-5-11.sym_audit_d11.status.json"
+   }
+  },
+  {
+   "code": "493-13-7.json",
+   "n": 493,
+   "k": 13,
+   "d": 7,
+   "family": "local-2d-single",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 1,
+    "Z": 1
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\493-13-7.sym_audit_d7.status.json"
+   }
+  },
+  {
+   "code": "495-67-3.json",
+   "n": 495,
+   "k": 67,
+   "d": 3,
+   "family": "local-2d-single",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 15,
+    "Z": 18
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.132,
+    "status_file": "lab\\results\\logs\\495-67-3.sym_audit_d3.status.json"
+   }
+  },
+  {
+   "code": "50-10-4.json",
+   "n": 50,
+   "k": 10,
+   "d": 4,
+   "family": "generalized-bicycle",
+   "cert_solver": "CryptoMiniSat 5.14 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 10,
+    "Z": 10
+   },
+   "deficient": false
+  },
+  {
+   "code": "50-18-4.json",
+   "n": 50,
+   "k": 18,
+   "d": 4,
+   "family": "generalized-bicycle",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 16,
+    "Z": 16
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\50-18-4.sym_audit_d4.status.json"
+   }
+  },
+  {
+   "code": "50-2-9.json",
+   "n": 50,
+   "k": 2,
+   "d": 9,
+   "family": "generalized-bicycle",
+   "cert_solver": "CryptoMiniSat 5.14 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 2,
+    "Z": 2
+   },
+   "deficient": false
+  },
+  {
+   "code": "50-6-3.json",
+   "n": 50,
+   "k": 6,
+   "d": 3,
+   "family": "other",
+   "cert_solver": "CryptoMiniSat 5.14 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 1,
+    "Z": 1
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\50-6-3.sym_audit_d3.status.json"
+   }
+  },
+  {
+   "code": "500-36-12.json",
+   "n": 500,
+   "k": 36,
+   "d": 12,
+   "family": "lifted-product",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 5,
+    "Z": 27
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "in progress",
+    "cpu_hours": 0.311,
+    "status_file": "lab\\results\\logs\\500-36-12.sym_audit_d12.status.json"
+   }
+  },
+  {
+   "code": "500-68-3.json",
+   "n": 500,
+   "k": 68,
+   "d": 3,
+   "family": "local-2d-single",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 16,
+    "Z": 19
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\500-68-3.sym_audit_d3.status.json"
+   }
+  },
+  {
+   "code": "506-26-5.json",
+   "n": 506,
+   "k": 26,
+   "d": 5,
+   "family": "local-2d-single",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 4,
+    "Z": 2
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\506-26-5.sym_audit_d5.status.json"
+   }
+  },
+  {
+   "code": "51-16-5.json",
+   "n": 51,
+   "k": 16,
+   "d": 5,
+   "family": null,
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 16,
+    "Z": 16
+   },
+   "deficient": false
+  },
+  {
+   "code": "51-7-3.json",
+   "n": 51,
+   "k": 7,
+   "d": 3,
+   "family": "local-2d-single",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 2,
+    "Z": 2
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\51-7-3.sym_audit_d3.status.json"
+   }
+  },
+  {
+   "code": "511-69-3.json",
+   "n": 511,
+   "k": 69,
+   "d": 3,
+   "family": "local-2d-single",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 18,
+    "Z": 15
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\511-69-3.sym_audit_d3.status.json"
+   }
+  },
+  {
+   "code": "515-27-5.json",
+   "n": 515,
+   "k": 27,
+   "d": 5,
+   "family": "local-2d-single",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 3,
+    "Z": 3
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\515-27-5.sym_audit_d5.status.json"
+   }
+  },
+  {
+   "code": "519-27-5.json",
+   "n": 519,
+   "k": 27,
+   "d": 5,
+   "family": "local-2d-single",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 3,
+    "Z": 3
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\519-27-5.sym_audit_d5.status.json"
+   }
+  },
+  {
+   "code": "528-70-3.json",
+   "n": 528,
+   "k": 70,
+   "d": 3,
+   "family": "local-2d-single",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 16,
+    "Z": 18
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\528-70-3.sym_audit_d3.status.json"
+   }
+  },
+  {
+   "code": "528-72-3.json",
+   "n": 528,
+   "k": 72,
+   "d": 3,
+   "family": "local-2d-single",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 20,
+    "Z": 17
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.162,
+    "status_file": "lab\\results\\logs\\528-72-3.sym_audit_d3.status.json"
+   }
+  },
+  {
+   "code": "532-28-5.json",
+   "n": 532,
+   "k": 28,
+   "d": 5,
+   "family": "local-2d-single",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 2,
+    "Z": 4
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\532-28-5.sym_audit_d5.status.json"
+   }
+  },
+  {
+   "code": "54-16-6.json",
+   "n": 54,
+   "k": 16,
+   "d": 6,
+   "family": "generalized-bicycle",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 16,
+    "Z": 16
+   },
+   "deficient": false
+  },
+  {
+   "code": "54-2-9.json",
+   "n": 54,
+   "k": 2,
+   "d": 9,
+   "family": "generalized-bicycle",
+   "cert_solver": "CryptoMiniSat 5.14 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 2,
+    "Z": 2
+   },
+   "deficient": false
+  },
+  {
+   "code": "54-20-4.json",
+   "n": 54,
+   "k": 20,
+   "d": 4,
+   "family": "topological",
+   "cert_solver": "CryptoMiniSat 5.14 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 19,
+    "Z": 17
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\54-20-4.sym_audit_d4.status.json"
+   }
+  },
+  {
+   "code": "54-6-7.json",
+   "n": 54,
+   "k": 6,
+   "d": 7,
+   "family": "generalized-bicycle",
+   "cert_solver": "CryptoMiniSat 5.14 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 4,
+    "Z": 6
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\54-6-7.sym_audit_d7.status.json"
+   }
+  },
+  {
+   "code": "54-8-6.json",
+   "n": 54,
+   "k": 8,
+   "d": 6,
+   "family": "bivariate-bicycle",
+   "cert_solver": "CryptoMiniSat 5.14 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 6,
+    "Z": 6
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\54-8-6.sym_audit_d6.status.json"
+   }
+  },
+  {
+   "code": "54-9-5.json",
+   "n": 54,
+   "k": 9,
+   "d": 5,
+   "family": "other",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 6,
+    "Z": 6
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\54-9-5.sym_audit_d5.status.json"
+   }
+  },
+  {
+   "code": "545-73-3.json",
+   "n": 545,
+   "k": 73,
+   "d": 3,
+   "family": "local-2d-single",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 17,
+    "Z": 18
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.182,
+    "status_file": "lab\\results\\logs\\545-73-3.sym_audit_d3.status.json"
+   }
+  },
+  {
+   "code": "546-74-3.json",
+   "n": 546,
+   "k": 74,
+   "d": 3,
+   "family": "local-2d-single",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 19,
+    "Z": 18
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.179,
+    "status_file": "lab\\results\\logs\\546-74-3.sym_audit_d3.status.json"
+   }
+  },
+  {
+   "code": "549-75-3.json",
+   "n": 549,
+   "k": 75,
+   "d": 3,
+   "family": "local-2d-single",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 20,
+    "Z": 17
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\549-75-3.sym_audit_d3.status.json"
+   }
+  },
+  {
+   "code": "552-8-9.json",
+   "n": 552,
+   "k": 8,
+   "d": 9,
+   "family": "local-2d-single",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 0,
+    "Z": 2
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.105,
+    "status_file": "lab\\results\\logs\\552-8-9.sym_audit_d9.status.json"
+   }
+  },
+  {
+   "code": "555-75-3.json",
+   "n": 555,
+   "k": 75,
+   "d": 3,
+   "family": "local-2d-single",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 18,
+    "Z": 19
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\555-75-3.sym_audit_d3.status.json"
+   }
+  },
+  {
+   "code": "557-29-5.json",
+   "n": 557,
+   "k": 29,
+   "d": 5,
+   "family": "local-2d-single",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 3,
+    "Z": 3
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\557-29-5.sym_audit_d5.status.json"
+   }
+  },
+  {
+   "code": "558-76-3.json",
+   "n": 558,
+   "k": 76,
+   "d": 3,
+   "family": "local-2d-single",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 18,
+    "Z": 20
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\558-76-3.sym_audit_d3.status.json"
+   }
+  },
+  {
+   "code": "56-4-10.json",
+   "n": 56,
+   "k": 4,
+   "d": 10,
+   "family": "generalized-bicycle",
+   "cert_solver": "CryptoMiniSat 5.14 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 4,
+    "Z": 4
+   },
+   "deficient": false
+  },
+  {
+   "code": "565-77-3.json",
+   "n": 565,
+   "k": 77,
+   "d": 3,
+   "family": "local-2d-single",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 18,
+    "Z": 22
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.199,
+    "status_file": "lab\\results\\logs\\565-77-3.sym_audit_d3.status.json"
+   }
+  },
+  {
+   "code": "567-15-7.json",
+   "n": 567,
+   "k": 15,
+   "d": 7,
+   "family": "local-2d-single",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 1,
+    "Z": 1
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\567-15-7.sym_audit_d7.status.json"
+   }
+  },
+  {
+   "code": "569-9-9.json",
+   "n": 569,
+   "k": 9,
+   "d": 9,
+   "family": null,
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 0,
+    "Z": 4
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.005,
+    "status_file": "lab\\results\\logs\\569-9-9.sym_audit_d9.status.json"
+   }
+  },
+  {
+   "code": "57-18-4.json",
+   "n": 57,
+   "k": 18,
+   "d": 4,
+   "family": null,
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 18,
+    "Z": 18
+   },
+   "deficient": false
+  },
+  {
+   "code": "570-78-3.json",
+   "n": 570,
+   "k": 78,
+   "d": 3,
+   "family": null,
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 22,
+    "Z": 19
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\570-78-3.sym_audit_d3.status.json"
+   }
+  },
+  {
+   "code": "574-30-5.json",
+   "n": 574,
+   "k": 30,
+   "d": 5,
+   "family": "local-2d-single",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 0,
+    "Z": 6
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.001,
+    "status_file": "lab\\results\\logs\\574-30-5.sym_audit_d5.status.json"
+   }
+  },
+  {
+   "code": "578-14-7.json",
+   "n": 578,
+   "k": 14,
+   "d": 7,
+   "family": null,
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 0,
+    "Z": 2
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.001,
+    "status_file": "lab\\results\\logs\\578-14-7.sym_audit_d7.status.json"
+   }
+  },
+  {
+   "code": "582-30-5.json",
+   "n": 582,
+   "k": 30,
+   "d": 5,
+   "family": "local-2d-single",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 4,
+    "Z": 2
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\582-30-5.sym_audit_d5.status.json"
+   }
+  },
+  {
+   "code": "595-31-5.json",
+   "n": 595,
+   "k": 31,
+   "d": 5,
+   "family": "local-2d-single",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 3,
+    "Z": 3
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\595-31-5.sym_audit_d5.status.json"
+   }
+  },
+  {
+   "code": "597-81-3.json",
+   "n": 597,
+   "k": 81,
+   "d": 3,
+   "family": "local-2d-single",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 21,
+    "Z": 18
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.233,
+    "status_file": "lab\\results\\logs\\597-81-3.sym_audit_d3.status.json"
+   }
+  },
+  {
+   "code": "60-12-6.json",
+   "n": 60,
+   "k": 12,
+   "d": 6,
+   "family": "balanced-product",
+   "cert_solver": "CryptoMiniSat 5.14 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 0,
+    "Z": 10
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.002,
+    "status_file": "lab\\results\\logs\\60-12-6.sym_audit_d6.status.json"
+   }
+  },
+  {
+   "code": "60-4-8.json",
+   "n": 60,
+   "k": 4,
+   "d": 8,
+   "family": "generalized-bicycle",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 2,
+    "Z": 2
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.002,
+    "status_file": "lab\\results\\logs\\60-4-8.sym_audit_d8.status.json"
+   }
+  },
+  {
+   "code": "60-6-9.json",
+   "n": 60,
+   "k": 6,
+   "d": 9,
+   "family": "bivariate-bicycle",
+   "cert_solver": "CryptoMiniSat 5.14 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 3,
+    "Z": 5
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.001,
+    "status_file": "lab\\results\\logs\\60-6-9.sym_audit_d9.status.json"
+   }
+  },
+  {
+   "code": "600-45-8.json",
+   "n": 600,
+   "k": 45,
+   "d": 8,
+   "family": "lifted-product",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 6,
+    "Z": 21
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.026,
+    "status_file": "lab\\results\\logs\\600-45-8.sym_audit_d8.status.json"
+   }
+  },
+  {
+   "code": "607-83-3.json",
+   "n": 607,
+   "k": 83,
+   "d": 3,
+   "family": "local-2d-single",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 22,
+    "Z": 19
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.249,
+    "status_file": "lab\\results\\logs\\607-83-3.sym_audit_d3.status.json"
+   }
+  },
+  {
+   "code": "608-32-5.json",
+   "n": 608,
+   "k": 32,
+   "d": 5,
+   "family": "local-2d-single",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 2,
+    "Z": 4
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.154,
+    "status_file": "lab\\results\\logs\\608-32-5.sym_audit_d5.status.json"
+   }
+  },
+  {
+   "code": "615-15-7.json",
+   "n": 615,
+   "k": 15,
+   "d": 7,
+   "family": null,
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 0,
+    "Z": 2
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.002,
+    "status_file": "lab\\results\\logs\\615-15-7.sym_audit_d7.status.json"
+   }
+  },
+  {
+   "code": "616-84-3.json",
+   "n": 616,
+   "k": 84,
+   "d": 3,
+   "family": "local-2d-single",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 23,
+    "Z": 20
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\616-84-3.sym_audit_d3.status.json"
+   }
+  },
+  {
+   "code": "62-12-7.json",
+   "n": 62,
+   "k": 12,
+   "d": 7,
+   "family": "generalized-bicycle",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 12,
+    "Z": 12
+   },
+   "deficient": false
+  },
+  {
+   "code": "621-85-3.json",
+   "n": 621,
+   "k": 85,
+   "d": 3,
+   "family": "local-2d-single",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 20,
+    "Z": 24
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\621-85-3.sym_audit_d3.status.json"
+   }
+  },
+  {
+   "code": "625-33-5.json",
+   "n": 625,
+   "k": 33,
+   "d": 5,
+   "family": null,
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 4,
+    "Z": 3
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\625-33-5.sym_audit_d5.status.json"
+   }
+  },
+  {
+   "code": "625-50-3.json",
+   "n": 625,
+   "k": 50,
+   "d": 3,
+   "family": "topological",
+   "cert_solver": "CryptoMiniSat 5.14 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 7,
+    "Z": 8
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\625-50-3.sym_audit_d3.status.json"
+   }
+  },
+  {
+   "code": "63-3-5.json",
+   "n": 63,
+   "k": 3,
+   "d": 5,
+   "family": "local-2d-single",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 0,
+    "Z": 1
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\63-3-5.sym_audit_d5.status.json"
+   }
+  },
+  {
+   "code": "630-86-3.json",
+   "n": 630,
+   "k": 86,
+   "d": 3,
+   "family": "local-2d-single",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 19,
+    "Z": 23
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.279,
+    "status_file": "lab\\results\\logs\\630-86-3.sym_audit_d3.status.json"
+   }
+  },
+  {
+   "code": "633-6-11.json",
+   "n": 633,
+   "k": 6,
+   "d": 11,
+   "family": "local-2d-single",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 0,
+    "Z": 2
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.011,
+    "status_file": "lab\\results\\logs\\633-6-11.sym_audit_d11.status.json"
+   }
+  },
+  {
+   "code": "634-6-11.json",
+   "n": 634,
+   "k": 6,
+   "d": 11,
+   "family": "local-2d-single",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 0,
+    "Z": 2
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.009,
+    "status_file": "lab\\results\\logs\\634-6-11.sym_audit_d11.status.json"
+   }
+  },
+  {
+   "code": "636-6-11.json",
+   "n": 636,
+   "k": 6,
+   "d": 11,
+   "family": "local-2d-single",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 0,
+    "Z": 2
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.007,
+    "status_file": "lab\\results\\logs\\636-6-11.sym_audit_d11.status.json"
+   }
+  },
+  {
+   "code": "64-16-6.json",
+   "n": 64,
+   "k": 16,
+   "d": 6,
+   "family": "2bga-coset",
+   "cert_solver": "CryptoMiniSat 5.14 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 14,
+    "Z": 14
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\64-16-6.sym_audit_d6.status.json"
+   }
+  },
+  {
+   "code": "64-18-8.json",
+   "n": 64,
+   "k": 18,
+   "d": 8,
+   "family": "generalized-bicycle",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 15,
+    "Z": 15
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\64-18-8.sym_audit_d8.status.json"
+   }
+  },
+  {
+   "code": "64-8-3.json",
+   "n": 64,
+   "k": 8,
+   "d": 3,
+   "family": "local-2d-single",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 2,
+    "Z": 2
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.001,
+    "status_file": "lab\\results\\logs\\64-8-3.sym_audit_d3.status.json"
+   }
+  },
+  {
+   "code": "641-17-7.json",
+   "n": 641,
+   "k": 17,
+   "d": 7,
+   "family": "topological",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 0,
+    "Z": 8
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.003,
+    "status_file": "lab\\results\\logs\\641-17-7.sym_audit_d7.status.json"
+   }
+  },
+  {
+   "code": "643-87-3.json",
+   "n": 643,
+   "k": 87,
+   "d": 3,
+   "family": "local-2d-single",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 22,
+    "Z": 21
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\643-87-3.sym_audit_d3.status.json"
+   }
+  },
+  {
+   "code": "648-88-3.json",
+   "n": 648,
+   "k": 88,
+   "d": 3,
+   "family": "local-2d-single",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 21,
+    "Z": 23
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.329,
+    "status_file": "lab\\results\\logs\\648-88-3.sym_audit_d3.status.json"
+   }
+  },
+  {
+   "code": "65-9-3.json",
+   "n": 65,
+   "k": 9,
+   "d": 3,
+   "family": "local-2d-single",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 2,
+    "Z": 3
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\65-9-3.sym_audit_d3.status.json"
+   }
+  },
+  {
+   "code": "656-114-3.json",
+   "n": 656,
+   "k": 114,
+   "d": 3,
+   "family": "topological",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 34,
+    "Z": 34
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.001,
+    "status_file": "lab\\results\\logs\\656-114-3.sym_audit_d3.status.json"
+   }
+  },
+  {
+   "code": "658-34-5.json",
+   "n": 658,
+   "k": 34,
+   "d": 5,
+   "family": "local-2d-single",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 4,
+    "Z": 2
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\658-34-5.sym_audit_d5.status.json"
+   }
+  },
+  {
+   "code": "659-35-5.json",
+   "n": 659,
+   "k": 35,
+   "d": 5,
+   "family": null,
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 2,
+    "Z": 5
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.001,
+    "status_file": "lab\\results\\logs\\659-35-5.sym_audit_d5.status.json"
+   }
+  },
+  {
+   "code": "66-20-7.json",
+   "n": 66,
+   "k": 20,
+   "d": 7,
+   "family": "generalized-bicycle",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 19,
+    "Z": 20
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.002,
+    "status_file": "lab\\results\\logs\\66-20-7.sym_audit_d7.status.json"
+   }
+  },
+  {
+   "code": "66-4-10.json",
+   "n": 66,
+   "k": 4,
+   "d": 10,
+   "family": "generalized-bicycle",
+   "cert_solver": "CryptoMiniSat 5.14 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 4,
+    "Z": 4
+   },
+   "deficient": false
+  },
+  {
+   "code": "66-6-10.json",
+   "n": 66,
+   "k": 6,
+   "d": 10,
+   "family": "generalized-bicycle",
+   "cert_solver": "CryptoMiniSat 5.14 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 5,
+    "Z": 5
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.001,
+    "status_file": "lab\\results\\logs\\66-6-10.sym_audit_d10.status.json"
+   }
+  },
+  {
+   "code": "663-91-3.json",
+   "n": 663,
+   "k": 91,
+   "d": 3,
+   "family": null,
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 28,
+    "Z": 21
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\663-91-3.sym_audit_d3.status.json"
+   }
+  },
+  {
+   "code": "666-10-9.json",
+   "n": 666,
+   "k": 10,
+   "d": 9,
+   "family": null,
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 0,
+    "Z": 2
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.005,
+    "status_file": "lab\\results\\logs\\666-10-9.sym_audit_d9.status.json"
+   }
+  },
+  {
+   "code": "667-7-11.json",
+   "n": 667,
+   "k": 7,
+   "d": 11,
+   "family": null,
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 0,
+    "Z": 3
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.009,
+    "status_file": "lab\\results\\logs\\667-7-11.sym_audit_d11.status.json"
+   }
+  },
+  {
+   "code": "671-35-5.json",
+   "n": 671,
+   "k": 35,
+   "d": 5,
+   "family": "topological",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 0,
+    "Z": 17
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.001,
+    "status_file": "lab\\results\\logs\\671-35-5.sym_audit_d5.status.json"
+   }
+  },
+  {
+   "code": "672-342-5.json",
+   "n": 672,
+   "k": 342,
+   "d": 5,
+   "family": null,
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 340,
+    "Z": 342
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "in progress",
+    "cpu_hours": 0.289,
+    "status_file": "lab\\results\\logs\\672-342-5.sym_audit_d5.status.json"
+   }
+  },
+  {
+   "code": "672-85-3.json",
+   "n": 672,
+   "k": 85,
+   "d": 3,
+   "family": "topological",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 15,
+    "Z": 18
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.001,
+    "status_file": "lab\\results\\logs\\672-85-3.sym_audit_d3.status.json"
+   }
+  },
+  {
+   "code": "676-110-3.json",
+   "n": 676,
+   "k": 110,
+   "d": 3,
+   "family": "topological",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 30,
+    "Z": 32
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.001,
+    "status_file": "lab\\results\\logs\\676-110-3.sym_audit_d3.status.json"
+   }
+  },
+  {
+   "code": "676-36-5.json",
+   "n": 676,
+   "k": 36,
+   "d": 5,
+   "family": null,
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 4,
+    "Z": 4
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.001,
+    "status_file": "lab\\results\\logs\\676-36-5.sym_audit_d5.status.json"
+   }
+  },
+  {
+   "code": "676-51-4.json",
+   "n": 676,
+   "k": 51,
+   "d": 4,
+   "family": null,
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 4,
+    "Z": 5
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.001,
+    "status_file": "lab\\results\\logs\\676-51-4.sym_audit_d4.status.json"
+   }
+  },
+  {
+   "code": "676-71-4.json",
+   "n": 676,
+   "k": 71,
+   "d": 4,
+   "family": "lifted-product",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 1,
+    "Z": 64
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.235,
+    "status_file": "lab\\results\\logs\\676-71-4.sym_audit_d4.status.json"
+   }
+  },
+  {
+   "code": "677-5-13.json",
+   "n": 677,
+   "k": 5,
+   "d": 13,
+   "family": "topological",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 0,
+    "Z": 2
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.019,
+    "status_file": "lab\\results\\logs\\677-5-13.sym_audit_d13.status.json"
+   }
+  },
+  {
+   "code": "680-163-4.json",
+   "n": 680,
+   "k": 163,
+   "d": 4,
+   "family": "lifted-product",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 28,
+    "Z": 154
+   },
+   "deficient": true
+  },
+  {
+   "code": "691-11-9.json",
+   "n": 691,
+   "k": 11,
+   "d": 9,
+   "family": "topological",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 0,
+    "Z": 5
+   },
+   "deficient": true
+  },
+  {
+   "code": "696-76-3.json",
+   "n": 696,
+   "k": 76,
+   "d": 3,
+   "family": "topological",
+   "cert_solver": "CryptoMiniSat 5.14 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 13,
+    "Z": 15
+   },
+   "deficient": true
+  },
+  {
+   "code": "70-6-9.json",
+   "n": 70,
+   "k": 6,
+   "d": 9,
+   "family": "generalized-bicycle",
+   "cert_solver": "CryptoMiniSat 5.14 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 4,
+    "Z": 5
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.001,
+    "status_file": "lab\\results\\logs\\70-6-9.sym_audit_d9.status.json"
+   }
+  },
+  {
+   "code": "70-8-10.json",
+   "n": 70,
+   "k": 8,
+   "d": 10,
+   "family": "generalized-bicycle",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 6,
+    "Z": 6
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.004,
+    "status_file": "lab\\results\\logs\\70-8-10.sym_audit_d10.status.json"
+   }
+  },
+  {
+   "code": "72-10-9.json",
+   "n": 72,
+   "k": 10,
+   "d": 9,
+   "family": "generalized-bicycle",
+   "cert_solver": "CryptoMiniSat 5.14 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 9,
+    "Z": 8
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.001,
+    "status_file": "lab\\results\\logs\\72-10-9.sym_audit_d9.status.json"
+   }
+  },
+  {
+   "code": "72-14-8.json",
+   "n": 72,
+   "k": 14,
+   "d": 8,
+   "family": "bivariate-bicycle",
+   "cert_solver": "CryptoMiniSat 5.14 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 11,
+    "Z": 11
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\72-14-8.sym_audit_d8.status.json"
+   }
+  },
+  {
+   "code": "72-4-10.json",
+   "n": 72,
+   "k": 4,
+   "d": 10,
+   "family": "generalized-bicycle",
+   "cert_solver": "CryptoMiniSat 5.14 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 4,
+    "Z": 4
+   },
+   "deficient": false
+  },
+  {
+   "code": "72-8-10.json",
+   "n": 72,
+   "k": 8,
+   "d": 10,
+   "family": "generalized-bicycle",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 7,
+    "Z": 7
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.004,
+    "status_file": "lab\\results\\logs\\72-8-10.sym_audit_d10.status.json"
+   }
+  },
+  {
+   "code": "73-37-6.json",
+   "n": 73,
+   "k": 37,
+   "d": 6,
+   "family": null,
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 37,
+    "Z": 37
+   },
+   "deficient": false
+  },
+  {
+   "code": "76-4-10.json",
+   "n": 76,
+   "k": 4,
+   "d": 10,
+   "family": "generalized-bicycle",
+   "cert_solver": "CryptoMiniSat 5.14 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 4,
+    "Z": 4
+   },
+   "deficient": false
+  },
+  {
+   "code": "78-10-3.json",
+   "n": 78,
+   "k": 10,
+   "d": 3,
+   "family": "local-2d-single",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 4,
+    "Z": 2
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\78-10-3.sym_audit_d3.status.json"
+   }
+  },
+  {
+   "code": "79-11-3.json",
+   "n": 79,
+   "k": 11,
+   "d": 3,
+   "family": "local-2d-single",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 3,
+    "Z": 3
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\79-11-3.sym_audit_d3.status.json"
+   }
+  },
+  {
+   "code": "80-6-10.json",
+   "n": 80,
+   "k": 6,
+   "d": 10,
+   "family": "generalized-bicycle",
+   "cert_solver": "CryptoMiniSat 5.14 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 4,
+    "Z": 4
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.001,
+    "status_file": "lab\\results\\logs\\80-6-10.sym_audit_d10.status.json"
+   }
+  },
+  {
+   "code": "84-10-9.json",
+   "n": 84,
+   "k": 10,
+   "d": 9,
+   "family": "generalized-bicycle",
+   "cert_solver": "CryptoMiniSat 5.14 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 7,
+    "Z": 8
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.001,
+    "status_file": "lab\\results\\logs\\84-10-9.sym_audit_d9.status.json"
+   }
+  },
+  {
+   "code": "84-14-10.json",
+   "n": 84,
+   "k": 14,
+   "d": 10,
+   "family": "generalized-bicycle",
+   "cert_solver": "CryptoMiniSat 5.14 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 8,
+    "Z": 11
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.005,
+    "status_file": "lab\\results\\logs\\84-14-10.sym_audit_d10.status.json"
+   }
+  },
+  {
+   "code": "84-2-9.json",
+   "n": 84,
+   "k": 2,
+   "d": 9,
+   "family": "bivariate-bicycle",
+   "cert_solver": "CryptoMiniSat 5.14 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 2,
+    "Z": 1
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.002,
+    "status_file": "lab\\results\\logs\\84-2-9.sym_audit_d9.status.json"
+   }
+  },
+  {
+   "code": "84-34-6.json",
+   "n": 84,
+   "k": 34,
+   "d": 6,
+   "family": "pair-partition-cpm",
+   "cert_solver": "CryptoMiniSat 5.14 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 33,
+    "Z": 33
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\84-34-6.sym_audit_d6.status.json"
+   }
+  },
+  {
+   "code": "85-22-4.json",
+   "n": 85,
+   "k": 22,
+   "d": 4,
+   "family": "topological",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 18,
+    "Z": 20
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\85-22-4.sym_audit_d4.status.json"
+   }
+  },
+  {
+   "code": "85-37-5.json",
+   "n": 85,
+   "k": 37,
+   "d": 5,
+   "family": null,
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 37,
+    "Z": 37
+   },
+   "deficient": false
+  },
+  {
+   "code": "85-40-5.json",
+   "n": 85,
+   "k": 40,
+   "d": 5,
+   "family": null,
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 40,
+    "Z": 37
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.001,
+    "status_file": "lab\\results\\logs\\85-40-5.sym_audit_d5.status.json"
+   }
+  },
+  {
+   "code": "90-12-9.json",
+   "n": 90,
+   "k": 12,
+   "d": 9,
+   "family": "generalized-bicycle",
+   "cert_solver": "CryptoMiniSat 5.14 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 9,
+    "Z": 11
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.001,
+    "status_file": "lab\\results\\logs\\90-12-9.sym_audit_d9.status.json"
+   }
+  },
+  {
+   "code": "90-20-7.json",
+   "n": 90,
+   "k": 20,
+   "d": 7,
+   "family": "generalized-bicycle",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 20,
+    "Z": 19
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\90-20-7.sym_audit_d7.status.json"
+   }
+  },
+  {
+   "code": "93-13-3.json",
+   "n": 93,
+   "k": 13,
+   "d": 3,
+   "family": "local-2d-single",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 4,
+    "Z": 3
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.0,
+    "status_file": "lab\\results\\logs\\93-13-3.sym_audit_d3.status.json"
+   }
+  },
+  {
+   "code": "96-12-9.json",
+   "n": 96,
+   "k": 12,
+   "d": 9,
+   "family": "generalized-bicycle",
+   "cert_solver": "CryptoMiniSat 5.14 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 6,
+    "Z": 10
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.001,
+    "status_file": "lab\\results\\logs\\96-12-9.sym_audit_d9.status.json"
+   }
+  },
+  {
+   "code": "96-18-4.json",
+   "n": 96,
+   "k": 18,
+   "d": 4,
+   "family": "topological",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 14,
+    "Z": 13
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.003,
+    "status_file": "lab\\results\\logs\\96-18-4.sym_audit_d4.status.json"
+   }
+  },
+  {
+   "code": "96-20-8.json",
+   "n": 96,
+   "k": 20,
+   "d": 8,
+   "family": "bivariate-bicycle",
+   "cert_solver": "CryptoMiniSat 5.14 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 18,
+    "Z": 18
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.001,
+    "status_file": "lab\\results\\logs\\96-20-8.sym_audit_d8.status.json"
+   }
+  },
+  {
+   "code": "96-34-4.json",
+   "n": 96,
+   "k": 34,
+   "d": 4,
+   "family": "topological",
+   "cert_solver": "CryptoMiniSat 5.14.7 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 29,
+    "Z": 28
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.002,
+    "status_file": "lab\\results\\logs\\96-34-4.sym_audit_d4.status.json"
+   }
+  },
+  {
+   "code": "96-4-12.json",
+   "n": 96,
+   "k": 4,
+   "d": 12,
+   "family": "bivariate-bicycle",
+   "cert_solver": "CryptoMiniSat 5.14 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 2,
+    "Z": 2
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.012,
+    "status_file": "lab\\results\\logs\\96-4-12.sym_audit_d12.status.json"
+   }
+  },
+  {
+   "code": "98-12-9.json",
+   "n": 98,
+   "k": 12,
+   "d": 9,
+   "family": "generalized-bicycle",
+   "cert_solver": "CryptoMiniSat 5.14 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 11,
+    "Z": 9
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.001,
+    "status_file": "lab\\results\\logs\\98-12-9.sym_audit_d9.status.json"
+   }
+  },
+  {
+   "code": "98-6-12.json",
+   "n": 98,
+   "k": 6,
+   "d": 12,
+   "family": "bivariate-bicycle",
+   "cert_solver": "CryptoMiniSat 5.14 SAT",
+   "cert_d_exact": true,
+   "spanned": {
+    "X": 3,
+    "Z": 3
+   },
+   "deficient": true,
+   "recertify": {
+    "verdict": "PROVEN",
+    "cpu_hours": 0.013,
+    "status_file": "lab\\results\\logs\\98-6-12.sym_audit_d12.status.json"
+   }
+  }
+ ]
+}

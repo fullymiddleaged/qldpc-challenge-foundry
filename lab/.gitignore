@@ -7,3 +7,6 @@ runs/
 submissions/
 *.log
 !results/logs/*
+
+# per-code certify_sym status from the SAT-certificate audit (31 MB; summary is in sat_cert_audit.json)
+results/logs/*.sym_audit_*.status.json
