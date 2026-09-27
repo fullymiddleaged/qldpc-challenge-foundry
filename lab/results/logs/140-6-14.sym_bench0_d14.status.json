@@ -1,0 +1,95 @@
+{
+ "code": "..\\codes\\140-6-14.json",
+ "n": 140,
+ "claimed_d": 14,
+ "depth": 0,
+ "orbit_sizes": [
+  70,
+  70
+ ],
+ "xz_duality": true,
+ "sides": [
+  "X"
+ ],
+ "roots": [
+  []
+ ],
+ "symmetry_secs": 0.06,
+ "method": "upstream sat_certify selector encoding + orbital branching on Tanner-graph automorphisms, adaptive cubes (lab/qec_search/certify_sym.py)",
+ "started": "2026-09-27T22:14:09",
+ "cubes": {
+  "X|": {
+   "status": "SPLIT",
+   "secs": 300.05
+  },
+  "X|1": {
+   "status": "SPLIT",
+   "secs": 300.05
+  },
+  "X|-1": {
+   "status": "SPLIT",
+   "secs": 300.07
+  },
+  "X|1,2": {
+   "status": "UNSAT",
+   "secs": 59.35
+  },
+  "X|-1,2": {
+   "status": "UNSAT",
+   "secs": 280.76
+  },
+  "X|-1,-2": {
+   "status": "SPLIT",
+   "secs": 300.07
+  },
+  "X|1,-2": {
+   "status": "SPLIT",
+   "secs": 300.09
+  },
+  "X|1,-2,3": {
+   "status": "UNSAT",
+   "secs": 84.87
+  },
+  "X|-1,-2,3": {
+   "status": "UNSAT",
+   "secs": 210.99
+  },
+  "X|1,-2,-3": {
+   "status": "SPLIT",
+   "secs": 300.05
+  },
+  "X|-1,-2,-3": {
+   "status": "SPLIT",
+   "secs": 300.07
+  },
+  "X|1,-2,-3,4": {
+   "status": "UNSAT",
+   "secs": 59.06
+  },
+  "X|-1,-2,-3,4": {
+   "status": "UNSAT",
+   "secs": 226.84
+  },
+  "X|1,-2,-3,-4": {
+   "status": "UNSAT",
+   "secs": 274.04
+  },
+  "X|-1,-2,-3,-4": {
+   "status": "SPLIT",
+   "secs": 300.06
+  },
+  "X|-1,-2,-3,-4,5": {
+   "status": "UNSAT",
+   "secs": 172.02
+  }
+ },
+ "updated": "2026-09-27T22:42:03",
+ "summary": {
+  "verdict": "in progress",
+  "roots_done": "0/1",
+  "leaves_unsat": 8,
+  "leaves_pending": 1,
+  "splits": 8,
+  "cpu_hours": 1.047
+ }
+}
