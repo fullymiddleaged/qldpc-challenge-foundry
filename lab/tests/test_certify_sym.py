@@ -93,3 +93,64 @@ def test_certifier_proves_d_and_refutes_d_plus_one(name, monkeypatch):
         side = next(k.split("|")[0] for k, c in st["cubes"].items() if c["status"] == "SAT")
         h_same, h_opp = (hx, hz) if side == "X" else (hz, hx)
         assert len(wit) <= d and certify_sym.is_logical(h_same, h_opp, wit)
+
+
+def _min_weight_logicals(h_same, h_opp, d):
+    """Every logical in ker(h_opp) outside rowspace(h_same) of weight exactly d, by DFS with incremental syndrome."""
+    n = h_opp.shape[1]
+    t = certify_sym.pairing_set(h_same, h_opp)
+    col = [int("".join(map(str, h_opp[::-1, q])), 2) for q in range(n)]
+    tcol = [int("".join(map(str, t[::-1, q])), 2) for q in range(n)]
+    out = []
+
+    def dfs(start, depth, syn, anti, chosen):
+        if depth == d:
+            if syn == 0 and anti:
+                out.append(frozenset(chosen))
+            return
+        for q in range(start, n - (d - depth) + 1):
+            chosen.append(q)
+            dfs(q + 1, depth + 1, syn ^ col[q], anti ^ tcol[q], chosen)
+            chosen.pop()
+
+    dfs(0, 0, 0, 0, [])
+    return set(out)
+
+
+def _orbits_missed(name, cubes_fn, depth):
+    """How many Aut-orbits of minimum-weight X logicals have no member inside any root cube (0 = sound)."""
+    hx, hz, d = certify_sym.load_code(CODES / f"{name}.json")
+    logicals = _min_weight_logicals(hx, hz, d)
+    _, gens = qubit_orbits(hx, hz)
+    cubes = cubes_fn(hx, hz, depth)
+    seen, missed = set(), 0
+    for s in logicals:
+        if s in seen:
+            continue
+        orb, stack = {s}, [s]
+        while stack:
+            x = stack.pop()
+            for g in gens:
+                y = frozenset(int(g[q]) for q in x)
+                assert y in logicals, "an automorphism moved a minimum-weight logical outside the set"
+                if y not in orb:
+                    orb.add(y)
+                    stack.append(y)
+        seen |= orb
+        if not any(all((lit > 0) == (abs(lit) - 1 in s) for lit in c) for s in orb for c in cubes):
+            missed += 1
+    return missed
+
+
+@pytest.mark.skipif(not HAS_SAT, reason="needs pycryptosat and python-sat (pip install -e .[cert])")
+@pytest.mark.parametrize("name", ["45-9-3", "37-1-7"])
+def test_orbital_branching_keeps_every_orbit_of_lightest_logicals(name):
+    for depth in (1, 2, 3):
+        assert _orbits_missed(name, certify_sym.orbital_cubes, depth) == 0
+
+
+@pytest.mark.skipif(not HAS_SAT, reason="needs pycryptosat and python-sat (pip install -e .[cert])")
+def test_coverage_check_catches_a_dropped_cube():
+    def broken(hx, hz, depth):
+        return certify_sym.orbital_cubes(hx, hz, depth)[1:]
+    assert _orbits_missed("45-9-3", broken, 2) > 0

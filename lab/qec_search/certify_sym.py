@@ -238,6 +238,14 @@ def save_status(path: pathlib.Path, st: dict) -> None:
             time.sleep(0.2 * (attempt + 1))
 
 
+def _keep_awake() -> None:
+    """Ask Windows not to sleep while this process runs (the display may still turn off); released on exit."""
+    if os.name == "nt":
+        import ctypes
+        ES_CONTINUOUS, ES_SYSTEM_REQUIRED = 0x80000000, 0x00000001
+        ctypes.windll.kernel32.SetThreadExecutionState(ES_CONTINUOUS | ES_SYSTEM_REQUIRED)
+
+
 def _lower_priority() -> None:
     if os.name == "nt":
         import ctypes
@@ -306,6 +314,7 @@ def main() -> None:
     ap.add_argument("--no-duality", action="store_true", help="solve both sides even if an X/Z duality exists")
     ap.add_argument("--tlim", type=float, default=600, help="seconds per cube before it is split")
     ap.add_argument("--workers", type=int, default=os.cpu_count() or 1, help="solver processes (below-normal priority)")
+    ap.add_argument("--max-cpu-hours", type=float, help="stop splitting a code once it has used this much solver time")
     ap.add_argument("--tag", default="", help="suffix for the status file, to keep benchmark arms apart")
     ap.add_argument("--status", action="store_true", help="print progress and exit")
     args = ap.parse_args()
@@ -315,7 +324,9 @@ def main() -> None:
             p = status_path(code, d, args.tag)
             print(code.stem, json.dumps(summarize(json.loads(p.read_text())) if p.exists() else "not started"))
         return
-    states = certify(args.codes, args.d, args.depth, not args.no_duality, args.tlim, args.workers, args.tag)
+    _keep_awake()
+    states = certify(args.codes, args.d, args.depth, not args.no_duality, args.tlim, args.workers, args.tag,
+                     max_cpu_hours=args.max_cpu_hours)
     for code, st in states.items():
         print(code.stem, json.dumps(summarize(st)))
 

@@ -1,0 +1,6 @@
+205-12-12 {"verdict": "PROVEN", "roots_done": "2/2", "leaves_unsat": 2, "leaves_pending": 0, "splits": 0, "cpu_hours": 0.072}
+depth=2 wall_s=163
+205-12-12 {"verdict": "PROVEN", "roots_done": "2/2", "leaves_unsat": 2, "leaves_pending": 0, "splits": 0, "cpu_hours": 0.072}
+depth=1 wall_s=158
+205-12-12 {"verdict": "PROVEN", "roots_done": "2/2", "leaves_unsat": 2, "leaves_pending": 0, "splits": 0, "cpu_hours": 0.092}
+depth=0 wall_s=208
