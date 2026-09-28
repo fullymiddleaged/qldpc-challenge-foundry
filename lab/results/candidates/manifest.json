@@ -206,5 +206,47 @@
   "status": "do_not_submit",
   "status_reason": "IBM's code; the layout alone is not a contribution worth a record",
   "layers": 2
+ },
+ "bb_168_12_10_14x6": {
+  "params": "[[168,12,10]]",
+  "radius": 7.0,
+  "genome": {
+   "l": 14,
+   "m": 6,
+   "A": [
+    [
+     0,
+     5
+    ],
+    [
+     4,
+     0
+    ],
+    [
+     5,
+     0
+    ]
+   ],
+   "B": [
+    [
+     0,
+     4
+    ],
+    [
+     2,
+     0
+    ],
+    [
+     6,
+     0
+    ]
+   ]
+  },
+  "construction": "Bivariate bicycle code on Z_14 x Z_6: A = y^5 + x^4 + x^5, B = y^4 + x^2 + x^6. Found by a random screen of weight-6 BB polynomials against the bilayer board frontier. Bilayer layout (max check diameter 7.000) found by simulated annealing from a folded-torus start.",
+  "not_our_code": false,
+  "status": "submitted",
+  "status_reason": "hunt 2026-09-29: non-dominated in 2D-local bilayer weight-6; d = 10 proven by MILP and DistQLDPC",
+  "layers": 2,
+  "pr": 2338
  }
 }
