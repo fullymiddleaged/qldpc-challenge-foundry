@@ -3,6 +3,8 @@
 Project memory for Claude Code. Read `HANDOFF.md` for the full story; this file is the short, always-on version.
 
 ## What this repo is
+**Aim:** Searching for quantum error-correcting codes that are both strong and buildable: laid out for real chips, with proven distances, and submitted to the qLDPC Challenge.
+
 Our own research code for **quantum LDPC codes** (bivariate bicycle / BB family first): search for codes, lay them out on a 2D chip, certify their distance, simulate them, and submit good ones to the Unitary Foundation **qLDPC Challenge** leaderboard. It lives in `lab/` on the main branch of our fork of the challenge repo (`origin` = fullymiddleaged/qldpc-challenge-foundry, `upstream` = unitaryfoundation/qldpc-challenge). The fork's `main` = upstream's files + `lab/`: never edit upstream's files on main, so `git merge upstream/main` stays conflict-free. Commands below run from `lab/`.
 
 ## Commands
@@ -15,6 +17,7 @@ Our own research code for **quantum LDPC codes** (bivariate bicycle / BB family 
 - Export best codes + bilayer layouts: `python -m qec_search.export runs/<name> --layout --dest submissions/`
 - Prove exact distance: `python -m qec_search.exact_distance --genome '<json>' --claimed <d> --hours <h> --out results/proofs/<file>.json`
 - Exact distance for any CSS code (orbital branching on Tanner-graph automorphisms, complete logical basis, resumable; needs `pip install -e .[cert]`): `python -m qec_search.certify_sym ../codes/<name>.json [--d <d>] [--depth 2] [--max-cpu-hours h]`; progress: `--status`. Supersedes `scripts/certify_upstream.py` (BB tori only)
+- Fast exact distance (MaxSAT, arXiv:2606.12445; solver built in WSL at `~/src/DistQLDPC` + `scripts/distqldpc-one-z.patch`): `python scripts/export_distqldpc.py <code.json|.npz> results/distqldpc [--side X|Z] [--cube <certify_sym cube> --tag r0]`, then from Git Bash `MSYS_NO_PATHCONV=1 wsl.exe -d Ubuntu -- bash /mnt/c/vscode/qldpc-challenge-foundry/lab/scripts/run_distqldpc.sh <secs> results/distqldpc/<stem>[:-one-z=i]...`; logs in `results/distqldpc/logs/` (`o <d>` = optimum). Minutes at d ≤ 14 where certify_sym took tens of cpu-hours; no proof file, so it is a solver claim like upstream's certs
 - Audit the board's SAT certificates (upstream `sat_certify._logicals` spans < k classes on 255/280 of them): `python scripts/audit_sat_certs.py [--recertify --max-cpu-hours 0.25]` from `lab/` or the root; results in `results/logs/sat_cert_audit.json`
 - SAT certificate (upstream's encoding, resumable, from the repo root): `uv run --with pycryptosat --with python-sat python lab/scripts/certify_upstream.py <npz...> --d <d>`; progress: add `--status`
 - Leaderboard frontier: `(cd .. && uv run python cli/qldpc.py targets --n 300 --top 10)` (or `./qldpc` from Git Bash; set `PYTHONUTF8=1` on Windows)

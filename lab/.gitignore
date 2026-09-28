@@ -10,3 +10,7 @@ submissions/
 
 # per-code certify_sym status from the SAT-certificate audit (31 MB; summary is in sat_cert_audit.json)
 results/logs/*.sym_audit_*.status.json
+
+# DistQLDPC inputs: regenerate with scripts/export_distqldpc.py
+results/distqldpc/*.txt
+!results/distqldpc/logs/*.log

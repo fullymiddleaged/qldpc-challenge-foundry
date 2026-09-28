@@ -1,5 +1,7 @@
 # qldpc-lab
 
+**Aim:** Searching for quantum error-correcting codes that are both strong and buildable: laid out for real chips, with proven distances, and submitted to the qLDPC Challenge.
+
 Search, lay out, certify and submit **quantum LDPC codes**, starting with the bivariate bicycle family behind IBM's gross code. The work targets both the research frontier and the [Unitary Foundation qLDPC Challenge](https://github.com/unitaryfoundation/qldpc-challenge) leaderboard.
 
 ```
