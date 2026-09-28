@@ -162,6 +162,12 @@ def cmd_screen(a) -> None:
     print(f"screen done: {kept} kept", flush=True)
 
 
+def refine_one(r: dict, frontier, trials: int) -> dict | None:
+    """Tighter d_ub (a new seed, many more trials); None if the frontier now dominates the code."""
+    d = min(r["d_ub"], build_bb(BBGenome.from_json(r["genome"])).distance_upper_bound(trials=trials, seed=2))
+    return None if dominated((r["n"], r["k"], d, r["w"]), frontier) else {**r, "d_ub": d, "refined": trials}
+
+
 def layout_one(r: dict, steps: int, restarts: int, npz_dir: str) -> dict:
     from qec_search.layout import check_supports, find_layout, validate
     g = BBGenome.from_json(r["genome"])
@@ -186,7 +192,11 @@ def cmd_layout(a) -> None:
         if r["key"] not in done and r["sig"] not in seen_sig:   # relabelled copies share a signature
             seen_sig.add(r["sig"])
             todo.append(r)
-    todo = todo[:a.max]
+    # the screen's bound used few trials; tighten it on the leaders before paying ~100 s per anneal
+    with ProcessPoolExecutor(a.workers) as ex:
+        todo = [r for r in ex.map(refine_one, todo[:3 * a.max], [load_frontier(a, r["w"]) for r in todo[:3 * a.max]],
+                                  [a.refine_trials] * len(todo[:3 * a.max])) if r is not None]
+    todo = sorted(todo, key=lambda r: -r["k"] * r["d_ub"] ** 2 / r["n"])[:a.max]
     print(f"{len(todo)} layouts to anneal", flush=True)
     with ProcessPoolExecutor(a.workers) as ex, open(out / "layout.jsonl", "a") as f:
         for fut in as_completed([ex.submit(layout_one, r, a.steps, a.restarts, str((out / "cand").resolve()))
@@ -263,6 +273,7 @@ def main(argv=None) -> None:
     lay = sub.add_parser("layout")
     lay.add_argument("--steps", type=int, default=400_000)
     lay.add_argument("--restarts", type=int, default=2)
+    lay.add_argument("--refine-trials", type=int, default=1000, help="d_ub trials on the leaders before layout")
     p = sub.add_parser("prove")
     p.add_argument("--cube-secs", type=int, default=3600)
     p.add_argument("--jobs", type=int, default=os.cpu_count())

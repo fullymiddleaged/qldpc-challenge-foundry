@@ -53,3 +53,10 @@ def test_screen_keeps_what_nothing_beats_and_drops_ties():
     assert kept is not None and (kept["n"], kept["k"], kept["w"]) == (144, 12, 6) and kept["d_ub"] >= 12
     assert hunt.screen_one(GROSS.to_json(), [(144, 12, 12, 6)], kmin=4, trials=20) is None
     assert hunt.screen_one(GROSS.to_json(), [], kmin=13, trials=20) is None
+
+
+def test_refine_tightens_and_drops_what_is_then_beaten():
+    loose = {"genome": GROSS.to_json(), "n": 144, "k": 12, "d_ub": 99, "w": 6}
+    r = hunt.refine_one(loose, [], trials=50)
+    assert r is not None and r["d_ub"] == 12 and r["refined"] == 50
+    assert hunt.refine_one(loose, [(144, 12, 12, 6)], trials=50) is None
