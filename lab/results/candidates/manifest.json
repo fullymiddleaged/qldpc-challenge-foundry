@@ -161,9 +161,10 @@
   },
   "construction": "Bivariate bicycle code on Z_12 x Z_6: A = y + x^3 + x^10, B = y^3 + x + x^2. Found by an evolutionary search over BB polynomials. Bilayer layout (max check diameter 6.708) found by simulated annealing from a folded-torus start.",
   "not_our_code": false,
-  "status": "optional",
-  "status_reason": "weak entry: displaced as soon as anyone submits the gross code with a bilayer layout",
-  "layers": 2
+  "status": "submitted",
+  "status_reason": "non-dominated in 2D-local bilayer weight-6 (board of 28 Sep); d = 12 proven by MILP and DistQLDPC. Displaced once anyone lays out the gross code within the bilayer cap.",
+  "layers": 2,
+  "pr": 2337
  },
  "ibm_gross_144_12_12": {
   "params": "[[144,12,12]]",
