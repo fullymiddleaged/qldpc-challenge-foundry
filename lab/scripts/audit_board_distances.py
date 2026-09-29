@@ -18,28 +18,15 @@ import argparse
 import json
 import os
 import pathlib
-import re
-import subprocess
 import sys
 import time
 
 LAB = pathlib.Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(LAB))
-sys.path.insert(0, str(LAB / "scripts"))
-from export_distqldpc import one_sided, write  # noqa: E402
 from qec_search.certify_sym import is_logical, load_code, solve_cube  # noqa: E402
+from qec_search.distqldpc import parse_log, solve_many  # noqa: E402,F401  (parse_log re-exported for tests)
 
 OUT = LAB / "results" / "logs" / "board_distance_audit.jsonl"
-DQ = LAB / "results" / "distqldpc"
-WSL_LAB = "/mnt/c/vscode/qldpc-challenge-foundry/lab"
-
-
-def parse_log(text: str) -> dict:
-    """Optimum if the solver finished, else the last bounds it reported."""
-    m = re.search(r"^o (\d+)", text, re.M)
-    lbs = [int(x) for x in re.findall(r"^c d_lb: (\d+)", text, re.M)]
-    ubs = [int(x) for x in re.findall(r"^c d_ub: (\d+)", text, re.M)]
-    return {"exact": int(m.group(1)) if m else None, "lb": max(lbs, default=None), "ub": min(ubs, default=None)}
 
 
 def verdict(claimed: int, sides: dict) -> str:
@@ -78,33 +65,22 @@ def witness_below(code: pathlib.Path, side: str, w: int, secs: float) -> list[in
 
 
 def audit_batch(codes: list[pathlib.Path], secs: int, jobs: int) -> list[dict]:
-    DQ.mkdir(parents=True, exist_ok=True)
-    args, meta = [], []
-    for p in codes:
-        hx, hz, d = load_code(p)
-        for side in ("X", "Z"):
-            prefix = DQ / f"board_{p.stem}_{side}"
-            write(one_sided(hx, hz, side), prefix)
-            args.append(f"results/distqldpc/{prefix.name}")
-            meta.append((p, side))
-    env = dict(os.environ, JOBS=str(jobs), WSLENV="JOBS", MSYS_NO_PATHCONV="1")
-    subprocess.run(["wsl.exe", "-d", "Ubuntu", "--", "bash", f"{WSL_LAB}/scripts/run_distqldpc.sh", str(secs), *args],
-                   env=env, capture_output=True)
-    rows = {}
-    for (p, side), a in zip(meta, args):
-        log = DQ / "logs" / f"{pathlib.Path(a).name}.log"
-        rows.setdefault(p, {})[side] = parse_log(log.read_text() if log.exists() else "")
+    """Exact distances through qec_search.distqldpc (duality, orbital cubes), all codes in one solver batch."""
+    loaded = {p: load_code(p) for p in codes}
+    sol = solve_many({f"board_{p.stem}": (hx, hz) for p, (hx, hz, _) in loaded.items()}, secs, jobs)
+    rows = {p: sol[f"board_{p.stem}"]["sides"] for p in codes}
     out = []
     for p, sides in rows.items():
         doc = json.loads(p.read_text(encoding="utf-8"))
         claimed = doc["distance"]["d"]
         r = {"slug": p.stem, "n": doc["n"], "k": doc["k"], "claimed_d": claimed, "sides": sides,
-             "verdict": verdict(claimed, sides), "secs_cap": secs, "date": time.strftime("%Y-%m-%d")}
+             "verdict": verdict(claimed, sides), "secs_cap": secs, "method": "distqldpc+orbital",
+             "date": time.strftime("%Y-%m-%d")}
         if r["verdict"] == "LOWER":
             side, s = min(sides.items(), key=lambda kv: kv[1]["exact"] if kv[1]["exact"] is not None else kv[1]["ub"])
             w = s["exact"] if s["exact"] is not None else s["ub"]
             wit = witness_below(p, side, w, 1800)
-            hx, hz, _ = load_code(p)
+            hx, hz, _ = loaded[p]
             h_same, h_opp = (hx, hz) if side == "X" else (hz, hx)
             r["witness"] = {"side": side, "weight": len(wit) if wit else None, "support": wit,
                             "checked": bool(wit) and is_logical(h_same, h_opp, wit)}
@@ -124,9 +100,16 @@ def main() -> None:
     ap.add_argument("--batch", type=int, default=8, help="codes per solver batch (2 sides each)")
     ap.add_argument("--hours", type=float, default=12.0)
     ap.add_argument("--out", type=pathlib.Path, default=OUT)
+    ap.add_argument("--retry-open", action="store_true", help="re-solve codes whose last verdict was open")
     a = ap.parse_args()
     out_path = a.out
-    done = {json.loads(line)["slug"] for line in out_path.read_text().splitlines() if line.strip()}         if out_path.exists() else set()
+    last = {}
+    if out_path.exists():
+        for line in out_path.read_text().splitlines():
+            if line.strip():
+                r = json.loads(line)
+                last[r["slug"]] = r["verdict"]                  # a later line supersedes an earlier one
+    done = {s for s, v in last.items() if not (a.retry_open and v == "open")}
     todo = [p for p in targets(a.board, a.local_only, a.n_max, a.d_max) if p.stem not in done]
     print(f"{len(todo)} codes to audit ({len(done)} already in {out_path.name})", flush=True)
     t_end = time.time() + a.hours * 3600

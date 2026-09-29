@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: 2026 Pete Salmond
 # SPDX-License-Identifier: Apache-2.0
-"""scripts/audit_board_distances.py: reading DistQLDPC logs and turning per-side results into a verdict."""
+"""scripts/audit_board_distances.py and qec_search.distqldpc: reading solver logs, combining orbital cubes into a
+side, and turning per-side results into a verdict."""
 from __future__ import annotations
 
 import importlib.util
@@ -32,3 +33,19 @@ def test_verdicts():
     assert audit.verdict(12, {"X": side(None, 10, 12), "Z": side(12)}) == "open"
     assert audit.verdict(12, {"X": side(None, 12, 12), "Z": side(None, 12, 13)}) == "holds"
     assert audit.verdict(12, {"X": side(13), "Z": side(14)}) == "ERROR"
+
+
+def test_combine_cubes_into_a_side():
+    from qec_search.distqldpc import combine
+    assert combine([side(12), side(36)]) == {"exact": 12, "lb": 12, "ub": 12}
+    assert combine([side(None, 9, 14), side(20)]) == {"exact": None, "lb": 9, "ub": 14}    # unfinished cube bounds it
+    assert combine([side(None, 11, None), side(13)]) == {"exact": None, "lb": 11, "ub": 13}
+
+
+def test_plan_uses_duality_and_orbits_on_the_gross_code():
+    import numpy as np
+    from qec_search.distqldpc import plan
+    z = np.load(LAB / "results" / "candidates" / "ibm_gross_144_12_12.npz")
+    jobs = plan("gross", z["hx"].astype(np.int8), z["hz"].astype(np.int8))
+    assert {j.side for j in jobs} == {"X"}                 # d_X = d_Z, so one side
+    assert len(jobs) == 1 and jobs[0].flag == "-one-z=0"   # one qubit orbit: one cube, qubit 0 forced in

@@ -13,10 +13,10 @@ PY=.venv/Scripts/python.exe
 H="$PY scripts/hunt_bilayer.py"
 export MSYS_NO_PATHCONV=1
 echo "$(date -Iseconds) start"
-[ -f results/proofs/raw_216_4_18_long.json ] || nohup $PY -m qec_search.exact_distance \
+[ -f results/logs/milp_216_4_18_long.log ] || nohup $PY -m qec_search.exact_distance \
     --genome '{"l":18,"m":6,"A":[[0,2],[8,0],[13,0]],"B":[[0,1],[7,0],[11,0]]}' --claimed 18 --hours 14 \
     --out results/proofs/raw_216_4_18_long.json > results/logs/milp_216_4_18_long.log 2>&1 &
-$PY scripts/audit_board_distances.py --local-only --n-max 700 --d-max 40 --secs 900 --jobs 7 --hours 6
+$PY scripts/audit_board_distances.py --local-only --retry-open --n-max 700 --d-max 40 --secs 900 --jobs 7 --hours 6
 $H screen --out results/hunt/w6b --weight 6 --sizes 12x6,14x6,16x6,18x6,20x6,22x6,24x6,26x6,28x6,30x6 \
     --n-max 360 --count 200000 --hours 2 --seed 2 --workers 7
 $H layout --out results/hunt/w6b --max 40 --workers 7

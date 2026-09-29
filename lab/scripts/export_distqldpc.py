@@ -1,18 +1,15 @@
 # SPDX-FileCopyrightText: 2026 Pete Salmond
 # SPDX-License-Identifier: Apache-2.0
-"""Write a code as DistQLDPC input (github.com/guluchen/DistQLDPC, the MaxCDCL solver of arXiv:2606.12445).
+"""Write one CSS side of a code as DistQLDPC input, for a manual run. The encoding (and every speed-up: duality,
+orbital cubes) lives in qec_search/distqldpc.py; use qec_search.distqldpc.solve_many to solve rather than this script.
 
-DistQLDPC minimises Pauli weight over S^perp \\ S with both x and z variables. For a CSS code we pose one side only:
   Hx := h_opp        z must lie in ker(h_opp)
   Hz := I_n          forces every x variable to 0
   Gz := pairing_set  z must anticommute with some logical of the other type (all k classes, checked)
   Gx := one zero row (a zero row forces its selector off; the loader rejects an empty file)
-so the optimum is exactly the side's distance, as in certify_sym. Side X means an X-type logical: x in ker(Hz).
---cube takes a certify_sym cube (1-based literals, e.g. "91,-1,-2"): each negative literal becomes an Hx row e_i, and
-the positive ones are printed as the -one-z list for the patched solver (scripts/distqldpc-one-z.patch). The optimum is
-then the lightest logical in that cube, so a cube is closed when it reaches the claimed d.
+--cube takes a certify_sym cube (1-based literals): negative literals become Hx rows e_i, positive ones are printed
+as the -one-z list for the patched solver (scripts/distqldpc-one-z.patch).
 
-    python scripts/export_distqldpc.py ../codes/180-18-14.json results/distqldpc      # writes 180-18-14_X_{Hx,..}.txt
     python scripts/export_distqldpc.py ../codes/180-18-14.json results/distqldpc --cube 91,-1,-2 --tag r1
 """
 from __future__ import annotations
@@ -21,26 +18,9 @@ import argparse
 import pathlib
 import sys
 
-import numpy as np
-
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1]))
-from qec_search.certify_sym import load_code, pairing_set  # noqa: E402
-
-
-def one_sided(hx: np.ndarray, hz: np.ndarray, side: str, zeros: list[int] = ()) -> dict[str, np.ndarray]:
-    h_same, h_opp = (hx, hz) if side == "X" else (hz, hx)
-    n = hx.shape[1]
-    fixed = np.zeros((len(zeros), n), dtype=np.int8)
-    fixed[np.arange(len(zeros)), list(zeros)] = 1
-    return {"Hx": np.vstack([h_opp, fixed]), "Hz": np.eye(n, dtype=np.int8), "Gx": np.zeros((1, n), dtype=np.int8),
-            "Gz": pairing_set(h_same, h_opp)}
-
-
-def write(mats: dict[str, np.ndarray], prefix: pathlib.Path) -> None:
-    prefix.parent.mkdir(parents=True, exist_ok=True)
-    for name, m in mats.items():
-        lines = [" ".join(map(str, row)) for row in np.asarray(m, dtype=np.int8)]
-        pathlib.Path(f"{prefix}_{name}.txt").write_text("\n".join(lines) + "\n", newline="\n")
+from qec_search.certify_sym import load_code  # noqa: E402
+from qec_search.distqldpc import one_sided, write  # noqa: E402,F401  (one_sided/write re-exported for callers)
 
 
 def main() -> None:

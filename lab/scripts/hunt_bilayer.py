@@ -31,7 +31,6 @@ import os
 import pathlib
 import random
 import re
-import subprocess
 import sys
 import time
 from concurrent.futures import ProcessPoolExecutor, as_completed
@@ -43,7 +42,6 @@ sys.path.insert(0, str(LAB))
 from qec_search.bbcode import BBGenome, build_bb  # noqa: E402
 
 CAP = 7.0
-WSL_LAB = "/mnt/c/vscode/qldpc-challenge-foundry/lab"
 
 
 # ------------------------------------------------------------------ frontier
@@ -219,33 +217,14 @@ def cmd_layout(a) -> None:
 
 
 def prove_one(r: dict, frontier, cube_secs: int, jobs: int) -> dict:
-    """Exact d over the orbital cubes of both sides (one side if an X/Z duality exists)."""
-    from qec_search.automorphisms import find_duality
-    from qec_search.certify_sym import orbital_cubes
+    """Exact d via qec_search.distqldpc (duality, orbital cubes)."""
+    from qec_search.distqldpc import solve_many
     z = np.load(LAB / r["npz"])
-    hx, hz = z["hx"].astype(np.int8), z["hz"].astype(np.int8)
-    sides = ["X"] if find_duality(hx, hz) is not None else ["X", "Z"]
     stem = pathlib.Path(r["npz"]).stem
-    args, tags = [], []
-    for side in sides:
-        for i, cube in enumerate(orbital_cubes(hx, hz, 2)):
-            res = subprocess.run([sys.executable, str(LAB / "scripts" / "export_distqldpc.py"), str(LAB / r["npz"]),
-                                  str(LAB / "results" / "distqldpc"), "--side", side,
-                                  "--cube", ",".join(map(str, cube)), "--tag", f"c{i}"],
-                                 capture_output=True, text=True, check=True).stdout.split()
-            flag = next((t for t in res[1:] if t.startswith("-one-z=")), "")
-            args.append(f"results/distqldpc/{stem}_{side}_c{i}" + (f":{flag}" if flag else ""))
-            tags.append(f"{side}_c{i}")
-    env = dict(os.environ, JOBS=str(jobs), WSLENV="JOBS")
-    subprocess.run(["wsl.exe", "-d", "Ubuntu", "--", "bash", f"{WSL_LAB}/scripts/run_distqldpc.sh", str(cube_secs),
-                    *args], env=env, capture_output=True)
-    opt = {}
-    for tag in tags:
-        text = (LAB / "results" / "distqldpc" / "logs" / f"{stem}_{tag}.log").read_text()
-        m = re.search(r"^o (\d+)", text, re.M)
-        opt[tag] = int(m.group(1)) if m else None
-    d = None if None in opt.values() else min(opt.values())
-    res = {**r, "sides": sides, "cubes": opt, "d_exact": d}
+    sol = solve_many({stem: (z["hx"].astype(np.int8), z["hz"].astype(np.int8))}, cube_secs, jobs)[stem]
+    exact = [s["exact"] for s in sol["sides"].values()]
+    d = None if None in exact else min(exact)
+    res = {**r, "sides": sol["sides"], "cubes": {k: v["exact"] for k, v in sol["cubes"].items()}, "d_exact": d}
     res["new_entry"] = d is not None and not dominated((r["n"], r["k"], d, r["w"]), frontier)
     return res
 
