@@ -90,6 +90,11 @@ def random_genomes(sizes, terms: int, count: int, seed: int) -> list[BBGenome]:
     return [random_genome(sizes, terms, terms, False, rng) for _ in range(count)]
 
 
+def key_hash(key: str) -> str:
+    """Short stable id of a canonical key, for the screened.txt ledger."""
+    return hashlib.sha1(key.encode()).hexdigest()[:12]
+
+
 def stem_for(r: dict) -> str:
     g = BBGenome.from_json(r["genome"])
     return f"bb_{r['n']}_{r['k']}_{g.l}x{g.m}_{hashlib.sha1(r['key'].encode()).hexdigest()[:8]}"
@@ -139,17 +144,22 @@ def cmd_screen(a) -> None:
     else:
         from qec_search.search import parse_sizes
         gens = random_genomes(parse_sizes(a.sizes), a.weight // 2, a.count, a.seed)
+    # every genome any run has screened, kept or not: the frontier only gets harder to beat, so a rejection stands
+    seen = {h for p in (LAB / "results" / "hunt").glob("*/screened.txt") for h in p.read_text().split()}
     uniq = {}
     for g in gens:
         if 2 * g.l * g.m <= a.n_max:
             uniq.setdefault(g.canonical_key(), g)
-    gens = [g for key, g in uniq.items() if key not in done]
-    print(f"{len(gens)} genomes to screen against {len(frontier)} frontier entries", flush=True)
+    gens = [g for key, g in uniq.items() if key not in done and key_hash(key) not in seen]
+    print(f"{len(gens)} genomes to screen against {len(frontier)} frontier entries "
+          f"({len(uniq) - len(gens)} skipped as screened before)", flush=True)
     t_end = time.time() + a.hours * 3600
     kept = 0
-    with ProcessPoolExecutor(a.workers) as ex, open(out / "screen.jsonl", "a") as f:
-        futs = [ex.submit(screen_one, g.to_json(), frontier, a.kmin, a.trials) for g in gens]
+    with ProcessPoolExecutor(a.workers) as ex, open(out / "screen.jsonl", "a") as f, \
+            open(out / "screened.txt", "a") as fs:
+        futs = {ex.submit(screen_one, g.to_json(), frontier, a.kmin, a.trials): g.canonical_key() for g in gens}
         for fut in as_completed(futs):
+            fs.write(key_hash(futs[fut]) + "\n")
             if (r := fut.result()) is not None:
                 kept += 1
                 f.write(json.dumps(r) + "\n")

@@ -1,0 +1,2 @@
+{"slug": "8-3-2", "n": 8, "k": 3, "claimed_d": 2, "sides": {"X": {"exact": 2, "lb": 2, "ub": 2}, "Z": {"exact": 2, "lb": 2, "ub": 2}}, "verdict": "holds", "secs_cap": 120, "date": "2026-09-29"}
+{"slug": "12-2-4-b", "n": 12, "k": 2, "claimed_d": 4, "sides": {"X": {"exact": 4, "lb": 4, "ub": 4}, "Z": {"exact": 4, "lb": 4, "ub": 4}}, "verdict": "holds", "secs_cap": 120, "date": "2026-09-29"}
