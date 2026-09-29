@@ -14230,6 +14230,16 @@
 "weight_class": "weight-4"
 },
 {
+"slug": "792-202-20",
+"n": 792,
+"k": 202,
+"d": 20,
+"w": 8,
+"code_type": "CSS",
+"locality_class": "unrestricted",
+"weight_class": "weight-8"
+},
+{
 "slug": "8-3-2",
 "n": 8,
 "k": 3,
@@ -14670,6 +14680,16 @@
 "weight_class": "weight-6"
 },
 {
+"slug": "840-214-20",
+"n": 840,
+"k": 214,
+"d": 20,
+"w": 8,
+"code_type": "CSS",
+"locality_class": "unrestricted",
+"weight_class": "weight-8"
+},
+{
 "slug": "841-1-29",
 "n": 841,
 "k": 1,
@@ -14730,6 +14750,16 @@
 "weight_class": "weight-9plus"
 },
 {
+"slug": "856-218-20",
+"n": 856,
+"k": 218,
+"d": 20,
+"w": 8,
+"code_type": "CSS",
+"locality_class": "unrestricted",
+"weight_class": "weight-8"
+},
+{
 "slug": "864-146-8",
 "n": 864,
 "k": 146,
@@ -14748,6 +14778,16 @@
 "code_type": "CSS",
 "locality_class": "unrestricted",
 "weight_class": "weight-9plus"
+},
+{
+"slug": "872-222-18",
+"n": 872,
+"k": 222,
+"d": 18,
+"w": 8,
+"code_type": "CSS",
+"locality_class": "unrestricted",
+"weight_class": "weight-8"
 },
 {
 "slug": "874-157-3",
@@ -14838,6 +14878,16 @@
 "code_type": "CSS",
 "locality_class": "local-2d-single",
 "weight_class": "weight-4"
+},
+{
+"slug": "888-226-18",
+"n": 888,
+"k": 226,
+"d": 18,
+"w": 8,
+"code_type": "CSS",
+"locality_class": "unrestricted",
+"weight_class": "weight-8"
 },
 {
 "slug": "896-194-6",

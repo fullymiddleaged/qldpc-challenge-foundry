@@ -1,0 +1,19 @@
+c args: -cpu-lim=2400 -one-z=108 /mnt/c/vscode/qldpc-challenge-foundry/lab/results/distqldpc/bb_216_4_18x6_93a49a60_X_c1
+c trying d: 1
+c d_lb: 5
+c trying d: 2
+c d_lb: 6
+c trying d: 4
+c d_lb: 8
+c trying d: 8
+c d_lb: 12
+c trying d: 16
+c d_lb: 20
+c trying d: 32
+c d_lb: 36
+c trying d: 64
+c d_ub: 54
+c d_lb: 54
+c d  : 54
+o 54
+wall 0.10 s

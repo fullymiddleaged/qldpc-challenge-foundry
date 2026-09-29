@@ -1,0 +1,9 @@
+c args: -cpu-lim=900 -one-z=87 /mnt/c/vscode/qldpc-challenge-foundry/lab/results/distqldpc/board_361-1-19_X_c87
+error: hard constraints UNSAT during encoding
+c d_lb: -
+c d_ub: -
+c status: UNKNOWN
+c d  : UNKNOWN
+s UNKNOWN
+Command exited with non-zero status 1
+wall 0.16 s
