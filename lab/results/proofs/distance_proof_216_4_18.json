@@ -1,0 +1,72 @@
+{
+ "code": "[[216,4,18]]",
+ "genome": {
+  "l": 18,
+  "m": 6,
+  "A": [
+   [
+    0,
+    2
+   ],
+   [
+    8,
+    0
+   ],
+   [
+    13,
+    0
+   ]
+  ],
+  "B": [
+   [
+    0,
+    1
+   ],
+   [
+    7,
+    0
+   ],
+   [
+    11,
+    0
+   ]
+  ]
+ },
+ "result": "minimum distance proven exact",
+ "d": 18,
+ "solver_status": "Optimization terminated successfully. (HiGHS Status 7: Optimal)",
+ "seconds": 44042.8,
+ "side_solved": "Z-type",
+ "method": "MILP (scipy.optimize.milp / HiGHS): minimise |x| s.t. H_X x = 0 mod 2 and L_X[j].x = 1 mod 2 for at least one j; mod-2 constraints linearised with integer slacks; translation symmetry used to require the support to touch torus cell 0 (left or right block).",
+ "symmetry": "d_X = d_Z: qec_search.automorphisms.find_duality returned a qubit permutation mapping the X checks onto the Z checks, verified against the check supports.",
+ "cross_check": "DistQLDPC (MaxCDCL MaxSAT, arXiv:2606.12445), X side with a complete logical basis over two orbital cubes: optima 18 and 36, so d_X = 18.",
+ "witness": [
+  21,
+  29,
+  39,
+  51,
+  55,
+  71,
+  85,
+  97,
+  101,
+  108,
+  134,
+  136,
+  151,
+  175,
+  177,
+  179,
+  201,
+  203
+ ],
+ "environment": {
+  "scipy": "1.18.1",
+  "numpy": "2.5.3",
+  "python": "3.13.7",
+  "cpu": "Intel64 Family 6 Model 142 Stepping 12, GenuineIntel"
+ },
+ "date": "2026-09-30",
+ "validated_on": "Solver reproduced published exact distances of [[72,12,6]] (0.1 s), [[90,8,10]] (6.8 s), [[144,12,12]] gross (35 s).",
+ "reproduce": "python -m qec_search.exact_distance --genome '{\"l\":18,\"m\":6,\"A\":[[0,2],[8,0],[13,0]],\"B\":[[0,1],[7,0],[11,0]]}' --claimed 18"
+}

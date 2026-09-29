@@ -1,0 +1,65 @@
+{
+ "status": 1,
+ "message": "Time limit reached. (HiGHS Status 13: Time limit reached)",
+ "seconds": 14400.5,
+ "best_weight": 20,
+ "witness": [
+  1,
+  16,
+  29,
+  36,
+  46,
+  105,
+  108,
+  121,
+  123,
+  125,
+  127,
+  129,
+  145,
+  172,
+  186,
+  190,
+  192,
+  194,
+  196,
+  205
+ ],
+ "lower_bound": 13,
+ "exact": false,
+ "witness_valid": true,
+ "genome": {
+  "l": 18,
+  "m": 6,
+  "A": [
+   [
+    0,
+    2
+   ],
+   [
+    8,
+    0
+   ],
+   [
+    13,
+    0
+   ]
+  ],
+  "B": [
+   [
+    0,
+    1
+   ],
+   [
+    7,
+    0
+   ],
+   [
+    11,
+    0
+   ]
+  ]
+ },
+ "claimed": 18,
+ "verdict": "time limit reached: distance proven >= 13 (and <= 18)"
+}
