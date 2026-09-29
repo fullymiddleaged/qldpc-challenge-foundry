@@ -88,6 +88,28 @@ def random_genomes(sizes, terms: int, count: int, seed: int) -> list[BBGenome]:
     return [random_genome(sizes, terms, terms, False, rng) for _ in range(count)]
 
 
+BOARD = LAB.parent / ".worktrees" / "frontier"
+
+
+def board_twin(n: int, sig: str, board: pathlib.Path = BOARD) -> str | None:
+    """Slug of a board code with the same spectral fingerprint (a relabelled copy), if any. canonical_key misses
+    such copies: a 28-29 Sep hunt 'find' [[144,12,12]] was IBM's gross code relabelled."""
+    from qec_search.bbcode import CSSCode
+    for f in sorted(board.glob(f"codes/{n}-*.json")):
+        d = json.loads(f.read_text(encoding="utf-8"))
+        if d.get("code_type", "CSS") != "CSS":
+            continue
+        h = {}
+        for side in ("X", "Z"):
+            m = np.zeros((len(d["checks"][side]), n), dtype=np.uint8)
+            for i, r in enumerate(d["checks"][side]):
+                m[i, r] = 1
+            h[side] = m
+        if CSSCode(hx=h["X"], hz=h["Z"], name=f.stem, meta={}).signature() == sig:
+            return f.stem
+    return None
+
+
 def key_hash(key: str) -> str:
     """Short stable id of a canonical key, for the screened.txt ledger."""
     return hashlib.sha1(key.encode()).hexdigest()[:12]
@@ -225,6 +247,7 @@ def prove_one(r: dict, frontier, cube_secs: int, jobs: int) -> dict:
     exact = [s["exact"] for s in sol["sides"].values()]
     d = None if None in exact else min(exact)
     res = {**r, "sides": sol["sides"], "cubes": {k: v["exact"] for k, v in sol["cubes"].items()}, "d_exact": d}
+    res["board_twin"] = board_twin(r["n"], r["sig"])
     res["new_entry"] = d is not None and not dominated((r["n"], r["k"], d, r["w"]), frontier)
     return res
 
@@ -241,8 +264,8 @@ def cmd_prove(a) -> None:
             p = prove_one(r, load_frontier(a, r["w"]), a.cube_secs, a.jobs)
             f.write(json.dumps(p) + "\n")
             f.flush()
-            print(f"[[{p['n']},{p['k']},{p['d_exact']}]] (ub {p['d_ub']}) new_entry={p['new_entry']} {p['npz']}",
-                  flush=True)
+            print(f"[[{p['n']},{p['k']},{p['d_exact']}]] (ub {p['d_ub']}) new_entry={p['new_entry']} "
+                  f"board_twin={p['board_twin']} {p['npz']}", flush=True)
 
 
 def main(argv=None) -> None:

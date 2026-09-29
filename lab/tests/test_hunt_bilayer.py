@@ -9,6 +9,8 @@ from __future__ import annotations
 import importlib.util
 import pathlib
 
+import pytest
+
 from qec_search.bbcode import BBGenome, build_bb
 
 LAB = pathlib.Path(__file__).resolve().parents[1]
@@ -60,3 +62,10 @@ def test_refine_tightens_and_drops_what_is_then_beaten():
     r = hunt.refine_one(loose, [], trials=50)
     assert r is not None and r["d_ub"] == 12 and r["refined"] == 50
     assert hunt.refine_one(loose, [(144, 12, 12, 6)], trials=50) is None
+
+
+@pytest.mark.skipif(not hunt.BOARD.exists(), reason="needs the upstream checkout in .worktrees/frontier")
+def test_relabelled_gross_code_is_caught_as_a_board_twin():
+    relabelled = build_bb(BBGenome(12, 6, ((0, 1), (0, 2), (3, 0)), ((0, 3), (2, 0), (7, 0))))
+    assert BBGenome(12, 6, ((0, 1), (0, 2), (3, 0)), ((0, 3), (2, 0), (7, 0))).canonical_key() != GROSS.canonical_key()
+    assert hunt.board_twin(144, relabelled.signature()) == "144-12-12"
