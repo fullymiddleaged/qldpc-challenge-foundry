@@ -49,3 +49,11 @@ def test_plan_uses_duality_and_orbits_on_the_gross_code():
     jobs = plan("gross", z["hx"].astype(np.int8), z["hz"].astype(np.int8))
     assert {j.side for j in jobs} == {"X"}                 # d_X = d_Z, so one side
     assert len(jobs) == 1 and jobs[0].flag == "-one-z=0"   # one qubit orbit: one cube, qubit 0 forced in
+
+
+def test_plan_falls_back_to_one_cube_past_the_limit():
+    import numpy as np
+    from qec_search.distqldpc import plan
+    z = np.load(LAB / "results" / "candidates" / "ibm_gross_144_12_12.npz")
+    jobs = plan("gross", z["hx"].astype(np.int8), z["hz"].astype(np.int8), max_cubes=0)
+    assert len(jobs) == 1 and jobs[0].cube == () and jobs[0].flag == ""

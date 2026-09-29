@@ -58,12 +58,16 @@ def write(mats: dict[str, np.ndarray], prefix: pathlib.Path) -> None:
         pathlib.Path(f"{prefix}_{name}.txt").write_text("\n".join(lines) + "\n", newline="\n")
 
 
-def plan(name: str, hx: np.ndarray, hz: np.ndarray, depth: int = 1) -> list[Job]:
-    """Sides (one if a duality exists) times orbital cubes, for one code."""
+def plan(name: str, hx: np.ndarray, hz: np.ndarray, depth: int = 1, max_cubes: int = 16) -> list[Job]:
+    """Sides (one if a duality exists) times orbital cubes, for one code. A code with few automorphisms has many
+    orbits, and one capped solver run per orbit is slower than one unsplit run (a [[216,4]] hunt code split into 169
+    cubes on 29 Sep), so past max_cubes the side is solved whole."""
     from .automorphisms import find_duality
     from .certify_sym import orbital_cubes
     sides = ["X"] if find_duality(hx, hz) is not None else ["X", "Z"]
     cubes = orbital_cubes(hx, hz, depth)
+    if len(cubes) > max_cubes:
+        cubes = [[]]
     return [Job(name, s, tuple(c), f"{name}_{s}_c{i}") for s in sides for i, c in enumerate(cubes)]
 
 
