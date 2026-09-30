@@ -45,3 +45,10 @@ def test_probe_rejects_a_tile_beaten_at_the_probe_size():
     beaten = [(1, 10 ** 3, 10 ** 3, 4)]
     assert ht.screen_one(small, 2, 4, beaten, 1, 120, 20, 4.0, n_probe=100) == []
     assert ht.screen_one(small, 2, 4, [], 1, 120, 20, 4.0, n_probe=100)            # kept when nothing beats it
+
+
+def test_refine_drops_a_candidate_once_a_lighter_logical_is_known(monkeypatch):
+    r = {"tile": [["h", 0, 0], ["h", 0, 1], ["h", 1, 0], ["v", 0, 0]], "B": 2, "l": 6, "m": 6, "n": 98, "k": 2,
+         "d_ub": 50, "w": 4, "sides": {"X": {"exact": None, "lb": 3, "ub": 4}}}
+    monkeypatch.setattr(ht.fr, "load", lambda cell, w: [(90, 2, 6, 4)])        # bar 7 at n = 98, k = 2
+    assert ht.refine_one(r, 20) is None                                         # a known weight-4 logical settles it

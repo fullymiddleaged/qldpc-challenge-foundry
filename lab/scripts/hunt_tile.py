@@ -148,18 +148,37 @@ def cmd_screen(a) -> None:
     print(f"screen done: {kept} kept", flush=True)
 
 
+def refine_one(r: dict, trials: int) -> dict | None:
+    """Tighter d_ub before an exact proof: the screen's 100 trials overstate d at n > 300 (30 Sep: RIS said <= 19,
+    DistQLDPC found 15). Uses any lighter logical an earlier proof run found; None once the frontier's bar is missed."""
+    need = fr.bar(r["n"], r["k"], r["w"], fr.load("single", r["w"]))
+    known = [s["ub"] for s in r.get("sides", {}).values() if s.get("ub")]
+    d = min([r["d_ub"]] + known)
+    if d >= need:
+        hx, hz, _ = tile.build([tuple(e) for e in r["tile"]], r["B"], r["l"], r["m"])
+        d = min(d, CSSCode(hx=hx, hz=hz, name="t", meta={}).distance_upper_bound(trials=trials, seed=7, stop_at=need - 1))
+    return None if d < need else {**r, "d_ub": d, "refined": trials}
+
+
 def cmd_prove(a) -> None:
     from qec_search.distqldpc import solve_many
     out = pathlib.Path(a.out)
     (out / "cand").mkdir(parents=True, exist_ok=True)
-    done = {(r["key"], r["l"], r["m"]) for r in hb.read_jsonl(out / "proofs.jsonl")}
+    last = {}
+    for r in hb.read_jsonl(out / "proofs.jsonl"):
+        last[(r["key"], r["l"], r["m"])] = r                  # a later line supersedes an earlier one
+    done = {key for key, r in last.items() if not (a.retry_open and r["d_exact"] is None)}
     todo, seen_sig = [], set()
     for r in sorted(hb.read_jsonl(out / "screen.jsonl"), key=lambda r: -r["k"] * r["d_ub"] ** 2 / r["n"]):
         if (r["key"], r["l"], r["m"]) not in done and r["sig"] not in seen_sig:
             seen_sig.add(r["sig"])
             todo.append(r)
-    todo = todo[:a.max]
-    print(f"{len(todo)} codes to prove", flush=True)
+    todo = [{**r, **({"sides": last[(r["key"], r["l"], r["m"])]["sides"]} if (r["key"], r["l"], r["m"]) in last else {})}
+            for r in todo[:3 * a.max]]
+    with ProcessPoolExecutor(a.workers) as ex:
+        todo = [r for r in ex.map(refine_one, todo, [a.refine_trials] * len(todo)) if r is not None]
+    todo = sorted(todo, key=lambda r: -r["k"] * r["d_ub"] ** 2 / r["n"])[:a.max]
+    print(f"{len(todo)} codes to prove after refining", flush=True)
     codes = {}
     for r in todo:
         hx, hz, q = tile.build([tuple(e) for e in r["tile"]], r["B"], r["l"], r["m"])
@@ -199,6 +218,8 @@ def main(argv=None) -> None:
     p.add_argument("--max", type=int, default=20)
     p.add_argument("--cube-secs", type=int, default=1800)
     p.add_argument("--jobs", type=int, default=os.cpu_count())
+    p.add_argument("--retry-open", action="store_true", help="re-prove codes whose last proof did not finish")
+    p.add_argument("--refine-trials", type=int, default=2000, help="d_ub trials on the leaders before proving")
     for x in (s, p):
         x.add_argument("--out", required=True)
         x.add_argument("--workers", type=int, default=os.cpu_count())
