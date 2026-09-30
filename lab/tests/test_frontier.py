@@ -37,3 +37,7 @@ def test_screen_rejects_and_stops_early_where_it_is_beaten(monkeypatch):
     monkeypatch.setattr(type(GROSS), "distance_upper_bound", spy)
     assert fr.screen_distance(GROSS, 8, F, trials=30) is None       # [[112,12,12]] w=8 dominates it
     assert calls == [12]                        # one cheap pass, told to stop at bar - 1 = 12, and no full pass
+
+
+def test_weight_class_maps_odd_weights_up():
+    assert [fr.weight_class(w) for w in (3, 4, 5, 6, 7, 8)] == [4, 4, 6, 6, 8, 8]

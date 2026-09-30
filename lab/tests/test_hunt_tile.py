@@ -31,3 +31,17 @@ def test_screen_respects_the_cap_and_the_frontier():
     assert kept and all(r["n"] <= 120 and r["radius"] <= 4.0 for r in kept)
     beaten = [(1, 10 ** 3, 10 ** 3, 4)]                                # an entry that beats everything
     assert ht.screen_one(small, 2, 4, beaten, 1, 120, 20, 4.0) == []
+
+
+def test_sizes_respect_aspect_and_probe_is_square():
+    sizes = list(ht.bulk_sizes(2, 400, aspect=2.0))
+    assert sizes and all(l <= m <= 2 * l and 2 * (l + 1) * (m + 1) <= 400 for l, m in sizes)
+    l, m = ht.probe_size(3, 200)
+    assert l == m and abs(2 * (l + 2) ** 2 - 200) <= abs(2 * (l + 3) ** 2 - 200)
+
+
+def test_probe_rejects_a_tile_beaten_at_the_probe_size():
+    small = [("h", 0, 0), ("h", 0, 1), ("h", 1, 0), ("v", 0, 0)]
+    beaten = [(1, 10 ** 3, 10 ** 3, 4)]
+    assert ht.screen_one(small, 2, 4, beaten, 1, 120, 20, 4.0, n_probe=100) == []
+    assert ht.screen_one(small, 2, 4, [], 1, 120, 20, 4.0, n_probe=100)            # kept when nothing beats it

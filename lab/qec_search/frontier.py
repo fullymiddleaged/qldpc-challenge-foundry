@@ -26,9 +26,17 @@ def parse(text: str) -> list[Entry]:
     return [tuple(map(int, m)) for m in re.findall(r"\[\[(\d+),(\d+),(\d+)\]\]\s+w=(\d+)", text)]
 
 
+def weight_class(w: int) -> int:
+    """The board's weight cell a code of max check weight w competes in (4, 6 or 8)."""
+    for c in (4, 6, 8):
+        if w <= c:
+            return c
+    raise ValueError(f"weight {w} is above the 2D-local cells' weight-8 cap")
+
+
 def load(cell: str, w: int) -> list[Entry]:
-    """cell is 'single' or 'bilayer'."""
-    return parse((HUNT / f"frontier_{cell}_w{w}.txt").read_text(encoding="utf-8"))
+    """Frontier of the 2D-local cell ('single' or 'bilayer') that a code of max check weight w competes in."""
+    return parse((HUNT / f"frontier_{cell}_w{weight_class(w)}.txt").read_text(encoding="utf-8"))
 
 
 def dominated(c: Entry, frontier: list[Entry]) -> bool:

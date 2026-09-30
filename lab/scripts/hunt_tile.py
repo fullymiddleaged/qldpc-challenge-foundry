@@ -72,22 +72,38 @@ def all_tiles(B: int, w: int, samples: int, seed: int):
             yield rng.sample(edges, w)
 
 
-def bulk_sizes(B: int, n_max: int, lmin: int = 3):
+def bulk_sizes(B: int, n_max: int, lmin: int = 3, aspect: float = 2.0):
+    """l <= m <= aspect * l with n <= n_max. Long strips are capped by their short side and cost the most to screen
+    (on 30 Sep a full sweep was 183 sizes and 260 s per tile)."""
     for l in range(lmin, 40):
-        for m in range(l, 40):
+        for m in range(l, int(aspect * l) + 1):
             if 2 * (l + B - 1) * (m + B - 1) <= n_max:
                 yield l, m
 
 
-def screen_one(x_tile, B: int, w: int, frontier, kmin: int, n_max: int, trials: int, cap: float) -> list[dict]:
+def probe_size(B: int, n_probe: int) -> tuple[int, int]:
+    """The square bulk whose n is closest to n_probe."""
+    return min(((s, s) for s in range(3, 40)), key=lambda lm: abs(2 * (lm[0] + B - 1) ** 2 - n_probe))
+
+
+def screen_one(x_tile, B: int, w: int, frontier, kmin: int, n_max: int, trials: int, cap: float,
+               n_probe: int = 200, aspect: float = 2.0) -> list[dict]:
+    """Radius, then connectivity and k at 6 x 6, then one probe size, then the sweep. A tile whose probe-size code is
+    beaten is dropped without a sweep: a heuristic (a tile good only at other sizes is lost) that cuts the work about
+    100x; loosen it with --n-probe 0 (no probe)."""
     if tile_radius(x_tile, B) > cap + 1e-9:
         return []
     hx, hz, _ = tile.build(x_tile, B, 6, 6)                    # cheap first look at one size
     code = CSSCode(hx=hx, hz=hz, name="t", meta={})
     if code.k < kmin or code.components() > 1:
         return []
+    if n_probe:
+        hx, hz, _ = tile.build(x_tile, B, *probe_size(B, n_probe))
+        code = CSSCode(hx=hx, hz=hz, name="t", meta={})
+        if code.k < kmin or fr.screen_distance(code, w, frontier, trials) is None:
+            return []
     out = []
-    for l, m in bulk_sizes(B, n_max):
+    for l, m in bulk_sizes(B, n_max, aspect=aspect):
         hx, hz, _ = tile.build(x_tile, B, l, m)
         n = hx.shape[1]
         k = n - gf2.rank(hx) - gf2.rank(hz)
@@ -114,7 +130,8 @@ def cmd_screen(a) -> None:
     print(f"{len(tiles)} tiles (B={a.B}, w={a.w}) to screen against {len(frontier)} frontier entries", flush=True)
     t_end, kept = time.time() + a.hours * 3600, 0
     with ProcessPoolExecutor(a.workers) as ex, open(out / "screen.jsonl", "a") as f, open(out / "screened.txt", "a") as fs:
-        futs = {ex.submit(screen_one, t, a.B, a.w, frontier, a.kmin, a.n_max, a.trials, a.cap): tile_key(t, a.B)
+        futs = {ex.submit(screen_one, t, a.B, a.w, frontier, a.kmin, a.n_max, a.trials, a.cap, a.n_probe, a.aspect):
+                tile_key(t, a.B)
                 for t in tiles}
         for fut in as_completed(futs):
             fs.write(key_hash(futs[fut]) + "\n")
@@ -176,6 +193,8 @@ def main(argv=None) -> None:
     s.add_argument("--n-max", type=int, default=400)
     s.add_argument("--trials", type=int, default=100)
     s.add_argument("--hours", type=float, default=4.0)
+    s.add_argument("--n-probe", type=int, default=200, help="screen each tile at this n first (0: sweep every tile)")
+    s.add_argument("--aspect", type=float, default=2.0, help="largest m / l in the size sweep")
     p = sub.add_parser("prove")
     p.add_argument("--max", type=int, default=20)
     p.add_argument("--cube-secs", type=int, default=1800)
