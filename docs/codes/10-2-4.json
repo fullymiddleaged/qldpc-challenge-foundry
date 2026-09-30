@@ -1,0 +1,149 @@
+{
+ "schema_version": "0.4",
+ "name": "[[10,2,4]]",
+ "code_type": "stabilizer",
+ "n": 10,
+ "k": 2,
+ "checks": {
+  "S": [
+   {
+    "X": [
+     0,
+     4,
+     6,
+     9
+    ],
+    "Z": [
+     6,
+     7,
+     8,
+     9
+    ]
+   },
+   {
+    "X": [
+     4,
+     5,
+     7,
+     8
+    ],
+    "Z": [
+     0,
+     5,
+     7,
+     9
+    ]
+   },
+   {
+    "X": [
+     1,
+     4,
+     6,
+     9
+    ],
+    "Z": [
+     4,
+     5,
+     6,
+     8
+    ]
+   },
+   {
+    "X": [
+     8,
+     9
+    ],
+    "Z": [
+     1,
+     5,
+     6,
+     7,
+     8,
+     9
+    ]
+   },
+   {
+    "X": [
+     2,
+     5,
+     7,
+     8
+    ],
+    "Z": [
+     6,
+     9
+    ]
+   },
+   {
+    "X": [
+     6,
+     7,
+     8,
+     9
+    ],
+    "Z": [
+     2,
+     4,
+     6,
+     7
+    ]
+   },
+   {
+    "X": [
+     3,
+     4,
+     7,
+     8
+    ],
+    "Z": [
+     4,
+     5,
+     6,
+     7
+    ]
+   },
+   {
+    "X": [
+     4,
+     5,
+     6,
+     8
+    ],
+    "Z": [
+     3,
+     5,
+     7,
+     8
+    ]
+   }
+  ]
+ },
+ "distance": {
+  "d": 4,
+  "P": {
+   "value": 4,
+   "confidence": "upper_bound",
+   "witness": {
+    "X": [
+     1,
+     4,
+     7
+    ],
+    "Z": [
+     3,
+     4
+    ]
+   }
+  }
+ },
+ "provenance": {
+  "authors": [
+   "@MathysRennela"
+  ],
+  "construction": "Grassl additive-table quantum code; quantum code over GF(2^2) as tabulated at codetables.de: stored stabilizer matrix for cell [[10,2]] (table bounds 4-4, https://codetables.de/QECC.php?q=4&n=10&k=2) read as binary symplectic rows [x | z]; rank(A|B) < rank(A) + rank(B), so the group has no pure-X/pure-Z basis and the entry is typed stabilizer; generators reduced here to the lightest independent subset ordered by Pauli weight, k = n - rank S, n/k/check weight recomputed from those rows; distance.P witness from this submission's own search.",
+  "origin": "submission",
+  "date": "2026-09-28",
+  "model": "MiMo v2.6 Flash",
+  "notes": "Not equivalent to any entry on the board: validate_candidate fingerprint and WL-signature dedup came back clean on 2026-09-27 against main@fc36aafe, and no committed entry is typed stabilizer to share the cell."
+ }
+}

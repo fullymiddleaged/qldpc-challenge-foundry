@@ -1,0 +1,108 @@
+{
+ "schema_version": "0.4",
+ "name": "[[8,3,3]]",
+ "code_type": "stabilizer",
+ "n": 8,
+ "k": 3,
+ "checks": {
+  "S": [
+   {
+    "X": [
+     0,
+     4,
+     6,
+     7
+    ],
+    "Z": [
+     2,
+     4,
+     5,
+     7
+    ]
+   },
+   {
+    "X": [
+     3,
+     5,
+     6,
+     7
+    ],
+    "Z": [
+     0,
+     2,
+     5,
+     6
+    ]
+   },
+   {
+    "X": [
+     1,
+     4,
+     5,
+     6
+    ],
+    "Z": [
+     2,
+     3,
+     4,
+     6
+    ]
+   },
+   {
+    "X": [
+     3,
+     5,
+     6,
+     7
+    ],
+    "Z": [
+     1,
+     3,
+     4,
+     7
+    ]
+   },
+   {
+    "X": [
+     2,
+     3,
+     4,
+     6
+    ],
+    "Z": [
+     3,
+     5,
+     6,
+     7
+    ]
+   }
+  ]
+ },
+ "distance": {
+  "d": 3,
+  "P": {
+   "value": 3,
+   "confidence": "upper_bound",
+   "witness": {
+    "X": [
+     0,
+     4
+    ],
+    "Z": [
+     0,
+     5
+    ]
+   }
+  }
+ },
+ "provenance": {
+  "authors": [
+   "@MathysRennela"
+  ],
+  "construction": "Grassl additive-table quantum code; quantum code over GF(2^2) as tabulated at codetables.de: stored stabilizer matrix for cell [[8,3]] (table bounds 3-3, https://codetables.de/QECC.php?q=4&n=8&k=3) read as binary symplectic rows [x | z]; rank(A|B) < rank(A) + rank(B), so the group has no pure-X/pure-Z basis and the entry is typed stabilizer; generators reduced here to the lightest independent subset ordered by Pauli weight, k = n - rank S, n/k/check weight recomputed from those rows; distance.P witness from this submission's own search.",
+  "origin": "submission",
+  "date": "2026-09-28",
+  "model": "MiMo v2.6 Flash",
+  "notes": "Not equivalent to any entry on the board: validate_candidate fingerprint and WL-signature dedup came back clean on 2026-09-27 against main@fc36aafe, and no stabilizer entry existed to share the cell."
+ }
+}

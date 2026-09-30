@@ -6,6 +6,9 @@ tool. It is both the **operating manual for the research loop** and the **refere
 `research/` starter kit**: constructing a code, estimating its distance, and packaging a
 verifiable submission.
 
+A run does not need all of it. [`QUICKSTART.md`](QUICKSTART.md) is the loop and the rules on
+one page; come back here for the section the run actually reaches.
+
 The default path in `research/` is pure NumPy. An optional bit-packed C++ RIS backend can be
 built with `make fast` for larger screens and confirmation runs; Python still validates its
 witnesses.
@@ -55,10 +58,22 @@ The verdict's `gates` block is your evidence; `labels` are what you show the hum
                  search.py (screen→rank)      with distance.py before promoting a standout
 ```
 
+If you were handed a campaign definition
+(`research/campaigns/<id>/campaign.json`, see
+[`campaigns/README.md`](campaigns/README.md)), load it first: its constraints
+bound the search below, and its `stopping` conditions, not the budget alone,
+end the run. It cannot weaken the gate. Without one, nothing below changes.
+
 0. **Read the shared record first**: `./qldpc recent` (new codes, research
    notes, fieldnotes), then the `fieldnotes/` entries touching your intended
    family — blocked routes and calibration findings live there, and repeating
-   them wastes the budget.
+   them wastes the budget. Recent literature is part of that record:
+   [`literature/README.md`](literature/README.md) is the arXiv watch, and its
+   ledger says which new papers a human read and what they concluded
+   (`uv run --frozen python research/arxiv_watch.py --list relevant`, no network
+   needed). Screening there is triage and a distance in an abstract is a claim,
+   so a lead from it still has to be reconstructed and passed through the gate
+   below before it is a find.
 1. **Pick a direction** → a track cell + a family + a budget (below).
 2. **Build** `(HX, HZ)` from a constructor.
 3. **Estimate** distance cheaply with the surrogate (gets you the witness for free).
@@ -230,6 +245,20 @@ doc = make_submission(
 )
 ```
 
+Stage the result under this session's own directory rather than a shared flat name:
+
+```python
+from coordination import staging_dir, unique_path
+out = staging_dir()                            # research/candidates/<run_id>/
+save_submission(doc, unique_path(f"{out}/{n}-{k}-{d}.json", doc))
+```
+
+`save_submission` raises `CandidateCollision` rather than write over a candidate that is not the
+one in hand. Several sessions stage at once and the flat `<n>-<k>-<d>.json` convention hands two
+of them the same filename, so the second write used to delete the first one's witness. Re-writing
+the same candidate is not a collision, and `unique_path` gives a second candidate with the same
+parameters its own name.
+
 `family` is a filterable Layer-2 tag, never ranked. You do **not** declare which tracks you
 enter: the verifier computes primary-track membership (the weight and locality classes) from `H`
 and the layout. To enter the `2d-local-*` tracks, give the code a layout — pass
@@ -241,6 +270,65 @@ and computes the interaction radius, and the verifier derives the locality class
 Run `validate_candidate` on the packaged doc (see **The one rule** above). Keep only
 `passed: true`. The verdict's `gates` are your evidence; its `labels` are what you show the
 human. This — not the surrogate, not your own judgment — is what decides whether you have a find.
+
+Deep confirmation is the most expensive step in the loop, so do not pay twice for the same answer:
+
+```python
+from coordination import validate_cached
+verdict, reused = validate_cached(doc)         # the gate, or its own last word
+```
+
+`validate_cached` calls `verify/validate_candidate.py` exactly as you would and caches what it
+returned under the candidate's content hash, in the gitignored `research/candidates/.verdicts/`.
+An entry is served only while the validator source and the board it was judged against are both
+unchanged, since `dedup` and `novelty` are claims about `codes/` at a point in time and not about
+the candidate alone. Nothing in the cache is evidence, and deleting it costs compute rather than
+correctness.
+
+## 5b. A win only on d: audit the peer before you package
+
+A construction pins n, k and check weight, so a candidate built the same way as an existing
+board entry can only beat it on `d` — and `d` is the one axis that is a witness-backed
+*upper* bound, i.e. the one that inflates. When the gate comes back with
+
+```json
+"gates": {"novelty": {"advances_by": ["d"], "d_only_gain": true,
+                      "d_only_peers": ["[[72,6,6]] w=6 72-6-6.json"]}}
+```
+
+and the label `advances the <cell> board ONLY on d over <peer>: distance is the suspect
+axis`, assume **your** number is the soft one until a matched-depth measurement says
+otherwise. `d_only_gain` means the *whole* board advance was on `d`; `d_only_peers` is
+the list to act on, and it is non-empty even when the candidate also beat some other
+entry on `k` (the label then still names those peers, as
+`advances the <cell> board on d, k; its gain over <peer> is d-only: ...`).
+ The board has been wrong this way before (`[[882,18,30]]`→29, `[[684,12,81]]`→66,
+`[[396,10,39]]`→37 — `audits/README.md`), and chasing an inflated d is how a campaign
+ends with nothing.
+
+So measure both numbers at one budget before spending anything on packaging:
+
+```bash
+uv run --frozen python research/audits/leader_audit.py pair \
+    research/candidates/<n>-<k>-<d>.json --trials 2000000 --seeds 51 52 \
+    --pair-depth 64 --witness-dir /tmp/pair
+```
+
+The peers are chosen automatically — every board entry with the same n, k and max check
+weight and a lower claimed d — or name them with `--peer`. Both sides get the same trials,
+seeds and `--pair-depth`: a number read on your candidate at a deeper budget than the peer
+is an instrument artifact, not a distance difference. One of four decisions comes out:
+
+| decision | meaning | do this next |
+|---|---|---|
+| `drop: ...` | your own claim came down at its own budget | drop the candidate; the ladder was right, the packaging would have been wrong |
+| `redirect: ...` | the board peer came down | the submission is the peer's **distance revision** — a valid contribution on its own (`../CONTRIBUTING.md`) |
+| `credible: ...` | both claims held at matched depth | the gain survives; package it (step 4) |
+| `inconclusive: ...` | neither claim was reached | no information at all; go deeper or stop, and never report it as corroboration |
+
+Exit code 2 means a claim was refuted on either side, so `pair` can gate a script exactly
+like `ladder` and `screen`. Keep `--witness-dir`: the lighter logical found in a refuted
+peer *is* the revision (see **The one rule** above).
 
 ## 6. Confirm the distance exactly (optional, for a standout)
 
@@ -272,6 +360,9 @@ The constructors, surrogate, search, and packaging stay numpy-only.
   board; novelty vs the literature unverified."
 - **`upper_bound` is not `exact`.** The gate certifies an upper bound (`d<=`); an exact (`d=`)
   claim needs server certification (step 6). Only pursue it for a standout the human wants.
+- **Beating an equal (n, k, w) board entry on `d` alone is the inflation pattern** (step 5b).
+  The construction left `d` as the only free axis, so re-measure the peer and your candidate
+  at matched depth (`leader_audit.py pair`) before you treat the gain as real.
 
 ## Field notes from past campaigns
 
@@ -301,9 +392,13 @@ should not have to re-learn.
   the human will submit it beside the code, and your sweep counts, ladder traces (including
   collapses), and dead ends are exactly its required content — capture them while they are
   cheap to capture. Findings that are *not* attached to a candidate (blocked routes,
-  calibration results) belong in a drafted `fieldnotes/` entry instead.
+  calibration results) belong in a drafted `fieldnotes/` entry instead. Record the
+  ladder as rungs rather than as prose: `kit/promote.py` renders the note, the
+  `codes/` document, and the PR body from that one record once a human authorizes
+  the submission, so the ladder is transcribed once instead of three times.
 - Write each surviving candidate's **submission JSON + its full validator verdict** to a staging
-  folder (e.g. `research/candidates/` or a scratch dir), and print a short ranked summary:
+  folder (`coordination.staging_dir()` gives this run its own one under `research/candidates/`),
+  and print a short ranked summary:
   `[[n,k,d]]`, cell, efficiency `kd²/n`, board-advancing?, and the honest labels.
 - **Persist any new constructor code you wrote** and a brief decision journal, so the run is
   reproducible and a good `sample_<family>` can later graduate into `research/`.
@@ -322,6 +417,8 @@ should not have to re-learn.
 | `kit/search.py` | `screen`, `pareto_frontier`, `update_leaderboard` (the funnel) + samplers: `sample_bb`, `sample_dihedral`, `sample_metacyclic`, `sample_kasai_affine` |
 | `kit/escalation.py` | `rung_brief`, `apply_verdict`, `append_journal` — the rung-boundary escalation gate (step 3b): deterministic ladder facts + fenced judgment-model verdict; advisory only, never repo evidence |
 | `kit/submit.py` | `make_submission`, `save_submission`, `validate` |
+| `kit/coordination.py` | `run_id`, `staging_dir`, `unique_path`, `validate_cached`: collision-safe staging and verdict reuse when several sessions run at once |
+| `kit/promote.py` | `promote`, `promote_all`, `script_for`: the submission tail for a candidate the gate already passed. Renders `codes/<slug>.json`, `notes/<slug>.md`, and the PR body from one evidence record, runs the gate and `check_prose` in order, and returns one JSON report. Writes files; never runs git or gh |
 | `kit/distance.py` | `exact_distance` (MILP, `d=`), `decoder_distance` (BP+OSD) — needs the `research` extra |
 | `kit/census_css.py` | exhaustive small CSS-code census up to qubit permutations and global X/Z swap; exact distance uses the trusted SAT certifier and needs the `research` extra |
 | `local2d/planar.py` | fast greedy open-boundary builder, exact planar distance (scipy MILP), `grid_coordinates` for the bilayer layout |

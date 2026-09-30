@@ -1,0 +1,18 @@
+{
+ "name": "[[80,9,8]] two-block group algebra CSS (arXiv:2306.16400)",
+ "d": 8,
+ "solver": "scipy/HiGHS MILP",
+ "sides": {
+  "X": {
+   "value": 9,
+   "exact": true,
+   "note": "no logical < 9 exists"
+  },
+  "Z": {
+   "value": 8,
+   "exact": true,
+   "note": "no logical < 8 exists"
+  }
+ },
+ "d_exact": true
+}

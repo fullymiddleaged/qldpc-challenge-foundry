@@ -1,0 +1,152 @@
+{
+ "schema_version": "0.4",
+ "name": "[[14,3,3]]",
+ "code_type": "stabilizer",
+ "n": 14,
+ "k": 3,
+ "checks": {
+  "S": [
+   {
+    "X": [
+     0,
+     1,
+     2,
+     5
+    ],
+    "Z": []
+   },
+   {
+    "X": [
+     2,
+     3,
+     6,
+     7
+    ],
+    "Z": []
+   },
+   {
+    "X": [
+     7,
+     8,
+     11,
+     12
+    ],
+    "Z": []
+   },
+   {
+    "X": [
+     0,
+     9,
+     12,
+     13
+    ],
+    "Z": []
+   },
+   {
+    "X": [],
+    "Z": [
+     1,
+     2,
+     3,
+     4
+    ]
+   },
+   {
+    "X": [],
+    "Z": [
+     2,
+     5,
+     6,
+     10
+    ]
+   },
+   {
+    "X": [],
+    "Z": [
+     4,
+     8,
+     9,
+     12
+    ]
+   },
+   {
+    "X": [],
+    "Z": [
+     10,
+     11,
+     12,
+     13
+    ]
+   },
+   {
+    "X": [
+     0,
+     1,
+     4,
+     9
+    ],
+    "Z": [
+     0,
+     1,
+     4,
+     9
+    ]
+   },
+   {
+    "X": [
+     3,
+     4,
+     7,
+     8
+    ],
+    "Z": [
+     3,
+     4,
+     7,
+     8
+    ]
+   },
+   {
+    "X": [
+     6,
+     7,
+     10,
+     11
+    ],
+    "Z": [
+     6,
+     7,
+     10,
+     11
+    ]
+   }
+  ]
+ },
+ "distance": {
+  "d": 3,
+  "P": {
+   "value": 3,
+   "confidence": "upper_bound",
+   "witness": {
+    "X": [
+     7
+    ],
+    "Z": [
+     8,
+     11
+    ]
+   }
+  }
+ },
+ "provenance": {
+  "authors": [
+   "@MathysRennela"
+  ],
+  "construction": "rhombic dodecahedron surface code (stabilizer tableau of Landahl's twist-defect code; reproduced from the Error Correction Zoo entry rhombic_dodecahedron_surface, https://errorcorrectionzoo.org/c/rhombic_dodecahedron_surface)",
+  "origin": "submission",
+  "date": "2026-09-27",
+  "model": "Mimo-V2.6-Flash",
+  "notes": "Reproduced from the Error Correction Zoo entry rhombic_dodecahedron_surface (https://errorcorrectionzoo.org/c/rhombic_dodecahedron_surface); gate found no exact or WL-equivalent board entry."
+ },
+ "family": "topological"
+}

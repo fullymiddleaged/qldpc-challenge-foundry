@@ -21,7 +21,7 @@ import urllib.parse
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(ROOT, "verify"))
-from qldpc_verify import board_reports
+from qldpc_verify import board_reports, generator_supports, is_stabilizer
 
 DOCS = os.path.join(ROOT, "docs")
 CERTS = os.path.join(ROOT, "certs")
@@ -33,7 +33,7 @@ def load_refs():
     BibTeX file is regular enough that a brace-aware scan handles it."""
     path = os.path.join(ROOT, "refs.bib")
     try:
-        text = open(path).read()
+        text = open(path, encoding="utf-8").read()
     except Exception:
         return []
     entries = []
@@ -452,6 +452,26 @@ font-variant-numeric:tabular-nums}}
 .stat-card .sub{{font-size:12.5px;margin-top:5px;color:var(--mut)}}
 .stat-card .sub a{{font-family:'Space Mono',ui-monospace,monospace;
 color:var(--ink)}}
+/* Second tier under the headline cards: the uncapped kd^2/n on the left and
+   the board census on the right. Both are outlined rather than filled, so the
+   row above stays the one the eye compares across. */
+.herosub{{display:grid;grid-template-columns:2fr 3fr;gap:14px;margin:0 0 8px}}
+.stat-ghost{{border:1px dashed var(--ln);border-radius:14px;padding:14px 18px}}
+.stat-ghost .v{{font-size:25px;font-weight:700;line-height:1.05;
+font-variant-numeric:tabular-nums}}
+.stat-ghost .l{{font-size:12.5px;color:var(--mut);margin-top:4px}}
+.stat-ghost .sub{{font-size:12px;margin-top:4px;color:var(--mut)}}
+.stat-ghost .sub a{{font-family:'Space Mono',ui-monospace,monospace;
+color:var(--ink)}}
+.census{{display:grid;grid-template-columns:repeat(3,1fr);
+border:1px solid var(--ln);border-radius:14px;background:var(--soft);
+overflow:hidden}}
+.census div{{padding:14px 18px;border-right:1px solid var(--ln)}}
+.census div:last-child{{border-right:0}}
+.census b{{display:block;font-size:22px;line-height:1.1;font-weight:700;
+font-variant-numeric:tabular-nums;
+font-family:'Space Mono',ui-monospace,monospace}}
+.census span{{font-size:12px;color:var(--mut)}}
 .lb{{margin:18px 0 8px;border:1px solid var(--ln);border-radius:14px;
 background:#fff;overflow:hidden}}
 .lbhead{{display:flex;justify-content:space-between;align-items:center;gap:16px;
@@ -600,8 +620,14 @@ font-size:13.5px}}
    share a min-width so the columns stay aligned row-to-row while scrolling. */
 @media(max-width:680px){{.lbm{{width:64px}}
 .lblist{{overflow-x:auto}}
-.lbrow{{min-width:520px}}
-.lbname{{min-width:96px}}}}
+/* A handle wider than its column painted over the codes count beside it: the
+   name had a min-width but nothing that made a long one yield, and the metric
+   columns are flex:0 0 auto, so they never gave way (issue #2233). The name
+   gets a real column inside the row's scroll width, and any handle breaks
+   rather than overflowing. */
+.lbrow{{min-width:560px}}
+.lbnamewrap{{min-width:150px;overflow-wrap:anywhere}}
+.lbname{{min-width:0}}}}
 .how{{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin:40px 0}}
 .how .card{{border:1px solid var(--ln);border-radius:12px;padding:20px;
 background:var(--soft);display:block;color:inherit;text-decoration:none}}
@@ -690,6 +716,12 @@ font-size:11px;color:var(--mut);border:1px solid var(--ln);
 border-radius:999px;padding:0 7px;line-height:16px;
 font-variant-numeric:tabular-nums}}
 .hexmark{{color:var(--ac);vertical-align:-2px}}
+/* (n, k, LER) frontier chip, on rows Pareto-best by measured
+   logical error rate; the frontier list above the board reuses .latestlist */
+.lerchip{{display:inline-block;margin-left:7px;font-size:10px;line-height:1;
+padding:3px 6px;border-radius:5px;background:#ecfdf5;color:#065f46;
+border:1px solid #a7f3d0;vertical-align:2px;white-space:nowrap}}
+.lerv{{font-variant-numeric:tabular-nums;font-weight:600;min-width:5.5em}}
 .novelty{{display:inline-block;margin-left:7px;font-size:10px;line-height:1;
 padding:3px 6px;border-radius:5px;background:#fef3c7;color:#92400e;
 border:1px solid #fde68a;vertical-align:2px;white-space:nowrap}}
@@ -706,6 +738,19 @@ margin:2px 4px 2px 0;border-radius:999px;background:var(--soft);color:var(--mut)
 border:1px solid var(--ln);white-space:normal}}
 .tchip.loc{{background:#eef2ff;color:#3730a3;border-color:#c7d2fe}}
 .tchip.mod{{background:#ecfdf5;color:#065f46;border-color:#a7f3d0}}
+.tchip.stab{{background:#fdf4ff;color:#86198f;border-color:#f0abfc;
+vertical-align:middle;font-family:'Manrope',sans-serif}}
+.xboard{{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;
+font-size:13px;color:var(--mut);margin:18px 0 0;padding:10px 14px;
+border:1px solid var(--ln);border-radius:12px;background:var(--soft)}}
+.xboard b{{color:var(--ink)}}
+.xboard a.lbcta{{margin-left:auto}}
+.stabintro{{margin:20px 0 4px}}
+.stabintro p{{font-size:14px;color:var(--mut);max-width:760px;margin:6px 0}}
+.stabintro table{{border-collapse:collapse;font-size:13px;margin:10px 0 4px}}
+.stabintro th,.stabintro td{{text-align:left;padding:4px 14px 4px 0;
+vertical-align:top;border-bottom:1px solid var(--ln)}}
+.stabintro th{{color:var(--mut);font-weight:600}}
 .modtable{{border-collapse:collapse;font-size:13px;margin:8px 0}}
 .modtable th,.modtable td{{padding:3px 12px 3px 0;text-align:right;
 border-bottom:1px solid var(--ln)}}
@@ -844,8 +889,9 @@ border:1px solid var(--ln);border-radius:12px}}
 table.board,.board tbody,.board tr,.board td{{display:block;width:auto}}
 table.board{{min-width:0;font-size:13px;margin:12px 0}}
 .board thead{{display:none}}
-.board tr{{border:1px solid var(--ln);border-radius:12px;margin:0 0 10px;
-padding:12px 14px 10px;background:var(--soft)}}
+.board tr{{display:flex;flex-wrap:wrap;align-items:baseline;
+border:1px solid var(--ln);border-radius:12px;margin:0 0 8px;
+padding:9px 12px 8px;background:var(--soft)}}
 .board tr.fr{{border-color:var(--ac)}}
 .showall{{display:block;width:100%;margin:2px 0 14px;padding:11px;
 font:inherit;font-size:14px;font-weight:600;color:var(--ac);
@@ -857,7 +903,8 @@ gap:16px;padding:3px 0;border:0;white-space:normal;text-align:right}}
 font-family:'Space Mono',ui-monospace,monospace;font-size:11px;
 text-transform:uppercase;letter-spacing:.04em;text-align:left}}
 .board td.num{{text-align:right}}
-.board td.codecell{{justify-content:flex-start;padding:0 0 8px;margin:0 0 6px;
+.board td.codecell{{justify-content:flex-start;flex-wrap:wrap;row-gap:4px;
+width:100%;order:0;padding:0 0 6px;margin:0 0 6px;
 border-bottom:1px solid var(--ln);font-size:15px}}
 .board td.codecell::before{{content:none}}
 .board tr.fr td.codecell::after{{content:"\\2605";color:var(--ac);
@@ -873,39 +920,44 @@ margin-left:8px}}
 .board td.col-diag{{display:none}}
 /* date: small, in the card's top-right corner */
 .board tr{{position:relative}}
-.board td.date{{position:absolute;top:12px;right:14px;width:auto;padding:0;
+.board td.date{{position:absolute;top:9px;right:12px;width:auto;padding:0;
 font-size:11.5px;color:var(--mut)}}
 .board td.date::before{{content:none}}
 .board td.codecell{{padding-right:92px}}
-/* kd2/n, g, w, X/Z: a horizontal stat band, big value, small label beneath
-   (column-reverse puts the ::before label under the number) */
-.board td.m3{{display:inline-flex;flex-direction:column-reverse;
-align-items:center;justify-content:flex-start;gap:2px;width:24.5%;
-padding:5px 0 3px;font-size:17px;font-weight:700;
-font-variant-numeric:tabular-nums;text-align:center}}
-.board td.m3::before{{font-size:10.5px}}
+/* kd2/n, g, w, X/Z: one line, each ::before label beside its own number
+   (row-reverse puts the label after the value). Stacking the labels under the
+   numbers cost a whole line per card, and a phone shows four or five cards. */
+.board td.m3{{display:inline-flex;flex-direction:row-reverse;
+align-items:baseline;justify-content:center;gap:4px;width:24.5%;min-width:0;
+order:0;padding:2px 0;font-size:clamp(13px,3.6vw,16px);font-weight:700;
+font-variant-numeric:tabular-nums;text-align:center;white-space:nowrap}}
+.board td.m3::before{{font-size:clamp(9px,2.4vw,10.5px)}}
 /* an entry with no verified layout has no g: the cell is a bare middot, so it
    is a quarter of the stat band carrying nothing. Drop it and let the three
    real stats split the width. */
 .board td.m3.m3empty{{display:none}}
 .board tr:has(td.m3empty) td.m3{{width:32.8%}}
-/* the family chip rides on the title line instead of claiming its own row */
-.board td.typecell{{position:absolute;top:34px;left:14px;width:auto;
+/* the family and locality chips share the byline rather than claiming a row */
+.board td.typecell{{position:static;order:1;flex:0 0 auto;width:auto;
 padding:0;margin:0}}
-.board td.codecell{{padding-bottom:30px}}
 /* unlabeled rows: chips and byline speak for themselves */
 .board td.typecell::before,.board td.auth::before,
 .board td.model::before{{content:none}}
 .board td.typecell{{justify-content:flex-start}}
 /* bottom line: authors on the left, model on the right, one row */
-.board td.auth{{display:inline-flex;width:57%;justify-content:flex-start;
-text-align:left}}
-.board td.model{{display:inline-flex;width:42%;justify-content:flex-end;
-text-align:right}}}}
+.board td.auth{{display:inline-flex;order:2;flex:1 1 auto;width:auto;
+min-width:0;padding-left:8px;justify-content:flex-start;text-align:left;
+overflow:hidden;text-overflow:ellipsis;white-space:nowrap}}
+/* the model elides rather than wrapping the card onto another line */
+.board td.model{{display:inline-flex;order:3;flex:0 1 auto;width:auto;
+min-width:0;max-width:60%;padding-left:8px;justify-content:flex-end;
+text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}}}}
 /* phones: reclaim horizontal space and shrink oversized headers */
 @media(max-width:560px){{.wrap{{padding:0 14px}}
 header.hero{{padding:34px 0 30px}}
 .statsbar{{grid-template-columns:repeat(2,1fr);gap:10px}}
+.herosub{{grid-template-columns:1fr;gap:10px}}
+.census div{{padding:12px 14px}}.census b{{font-size:19px}}
 .stat-card{{padding:14px 16px}}.stat-card .v{{font-size:27px}}}}
 .claimed{{color:var(--mut);font-size:12px;font-style:italic}}
 .b{{display:inline-block;font-size:11px;font-weight:700;padding:1px 6px;
@@ -1019,7 +1071,7 @@ border-radius:5px;padding:1px 6px;white-space:nowrap;text-decoration:none}}
 @media(max-width:680px){{.ref{{flex-direction:column;gap:4px}}
 .refkey{{width:auto}}}}
 @media(max-width:880px){{.how{{grid-template-columns:1fr}}}}
-.latest{{margin:40px 0 0}}
+.latest{{margin:40px 0 24px}}
 .latestlist{{list-style:none;margin:10px 0 0;padding:0;
 border:1px solid var(--ln);border-radius:12px;overflow:hidden}}
 .latestlist li{{display:flex;align-items:center;gap:12px;flex-wrap:wrap;
@@ -1148,15 +1200,20 @@ document.addEventListener('click',e=>{
  // with a verified layout (f defined), 'without' = only codes with none.
  // Clicking the active button clears it back to 'all'.
  let geoMode='';
- const cmp=/^(n|k|d|w|eff|f|g|geo|swaps|route)(>=|<=|>|<|=)(-?\\d+(?:\\.\\d+)?)$/;
+ // asym: X/Z distance asymmetry, so biased-noise candidates can
+ // be pulled out by a threshold of the reader's choosing until the board
+ // defines a label for them.
+ const cmp=/^(n|k|d|w|eff|f|g|geo|swaps|route|ler|asym)(>=|<=|>|<|=)(-?\\d+(?:\\.\\d+)?(?:e-?\\d+)?)$/;
  function term(r,t){
   const m=t.match(cmp);
   if(m){const key=(m[1]==='f'||m[1]==='g')?'geo':(m[1]==='swaps'?'route':m[1]);
    const x=parseFloat(r.dataset[key]),v=parseFloat(m[3]);
-   if((key==='geo'||key==='route')&&x<0)return false;
+   if((key==='geo'||key==='route'||key==='ler')&&x<0)return false;
    switch(m[2]){case'>=':return x>=v;case'<=':return x<=v;
     case'>':return x>v;case'<':return x<v;default:return x===v;}}
   if(t==='record'||t==='frontier')return r.dataset.record==='1';
+  // the (n, k, LER) frontier, separate from the record star
+  if(t==='ler-record')return r.dataset.lrec==='1';
   // Distance provenance. 'exact' keeps only entries whose distance is proved
   // by a committed certificate; 'upper-bound' keeps the rest, which are the
   // ones a refutation could still move.
@@ -1200,6 +1257,33 @@ document.addEventListener('click',e=>{
   if(kfill){kfill.style.left=((b[0]-KMIN)/kspan*100)+'%';
    kfill.style.width=((b[1]-b[0])/kspan*100)+'%';}
   if(kval)kval.textContent=(b[0]===b[1])?(''+b[0]):(b[0]+'\\u2013'+b[1]);}
+ // Adaptive axes: fit each landscape scatter to the points the
+ // filter leaves visible. Mirrors scatter() in build.py (sx/sy, _axis_step,
+ // the x tick step); the server-rendered axes span every code and are the
+ // no-JS view.
+ function ystep(hi){for(const s of [1,2,5,10,20,50,100,200,500])if(hi/s<=6)return s;return 1000;}
+ function rescale(svg){
+  const W=+svg.dataset.w,H=+svg.dataset.h,pl=+svg.dataset.pl,pr=+svg.dataset.pr,
+   pb=+svg.dataset.pb,pt=+svg.dataset.pt,grid=svg.querySelector('g.grid');
+  if(!W||!grid)return;
+  const pts=[...svg.querySelectorAll('circle[data-x]')].filter(c=>c.style.display!=='none');
+  if(!pts.length)return;
+  let nhi=0,yhi=0;
+  pts.forEach(c=>{nhi=Math.max(nhi,+c.dataset.x);yhi=Math.max(yhi,+c.dataset.y);});
+  nhi=nhi||1;yhi=yhi||1;
+  const sx=n=>pl+n/nhi*(W-pl-pr),sy=v=>H-pb-v/yhi*(H-pt-pb);
+  pts.forEach(c=>{c.setAttribute('cx',sx(+c.dataset.x).toFixed(1));
+   c.setAttribute('cy',sy(+c.dataset.y).toFixed(1));});
+  let g='';const xs=Math.max(1,Math.round(nhi/4/50)*50||50);
+  for(let gx=0;gx<=nhi;gx+=xs){const x=sx(gx).toFixed(0);
+   g+='<line x1="'+x+'" y1="'+pt+'" x2="'+x+'" y2="'+(H-pb)+'" stroke="#eef2f7"/>'
+    +'<text x="'+x+'" y="'+(H-pb+18)+'" font-size="12" fill="#475569" text-anchor="middle">'+gx+'</text>';}
+  const ys=ystep(yhi);
+  for(let gy=0;gy<=yhi+1e-9;gy+=ys){const y=sy(gy);
+   g+='<line x1="'+pl+'" y1="'+y.toFixed(0)+'" x2="'+(W-pr)+'" y2="'+y.toFixed(0)+'" stroke="#eef2f7"/>'
+    +'<text x="'+(pl-8)+'" y="'+(y+4).toFixed(0)+'" font-size="12" fill="#475569" text-anchor="end">'+(+gy.toFixed(6))+'</text>';}
+  grid.innerHTML=g;
+ }
  function apply(){
   const toks=q.value.toLowerCase().trim().split(/\\s+/).filter(Boolean);
   const wb=wbounds(),db=dbounds(),nb=nbounds(),kb=kbounds();
@@ -1230,6 +1314,7 @@ document.addEventListener('click',e=>{
    if(f)chip.innerHTML='filtered: '+f.replace(/</g,'&lt;')+' <b>&times; clear</b>';}
   document.querySelectorAll('.plots svg.plot circle[data-code]').forEach(c=>{
    c.style.display=vis.has(c.dataset.code)?'':'none';});
+  document.querySelectorAll('.plots svg.plot').forEach(rescale);
   // 'with layout' swaps the efficiency chart from kd^2/n to f (issue #276)
   const pe=document.getElementById('ploteff'),pg=document.getElementById('plotgeo');
   if(pe&&pg){const g=(geoMode==='with');
@@ -1288,8 +1373,9 @@ document.addEventListener('click',e=>{
  if(klo&&khi){klo.addEventListener('input',()=>{kpaint();apply();});
   khi.addEventListener('input',()=>{kpaint();apply();});kpaint();}
  // ?q=... deep-links a search (used by the contributor leaderboard counts).
+ // A deep link names a set of codes; the default weight cap must not clip it.
  const uq=new URLSearchParams(location.search).get('q');
- if(uq){q.value=uq;
+ if(uq){q.value=uq;resetsliders();
   document.querySelectorAll('.ttab').forEach(t=>
    t.classList.toggle('active', t.dataset.q===uq));
   const bd=document.getElementById('board');
@@ -1330,7 +1416,7 @@ def check_analytics_coverage():
     marker = PLAUSIBLE_SCRIPT_SRC
     failures = []
     for path in glob.glob(os.path.join(DOCS, "**", "*.html"), recursive=True):
-        with open(path) as f:
+        with open(path, encoding="utf-8") as f:
             count = f.read().count(marker)
         if count != 1:
             failures.append(f"{os.path.relpath(path, ROOT)} ({count} snippets)")
@@ -1358,7 +1444,7 @@ def cert_info(slug):
     p = os.path.join(CERTS, slug + ".json")
     if os.path.exists(p):
         try:
-            with open(p) as f:
+            with open(p, encoding="utf-8") as f:
                 return json.load(f)
         except Exception:
             return None
@@ -1373,7 +1459,7 @@ def cert_consistent(cert, doc):
     if cert.get("d") is not None and cert["d"] != dist["d"]:
         return False
     sides = cert.get("sides") or {}
-    for side in ("X", "Z"):
+    for side in ("X", "Z", "P"):
         cv = (sides.get(side) or {}).get("value")
         dv = (dist.get(side) or {}).get("value")
         if cv is not None and dv is not None and cv != dv:
@@ -1386,14 +1472,37 @@ def side_tiers(cert, doc):
 
     A side shows d_S= only when an honored certificate proves that side
     exact, otherwise d_S<= (the witness the verifier confirmed). A claimed
-    'exact' confidence never upgrades a side on its own.
+    'exact' confidence never upgrades a side on its own. A stabilizer code
+    has the single Pauli-weight side P.
     """
-    tiers = {"X": "ub", "Z": "ub"}
+    names = ("P",) if is_stabilizer(doc) else ("X", "Z")
+    tiers = {s: "ub" for s in names}
     if cert and cert.get("d_exact") and cert_consistent(cert, doc):
-        for side in ("X", "Z"):
+        for side in names:
             if (cert.get("sides") or {}).get(side, {}).get("exact"):
                 tiers[side] = "exact"
     return tiers
+
+
+def diag_sides(e):
+    """Return the (side key, label) pairs of an entry's per-side diagnostics.
+
+    The two CSS matrices, or the one generator Tanner graph of a stabilizer
+    code (the verifier's side key S).
+    """
+    if e.get("code_type") == "stabilizer":
+        return [("S", "S")]
+    return [("X", "H_X"), ("Z", "H_Z")]
+
+
+def pauli_string(gen, n):
+    """Render one {"X": [...], "Z": [...]} generator (or witness) as a Pauli string.
+
+    n letters; a qubit in both lists is Y.
+    """
+    xs, zs = set(gen["X"]), set(gen["Z"])
+    return "".join("Y" if q in xs and q in zs else "X" if q in xs
+                   else "Z" if q in zs else "I" for q in range(n))
 
 
 def asym_ratio(d_x, d_z):
@@ -1478,7 +1587,7 @@ def geo_score(doc, n, k, d, locality_class):
     loc = doc["locality"]
     coords = [tuple(c) for c in loc["coordinates"]]
     r = max((max(math.dist(coords[a], coords[b]) for a in sup for b in sup)
-             for sup in doc["checks"]["X"] + doc["checks"]["Z"] if sup),
+             for sup in generator_supports(doc) if sup),
             default=0.0)
     if r <= 0:
         return None, None, None
@@ -1512,6 +1621,35 @@ def _model_str(m):
     return m or ""
 
 
+def provenance_counts(slugs):
+    """Bucket counts from research/provenance/derived.json, or None.
+
+    Returns None only when the table is unreadable. An entry the table has not
+    been derived against is reported as ``not_derived``, which is honest and
+    keeps the split visible; suppressing the block on any drift meant a single
+    merged code PR removed the figure until someone with the literature index
+    regenerated it.
+    """
+    path = os.path.join(ROOT, "research", "provenance", "derived.json")
+    try:
+        with open(path, encoding="utf-8") as f:
+            payload = json.load(f)
+    except (OSError, ValueError):
+        return None
+    table = payload.get("entries") or {}
+    # A rendered entry the table has not seen is counted as not_derived rather
+    # than suppressing the whole split. Dropping the block entirely was worse
+    # than it looked: one merged code PR hid the figure indefinitely, because
+    # regenerating the table needs an index CI does not have.
+    counts = {}
+    for slug in slugs:
+        bucket = (table.get(slug) or {}).get("bucket", "not_derived")
+        counts[bucket] = counts.get(bucket, 0) + 1
+    counts["method"] = "isomorphism against the literature index"
+    counts["caveat"] = payload.get("caveat")
+    return counts
+
+
 def load_entries():
     entries = []
     # One memoized structural pass over the board (qldpc_verify.board_reports),
@@ -1529,6 +1667,10 @@ def load_entries():
         doc, rep = e["doc"], e["report"]
         if not rep["ok"]:
             continue
+        # General stabilizer codes (issue #2131) load like CSS ones but rank
+        # on their own board: build() splits the list on code_type, so the
+        # CSS board never shows or compares against them.
+        stab = is_stabilizer(doc)
         earned = rep["earned_distance"].get("d")
         if not earned:
             print(f"  warning: {slug}: no earned distance; skipping board entry")
@@ -1554,8 +1696,16 @@ def load_entries():
         # already carries. Per-side distances and confidence come from the
         # verified distance block; the per-side max check weights are read
         # off the check supports, since the verifier reports only the
-        # combined max_check_weight.
-        d_x, d_z = doc["distance"]["X"]["value"], doc["distance"]["Z"]["value"]
+        # combined max_check_weight. A stabilizer code has no sides: its one
+        # distance is a Pauli weight, so the asymmetry and per-side weights
+        # are None and every renderer that shows them is skipped.
+        if stab:
+            d_x = d_z = w_x = w_z = asym = None
+        else:
+            d_x, d_z = doc["distance"]["X"]["value"], doc["distance"]["Z"]["value"]
+            w_x = max((len(s) for s in doc["checks"]["X"]), default=0)
+            w_z = max((len(s) for s in doc["checks"]["Z"]), default=0)
+            asym = asym_ratio(d_x, d_z)
         tiers = side_tiers(cert, doc)
         # verifier diagnostics (issue #1844): girth per side, weight profiles,
         # bounded trapping-set counts, and, with a layout, the support diameter
@@ -1566,12 +1716,13 @@ def load_entries():
         ldiams = list((diag.get("logical_diameter") or {}).values())
         entries.append({
             "slug": slug, "name": doc["name"], "n": n, "k": k, "d": d,
+            "code_type": doc.get("code_type", "CSS"),
             "eff": round(k * d * d / n, 3), "tier": tier,
             "d_X": d_x, "d_Z": d_z,
-            "tier_X": tiers["X"], "tier_Z": tiers["Z"],
-            "asym": asym_ratio(d_x, d_z),
-            "w_X": max((len(s) for s in doc["checks"]["X"]), default=0),
-            "w_Z": max((len(s) for s in doc["checks"]["Z"]), default=0),
+            "tier_X": tiers.get("X"), "tier_Z": tiers.get("Z"),
+            "tier_P": tiers.get("P"),
+            "asym": asym,
+            "w_X": w_x, "w_Z": w_z,
             "geo": round(geo, 4) if geo is not None else None,
             "geo_r": round(geo_r, 4) if geo_r is not None else None,
             "geo_rho": geo_rho,
@@ -1604,6 +1755,13 @@ def load_entries():
                            (doc.get("circuit", {}).get("d_circ") or {}).values())
                        if doc.get("circuit") else None),
             "has_ler": bool((doc.get("circuit") or {}).get("ler")),
+            # measured logical error rate: the worse of the two
+            # per-round side rates, the same worst-side convention as d =
+            # min(d_X, d_Z). The schema pins p and the decoder, so the number
+            # is comparable across entries; ler_key carries both anyway so
+            # the frontier only ever compares like with like.
+            "ler": ler_worst(doc),
+            "ler_key": ler_setting(doc),
             # transversal gates (issue #1850): the verifier's per-gate results,
             # listed on the code page and never ranked.
             "gates": rep["computed"].get("transversal_gates") or [],
@@ -1642,6 +1800,7 @@ def codes_index(entries):
                 "k": e["k"],
                 "d": e["d"],
                 "tier": e["tier"],
+                "code_type": e["code_type"],
             }
             for e in sorted(entries, key=lambda e: (e["n"], e["k"], e["d"], e["slug"]))
         ]
@@ -1660,12 +1819,12 @@ def write_code_artifacts(entries):
     os.makedirs(os.path.join(DOCS, "codes"), exist_ok=True)
     slugs = {e["slug"] for e in entries}
     for e in entries:
-        with open(os.path.join(DOCS, "codes", e["slug"] + ".html"), "w") as f:
+        with open(os.path.join(DOCS, "codes", e["slug"] + ".html"), "w", encoding="utf-8") as f:
             f.write(detail_page(e))
-        with open(os.path.join(DOCS, "codes", e["slug"] + ".json"), "w") as f:
+        with open(os.path.join(DOCS, "codes", e["slug"] + ".json"), "w", encoding="utf-8") as f:
             json.dump(e["doc"], f, indent=1)
             f.write("\n")
-    with open(os.path.join(DOCS, "codes", INDEX_MANIFEST), "w") as f:
+    with open(os.path.join(DOCS, "codes", INDEX_MANIFEST), "w", encoding="utf-8") as f:
         json.dump(codes_index(entries), f, indent=2)
     for f in glob.glob(os.path.join(DOCS, "codes", "*")):
         stem, ext = os.path.splitext(os.path.basename(f))
@@ -1691,6 +1850,50 @@ def pareto(te):
     return front
 
 
+def ler_worst(doc):
+    """The entry's measured per-round logical error rate as one number: the
+    larger of the X and Z rates (a memory fails when either side does).
+    None without a measured tier."""
+    ler = (doc.get("circuit") or {}).get("ler")
+    if not ler:
+        return None
+    return max(ler[s]["ler_per_round"] for s in ("X", "Z") if s in ler)
+
+
+def ler_setting(doc):
+    """(p, decoder) the rate was measured at, so rates are only ever compared
+    within one setting. The schema pins both today; this keeps the frontier
+    honest if either is ever widened."""
+    ler = (doc.get("circuit") or {}).get("ler")
+    if not ler:
+        return None
+    side = ler.get("X") or ler.get("Z")
+    return (side["p"], side["decoder"])
+
+
+def ler_frontier(entries):
+    """Indices on the Pareto frontier over (n, k, LER) among the codes with a
+    measured logical error rate: n and LER lower-is-better, k higher-is-
+    better, at least one strict. Decoupled from the (n, k, d, w)
+    frontier that awards the record star: d and w do not enter, so a code can
+    be an LER record without being a distance record and vice versa.
+    Computed per (p, decoder) setting."""
+    by_setting = {}
+    for i, e in enumerate(entries):
+        if e["ler"] is not None:
+            by_setting.setdefault(e["ler_key"], []).append(i)
+    def beats(b, a):
+        return (b["n"] <= a["n"] and b["k"] >= a["k"] and b["ler"] <= a["ler"]
+                and (b["n"] < a["n"] or b["k"] > a["k"] or b["ler"] < a["ler"]))
+
+    front = set()
+    for idxs in by_setting.values():
+        for i in idxs:
+            if not any(j != i and beats(entries[j], entries[i]) for j in idxs):
+                front.add(i)
+    return front
+
+
 def _axis_step(hi):
     """A round tick step giving at most ~6 gridlines up to hi."""
     for s in (1, 2, 5, 10, 20, 50, 100, 200, 500):
@@ -1703,7 +1906,8 @@ def scatter(te, front, yacc, ylabel):
     """A landscape scatter of every code: x = n, y = yacc(e) (e.g. distance or
     kd^2/n). Two complementary views are shown side by side, so codes that
     coincide in one (e.g. same n and d but different k) separate in the other.
-    Suppressed below a handful of distinct (n, y) points (nothing to show)."""
+    Suppressed below a handful of distinct (n, y) points (nothing to show).
+"""
     if not te or len({(e["n"], round(yacc(e), 3)) for e in te}) < 4:
         return ""
     W, H = 520, 274
@@ -1746,15 +1950,18 @@ def scatter(te, front, yacc, ylabel):
         tip = (f'[[{e["n"]},{e["k"]},{e["d"]}]]  kd2/n={e["eff"]}{_geo}\n'
                f'{_tlabel}{", record" if f else ""}')
         cx, cy = sx(e["n"]), sy(yacc(e))
-        pts.append(f'<circle class=pt data-code="{e["slug"]}" cx="{cx:.1f}" '
+        raw = f'data-x="{e["n"]}" data-y="{yacc(e):g}"'
+        pts.append(f'<circle class=pt data-code="{e["slug"]}" {raw} cx="{cx:.1f}" '
                    f'cy="{cy:.1f}" r="{r}" fill="{fill}" '
                    f'stroke="{col}" stroke-width="2" pointer-events="none"/>')
-        pts.append(f'<circle class=hit data-code="{e["slug"]}" cx="{cx:.1f}" '
+        pts.append(f'<circle class=hit data-code="{e["slug"]}" {raw} cx="{cx:.1f}" '
                    f'cy="{cy:.1f}" r="12" '
                    f'fill="transparent" data-tip="{html.escape(tip)}"/>')
     y_mid = pad_t + (H - pad_t - pad_b) / 2
-    return (f'<svg viewBox="0 0 {W} {H}" class="plot" role="img">'
-            + "".join(grid)
+    return (f'<svg viewBox="0 0 {W} {H}" class="plot" role="img" '
+            f'data-w="{W}" data-h="{H}" data-pl="{pad_l}" data-pr="{pad_r}" '
+            f'data-pb="{pad_b}" data-pt="{pad_t}">'
+            f'<g class=grid>{"".join(grid)}</g>'
             + f'<text x="14" y="{y_mid:.0f}" font-size="13" fill="#334155" '
             f'text-anchor="middle" transform="rotate(-90 14 {y_mid:.0f})">{ylabel}</text>'
             + "".join(pts) + "</svg>")
@@ -1844,7 +2051,7 @@ def load_note(slug):
     p = os.path.join(ROOT, "notes", slug + ".md")
     if not os.path.exists(p):
         return None
-    with open(p) as f:
+    with open(p, encoding="utf-8") as f:
         md = f.read()
     if len(md.encode()) > NOTE_CAP:
         print(f"  warning: notes/{slug}.md exceeds {NOTE_CAP} bytes; "
@@ -1862,7 +2069,7 @@ def load_fieldnotes():
         base = os.path.basename(p)
         if base.upper() == "README.MD":
             continue
-        with open(p) as f:
+        with open(p, encoding="utf-8") as f:
             raw = f.read()
         meta = {"title": os.path.splitext(base)[0], "date": "", "author": "",
                 "model": "", "topics": ""}
@@ -2014,9 +2221,16 @@ def layout_svg(doc):
         return None
     if len(coords) != doc["n"]:
         return None
-    X, Z = doc["checks"]["X"], doc["checks"]["Z"]
-    selfdual = sorted(map(sorted, X)) == sorted(map(sorted, Z))
-    groups = [("lo-x", X)] + ([] if selfdual else [("lo-z", Z)])
+    if is_stabilizer(doc):
+        # one kind of check: every generator drawn over its qubit support
+        # (a Y factor is one qubit), in the same style as an X check
+        X, Z = generator_supports(doc), []
+        selfdual = False
+        groups = [("lo-x", X)]
+    else:
+        X, Z = doc["checks"]["X"], doc["checks"]["Z"]
+        selfdual = sorted(map(sorted, X)) == sorted(map(sorted, Z))
+        groups = [("lo-x", X)] + ([] if selfdual else [("lo-z", Z)])
 
     # scale: coordinate units -> px, clamped so tiny codes don't balloon and
     # large ones stay legible; y flipped (SVG y grows downward)
@@ -2101,7 +2315,10 @@ def layout_svg(doc):
     parts.append('</svg>')
 
     legend = ['<div class=lolegend>']
-    if selfdual:
+    if is_stabilizer(doc):
+        legend.append(f'<span><span class=sw style="background:{ACCENT}">'
+                      '</span>stabilizer generator (qubit support)</span>')
+    elif selfdual:
         legend.append(f'<span><span class=sw style="background:{ACCENT}">'
                       '</span>check (X = Z, self-dual)</span>')
     else:
@@ -2166,7 +2383,7 @@ def module_section(doc, m):
          'diagnostics, not a track axis</div>',
          f'<div class=kv><b>modules</b> {m["count"]}</div>',
          f'<div class=kv><b>cross-module checks</b> {m["cross_module_checks"]} '
-         f'of {len(doc["checks"]["X"]) + len(doc["checks"]["Z"])}</div>',
+         f'of {len(generator_supports(doc))}</div>',
          f'<div class=kv><b>max ports per module</b> {m["max_ports"]}</div>',
          '<table class=modtable><thead><tr><th>module</th><th>qubits</th>'
          '<th>ports</th></tr></thead><tbody>']
@@ -2177,7 +2394,7 @@ def module_section(doc, m):
     P.append('</tbody></table>')
     idx = m["cross_module_check_indices"]
     if m["cross_module_checks"]:
-        body = "\n".join(f"{side} {i}" for side in ("X", "Z")
+        body = "\n".join(f"{side} {i}" for side in ("X", "Z", "S")
                          for i in idx.get(side, []))
         P.append(f'<details><summary>cross-module checks '
                  f'({m["cross_module_checks"]}, by side and row index)</summary>'
@@ -2211,6 +2428,15 @@ GIRTH_TIP = ("Tanner-graph girth: the shortest cycle in the check/qubit graph a 
              "decoder runs on, per side (H_X detects Z errors, H_Z detects X "
              "errors). Longer is friendlier to belief propagation. A diagnostic "
              "computed by the verifier from H, never a ranking axis.")
+GIRTH_TIP_STAB = ("Tanner-graph girth: the shortest cycle in the generator/qubit "
+                  "graph a decoder runs on (one graph, over the generator "
+                  "supports). Longer is friendlier to belief propagation. A "
+                  "diagnostic computed by the verifier from S, never a ranking "
+                  "axis.")
+
+
+def girth_tip(e):
+    return GIRTH_TIP_STAB if e.get("code_type") == "stabilizer" else GIRTH_TIP
 TS_TIP = ("(a,b) trapping sets: connected sets of a qubits whose error pattern "
           "has syndrome weight b; small b at small a is what stalls iterative "
           "decoders. Shown: the smallest b at each size and how many sets reach "
@@ -2227,12 +2453,13 @@ LDIAM_TIP = ("Euclidean support diameter of the stored distance witnesses in the
 def girth_cell_title(e):
     d = e["diag"]
     ts = d.get("trapping_sets") or {}
-    parts = [f"H_X girth {side_girth(d, 'X')}, H_Z girth {side_girth(d, 'Z')}"]
-    for side in ("X", "Z"):
+    parts = [", ".join(f"{lab} girth {side_girth(d, side)}"
+                       for side, lab in diag_sides(e))]
+    for side, lab in diag_sides(e):
         summ = ts_summary(ts.get(side))
         if summ:
-            parts.append(f"H_{side} trapping sets {summ}")
-    return "; ".join(parts) + ". " + GIRTH_TIP + " " + TS_TIP.format(
+            parts.append(f"{lab} trapping sets {summ}")
+    return "; ".join(parts) + ". " + girth_tip(e) + " " + TS_TIP.format(
         smax=ts.get("max_size", "?"))
 
 
@@ -2240,7 +2467,7 @@ def ldiam_cell_title(e):
     ld = e["diag"].get("logical_diameter") or {}
     if not ld:
         return "no verified layout; the witness diameter is undefined"
-    parts = ", ".join(f"{side} witness {ld[side]}" for side in ("X", "Z")
+    parts = ", ".join(f"{side} witness {ld[side]}" for side in ("X", "Z", "P")
                       if side in ld)
     return parts + ". " + LDIAM_TIP
 
@@ -2258,10 +2485,19 @@ def detail_page(e):
             "locality_class": e["locality_class"],
             "weight_class": e["weight_class"],
         })]
+    stab = e["code_type"] == "stabilizer"
     P.append('<div class=wrap>')
-    P.append('<a class=back href="../index.html">&larr; back to the board</a>')
+    if stab:
+        P.append('<a class=back href="../stabilizer.html">&larr; back to the '
+                 'stabilizer board</a>')
+    else:
+        P.append('<a class=back href="../index.html">&larr; back to the board</a>')
     P.append(f'<div class=codehead><span class="mono big">[[{n},{k},{d}]]</span> '
-             f'{badge(e["tier"])}</div>')
+             f'{badge(e["tier"])}'
+             + ('<span class="tchip stab" title="general (non-CSS) stabilizer '
+                'code: one Pauli-weight distance, ranked on the stabilizer '
+                'board">stabilizer</span>' if stab else '')
+             + '</div>')
 
     P.append('<div class=params>')
     params = [
@@ -2269,12 +2505,15 @@ def detail_page(e):
         ("k", k, "logical qubits"),
         ("d", d, "distance (smallest undetectable error)"),
         ("kd&sup2;/n", e["eff"], "operational efficiency (BPT ratio), compared within a track at comparable n"),
-        ("w", e["w"], "max check weight"),
-        ("X/Z", f'{e["asym"]:.3g}',
-         "distance asymmetry max(d_X,d_Z)/min(d_X,d_Z): 1 = both Pauli "
-         "types equally protected; larger = one side protected further, "
-         "which biased-noise hardware and erasure decoding can exploit"),
+        ("w", e["w"], "max check weight"
+         + (" |supp X_i ∪ supp Z_i| (a Y factor counts one qubit)" if stab else "")),
     ]
+    if e["asym"] is not None:
+        params.append(
+            ("X/Z", f'{e["asym"]:.3g}',
+             "distance asymmetry max(d_X,d_Z)/min(d_X,d_Z): 1 = both Pauli "
+             "types equally protected; larger = one side protected further, "
+             "which biased-noise hardware and erasure decoding can exploit"))
     if e.get("geo") is not None:
         params.append(("g", f'{e["geo"]:.3g}',
                        ("geometric efficiency 4kd²/(nρ²r⁴) "
@@ -2327,17 +2566,45 @@ def detail_page(e):
 
     # distance + certificate
     P.append('<section class=blk><h3>Distance</h3>')
-    P.append(f'<div class=kv><b>X/Z asymmetry</b> {e["asym"]:.3g} &middot; '
-             f'{asym_detail(e)} '
-             '<span class=claimed>(max(d_X,d_Z)/min(d_X,d_Z); each side '
-             'carries its own earned tier: = certified exact, &le; witness '
-             'upper bound)</span></div>')
-    for side in ("X", "Z"):
+    if stab:
+        # one side: the Pauli weight of a logical operator, Y counting once.
+        # The witness is a Pauli operator, shown as a letter string with its
+        # X and Z supports (the stored form) underneath.
+        P.append('<div class=kv style="color:var(--mut)">a general stabilizer '
+                 'code has no X and Z sides: d is the minimum Pauli weight of '
+                 'a nontrivial logical operator (a Y factor counts one qubit), '
+                 'and the witness is one Pauli operator that commutes with '
+                 'every generator and is not a product of them</div>')
+        sides_shown = [("P", "d")]
+    else:
+        P.append(f'<div class=kv><b>X/Z asymmetry</b> {e["asym"]:.3g} &middot; '
+                 f'{asym_detail(e)} '
+                 '<span class=claimed>(max(d_X,d_Z)/min(d_X,d_Z); each side '
+                 'carries its own earned tier: = certified exact, &le; witness '
+                 'upper bound)</span></div>')
+        sides_shown = [("X", "d_X"), ("Z", "d_Z")]
+    for side, label in sides_shown:
         if side in doc["distance"]:
             sd = doc["distance"][side]
             wit = sd["witness"]
-            P.append(f'<div class=kv><b>d_{side}</b> {sd["value"]} '
-                     f'&middot; witness weight {len(wit)} '
+            if isinstance(wit, dict):
+                hamming = len(wit["X"]) + len(wit["Z"])
+                wlen = len(set(wit["X"]) | set(wit["Z"]))
+                ylen = hamming - wlen
+                wit_text = (f'witness Pauli weight {wlen}'
+                            + (f' ({ylen} Y factor{"s" if ylen != 1 else ""}; '
+                               f'Hamming weight over 2n bits {hamming})'
+                               if ylen else ''))
+                wit_body = (html.escape(pauli_string(wit, n))
+                            + f'\nX: {wit["X"]}\nZ: {wit["Z"]}')
+                wit_sum = f'witness operator (Pauli string, {wlen} qubits)'
+            else:
+                wlen = len(wit)
+                wit_text = f'witness weight {wlen}'
+                wit_body = str(wit)
+                wit_sum = f'witness operator (support, {wlen} qubits)'
+            P.append(f'<div class=kv><b>{label}</b> {sd["value"]} '
+                     f'&middot; {wit_text} '
                      f'({"claimed " + sd["confidence"]})</div>')
             wp = sd.get("witness_provenance")
             if wp:
@@ -2353,8 +2620,8 @@ def detail_page(e):
                 parts.append(html.escape(wp["date"]))
                 P.append('<div class=kv style="color:var(--mut)">'
                          + " &middot; ".join(parts) + '</div>')
-            P.append(f'<details><summary>witness operator (support, {len(wit)} '
-                     f'qubits)</summary><div class=wit>{wit}</div></details>')
+            P.append(f'<details><summary>{wit_sum}</summary>'
+                     f'<div class=wit>{wit_body}</div></details>')
     if cert and cert.get("d_exact"):
         notes = "; ".join(f'{s}: {v["note"]}' for s, v in
                           cert.get("sides", {}).items())
@@ -2362,6 +2629,12 @@ def detail_page(e):
                  f'<span class=cert-ok>exact, d = {d}</span> &middot; '
                  f'{html.escape(cert.get("solver",""))}</div>'
                  f'<div class=kv style="color:var(--mut)">{html.escape(notes)}</div>')
+    elif stab:
+        P.append('<div class=kv><b>certificate</b> '
+                 '<span class=cert-no>none yet &middot; distance stands as a '
+                 'self-certified upper bound (d &le;); the Pauli-weight '
+                 'certifier is not built yet, so stabilizer entries cannot '
+                 'earn d= for now</span></div>')
     else:
         P.append('<div class=kv><b>certificate</b> '
                  '<span class=cert-no>none yet &middot; distance stands as a '
@@ -2377,10 +2650,15 @@ def detail_page(e):
         P.append('<div class=kv style="color:var(--mut)">computed by the '
                  'verifier from the parity checks, the layout, and the stored '
                  'witnesses; shown as evidence, not used for ranking</div>')
-        P.append(f'<div class=kv title="{html.escape(GIRTH_TIP)}"><b>girth</b> '
-                 f'H_X {side_girth(diag, "X")} &middot; H_Z {side_girth(diag, "Z")} '
-                 '<span class=claimed>(shortest cycle of each side&rsquo;s Tanner '
-                 'graph; longer is friendlier to belief propagation)</span></div>')
+        dsides = diag_sides(e)
+        girths = " &middot; ".join(f'{lab} {side_girth(diag, side)}'
+                                   for side, lab in dsides)
+        P.append(f'<div class=kv title="{html.escape(girth_tip(e))}"><b>girth</b> '
+                 f'{girths} '
+                 '<span class=claimed>(shortest cycle of '
+                 + ('the generator Tanner graph' if stab else
+                    'each side&rsquo;s Tanner graph')
+                 + '; longer is friendlier to belief propagation)</span></div>')
         wp = diag.get("weight_profile") or {}
 
         def prof(side, which):
@@ -2391,14 +2669,16 @@ def detail_page(e):
                     if pr["min"] != pr["max"] else f'{pr["min"]}')
         P.append('<div class=kv title="row weights of each side, min to max with '
                  'the mean"><b>check weights</b> '
-                 f'H_X {prof("X", "row")} &middot; H_Z {prof("Z", "row")}</div>')
+                 + " &middot; ".join(f'{lab} {prof(side, "row")}'
+                                     for side, lab in dsides) + '</div>')
         P.append('<div class=kv title="column weights of each side: how many '
                  'checks of that type touch a qubit, min to max with the mean">'
                  '<b>qubit degrees</b> '
-                 f'H_X {prof("X", "column")} &middot; H_Z {prof("Z", "column")}</div>')
+                 + " &middot; ".join(f'{lab} {prof(side, "column")}'
+                                     for side, lab in dsides) + '</div>')
         ts = diag.get("trapping_sets") or {}
         smax = ts.get("max_size", "?")
-        for side in ("X", "Z"):
+        for side, lab in dsides:
             st = ts.get(side) or {}
             if not st:
                 continue
@@ -2407,14 +2687,14 @@ def detail_page(e):
                     f'; sizes above {done} skipped under the cost cap')
             lines = "\n".join(f'({a},{b}): {c}' for a, b, c in st.get("counts", []))
             P.append(f'<div class=kv title="{html.escape(TS_TIP.format(smax=smax))}">'
-                     f'<b>trapping sets H_{side}</b> {ts_summary(st)} '
+                     f'<b>trapping sets {lab}</b> {ts_summary(st)} '
                      f'<span class=claimed>(smallest syndrome weight at each size, '
                      f'connected sets of up to {smax} qubits{note})</span></div>')
             P.append(f'<details><summary>full (size, syndrome weight): count census '
-                     f'for H_{side}</summary><div class=wit>{lines}</div></details>')
+                     f'for {lab}</summary><div class=wit>{lines}</div></details>')
         ld = diag.get("logical_diameter")
         if ld:
-            vals = " &middot; ".join(f'{side} {ld[side]}' for side in ("X", "Z")
+            vals = " &middot; ".join(f'{side} {ld[side]}' for side in ("X", "Z", "P")
                                      if side in ld)
             P.append(f'<div class=kv title="{html.escape(LDIAM_TIP)}">'
                      f'<b>witness diameter</b> {vals} '
@@ -2616,16 +2896,32 @@ def detail_page(e):
                  f'new submissions (<a href="{REPO}/notes">notes/README.md</a>)'
                  '</div></section>')
 
-    # parity checks
-    X, Z = doc["checks"]["X"], doc["checks"]["Z"]
-    P.append('<section class=blk><h3>Parity checks</h3>')
-    P.append(f'<div class=kv><b>X-checks</b> {len(X)} (max weight {e["w_X"]}) '
-             f'&middot; <b style="min-width:auto">Z-checks</b> {len(Z)} '
-             f'(max weight {e["w_Z"]})</div>')
-    for nm, H in (("H_X", X), ("H_Z", Z)):
-        body = "\n".join(str(s) for s in H)
-        P.append(f'<details><summary>{nm} ({len(H)} checks, sparse supports)'
-                 f'</summary><div class=wit>{body}</div></details>')
+    # parity checks: H_X / H_Z as sparse supports, or a stabilizer code's
+    # generators as Pauli strings (the symplectic rows (A | B) underneath)
+    if stab:
+        S = doc["checks"]["S"]
+        P.append('<section class=blk><h3>Stabilizer generators</h3>')
+        P.append(f'<div class=kv><b>generators</b> {len(S)} (max weight {e["w"]}; '
+                 f'{sum(1 for g in S if g["X"] and g["Z"])} mixed X/Z) '
+                 '<span class=claimed>(one binary symplectic matrix '
+                 'S = (A | B); generator i is X on A_i and Z on B_i, Y where '
+                 'both)</span></div>')
+        body = "\n".join(html.escape(pauli_string(g, n)) for g in S)
+        P.append(f'<details><summary>generators ({len(S)}, Pauli strings on '
+                 f'{n} qubits)</summary><div class=wit>{body}</div></details>')
+        body = "\n".join(f'X: {g["X"]}  Z: {g["Z"]}' for g in S)
+        P.append(f'<details><summary>symplectic rows (A | B) ({len(S)}, sparse '
+                 f'supports)</summary><div class=wit>{body}</div></details>')
+    else:
+        X, Z = doc["checks"]["X"], doc["checks"]["Z"]
+        P.append('<section class=blk><h3>Parity checks</h3>')
+        P.append(f'<div class=kv><b>X-checks</b> {len(X)} (max weight {e["w_X"]}) '
+                 f'&middot; <b style="min-width:auto">Z-checks</b> {len(Z)} '
+                 f'(max weight {e["w_Z"]})</div>')
+        for nm, H in (("H_X", X), ("H_Z", Z)):
+            body = "\n".join(str(s) for s in H)
+            P.append(f'<details><summary>{nm} ({len(H)} checks, sparse supports)'
+                     f'</summary><div class=wit>{body}</div></details>')
     P.append(f'<div class=kv style="margin-top:10px">'
              f'<b>Code ID</b> <code>{e["slug"]}</code> &middot; '
              f'<a href="{e["slug"]}.json" download '
@@ -2783,15 +3079,38 @@ def references_page(entries):
 
 
 
-def progress_panel(entries, best_eff_e, best_geo_e):
+# Check-weight caps of the headline kd^2/n cards. kd^2/n climbs
+# with check weight, so an uncapped "best on the board" card rewards whoever
+# mined the highest-weight region and invites bloating the board with heavy
+# codes; each card is the best within a cap instead, the caps that matter for
+# early fault tolerance.
+HERO_CAPS = (6, 8, 12)
+
+
+def best_eff_at(entries, cap=None):
+    """The entry with the best kd^2/n among codes of check weight <= cap;
+    ties go to the smallest n, then the smallest k. cap None reads the whole
+    board. None when the cap holds no code."""
+    pool = [e for e in entries if e["w"] is not None
+            and (cap is None or e["w"] <= cap)]
+    return max(pool, key=lambda e: (e["eff"], -e["n"], -e["k"]), default=None)
+
+
+def progress_panel(entries, best_geo_e):
     """The prominent stats bar at the top of the board: the headline numbers as
     big cards. This is the single home for the board's numbers (the hero carries
-    none). The contributed count is non-baseline codes only; it is not a novelty
-    claim. best_eff_e / best_geo_e are the entries ACHIEVING the two headline
-    efficiencies (geo: among eligible codes -- verified layout, d >= GEO_MIN_D);
-    each card names its code so the parameters behind the number are visible."""
-    n_base = sum(1 for e in entries if e["origin"] == "baseline")
-    n_contrib = len(entries) - n_base
+    none). Four cards: the best kd^2/n within each HERO_CAPS check-weight cap,
+    and the best geometric efficiency g (among eligible codes -- verified
+    layout, d >= GEO_MIN_D). Each card names the code achieving its number so
+    the parameters behind it are visible.
+
+    A second tier beneath carries the uncapped kd^2/n and the board census.
+    Both belong on the page, and neither belongs in the row above: kd^2/n
+    climbs with check weight, so the uncapped best is a ceiling set by whoever
+    worked the heaviest region rather than a target, and a headcount is not a
+    record. They are outlined instead of filled so the top row stays the one
+    comparable series. The census splits submitted from baseline because the
+    total alone invites reading every entry as a new result."""
 
     def by_line(e, geo=False):
         """The achieving code, linked: [[n,k,d]] plus the layout facts that
@@ -2807,24 +3126,48 @@ def progress_panel(entries, best_eff_e, best_geo_e):
     # of them upper bounds. Marking only g implied the other was firmer than it
     # is; the distance column already carries the one d <= that governs both.
     geo_v = "&middot;" if best_geo_e is None else f"{best_geo_e['geo']:.3g}"
-    best_eff = best_eff_e["eff"] if best_eff_e else 0
-    metrics = [
-        (str(n_contrib), "submitted codes",
-         "codes submitted through the challenge; not necessarily novel parameter sets"),
-        (str(n_base), "literature baselines",
-         "published codes seeded as the bar to beat"),
-        (f"{best_eff:g}" + by_line(best_eff_e), "best operational efficiency",
-         "Best kd^2/n on the board (surface code = 1). Full definition below."),
+    metrics = []
+    for cap in HERO_CAPS:
+        be = best_eff_at(entries, cap)
+        eff_v = "&middot;" if be is None else f"{be['eff']:g}"
+        metrics.append(
+            (eff_v + by_line(be), f"best kd&sup2;/n at w &le; {cap}",
+             f"Best operational efficiency kd^2/n among codes of check "
+             f"weight at most {cap} (surface code = 1). Full definition "
+             "below."))
+    metrics.append(
         (geo_v + by_line(best_geo_e, geo=True), "best geometric efficiency",
          "Best geometric efficiency g among codes with a verified layout "
-         "(surface code = 1). Full definition below."),
-    ]
+         "(surface code = 1). Full definition below."))
     cards = "".join(f'<div class="stat-card"'
                     f'{f" title=\"{t}\"" if t else ""}>'
                     f'<div class=v>{v}</div>'
                     f'<div class=l>{lab}</div></div>'
                     for i, (v, lab, t) in enumerate(metrics))
-    return f'<section class=statsbar>{cards}</section>'
+
+    top = best_eff_at(entries)
+    top_v = "&middot;" if top is None else f"{top['eff']:g}"
+    n_base = sum(1 for e in entries if e["origin"] == "baseline")
+    counts = (("{:,}".format(len(entries)), "codes on the board"),
+              ("{:,}".format(len(entries) - n_base), "submitted"),
+              ("{:,}".format(n_base), "literature baselines"))
+    census = "".join(f'<div><b>{v}</b><span>{lab}</span></div>'
+                     for v, lab in counts)
+    tier = (f'<div class=stat-ghost title="Best operational efficiency kd^2/n '
+            f'anywhere on the board, at any check weight. Full definition '
+            f'below.">'
+            f'<div class=v>{top_v}</div>{by_line(top)}'
+            f'<div class=l>best kd&sup2;/n at any weight</div></div>'
+            f'<div class=census title="Codes with a verified distance witness; '
+            f'submitted codes came through the challenge and are not '
+            f'necessarily novel parameter sets.">{census}</div>')
+    return (f'<section class=statsbar>{cards}</section>'
+            f'<section class=herosub>{tier}</section>')
+
+
+# Default cap of the leaderboard weight slider; see
+# contributors_panel.
+LB_DEFAULT_W = 8
 
 
 def contributors_panel(entries):
@@ -2849,8 +3192,10 @@ def contributors_panel(entries):
     snapping to the same caps as the primary-track weight cells. kd^2/n climbs
     with check weight (it is a per-cell figure, not a global one -- TRACKS.md),
     so an uncapped headline quietly rewards whoever worked the highest-weight
-    region; the slider makes the cap you are reading explicit. Each cap is
-    ranked here and shipped precomputed, like the metric toggle."""
+    region; the slider makes the cap you are reading explicit, and it starts
+    at LB_DEFAULT_W, the cap that matters for early fault
+    tolerance, rather than at the board's heaviest code. Each cap is ranked
+    here and shipped precomputed, like the metric toggle."""
 
     def geo_disp(g, tier):
         """Same 3-significant-digit display as the headline card and the board.
@@ -3127,6 +3472,7 @@ def contributors_panel(entries):
     cw = [e["w"] for e in entries
           if e["origin"] != "baseline" and e["w"] is not None]
     wmin, wmax = (min(cw), max(cw)) if cw else (0, 0)
+    wdef = min(max(LB_DEFAULT_W, wmin), wmax)
     lbw, lbidx, seen = {}, [], {}
     for cap in range(wmin, wmax + 1):
         st, od, gd, fd, nc, ng, nf = (
@@ -3218,9 +3564,9 @@ def contributors_panel(entries):
         '<span class=wfslider>'
         '<span class=wftrack></span><span class=wffill id=lbwfill></span>'
         f'<input type=range id=lbwrange class=wfrange min={wmin} max={wmax} '
-        f'value={wmax} step=1 aria-label="maximum check weight">'
+        f'value={wdef} step=1 aria-label="maximum check weight">'
         '</span>'
-        f'<span class=wfval id=lbwval>{wmax}</span>'
+        f'<span class=wfval id=lbwval>{wdef}</span>'
         '</span>')
     subs = (f'<p class=lbsub id=lbsub>'
             f'{subs_html(len(order), n_codes, n_geo, n_front)}</p>')
@@ -3299,8 +3645,9 @@ FAQ = [
     ("What is a qLDPC code?",
      "A quantum low-density parity-check code. As in classical LDPC codes, the "
      "parity checks are sparse: each check involves only a few qubits and each "
-     "qubit appears in only a few checks. It is a stabilizer code (here CSS), "
-     "so it has two commuting sets of checks, X-type and Z-type. A code is "
+     "qubit appears in only a few checks. It is a stabilizer code; on the main "
+     "board a CSS one, with two commuting sets of checks, X-type and Z-type, "
+     "while general (non-CSS) stabilizer codes rank on their own board. A code is "
      "summarized as [[n,k,d]]: n physical qubits encode k logical qubits, and "
      "the distance d is the lowest weight of an error that can go undetected."),
     ("Where are qLDPC codes useful?",
@@ -3344,9 +3691,11 @@ FAQ = [
      "largely search."),
     ("What does “verified” mean here?",
      "CI runs a verifier on every submission. It recomputes n and k over GF(2), "
-     "checks the CSS commutation and the check weights, and confirms the "
+     "checks the commutation (the CSS condition, or isotropy of the symplectic "
+     "matrix for a general stabilizer code) and the check weights, and confirms the "
      "distance witness is a genuine nontrivial logical operator of the claimed "
-     "weight. That certifies the distance as an upper bound (d &le;) with no "
+     "weight (Pauli weight for a stabilizer code). That certifies the distance as "
+     "an upper bound (d &le;) with no "
      "trust required. A code shows d= (certified exact) only when an "
      "independent certificate proves no shorter logical operator exists."),
     ("What do d= and d≤ mean, and how is the distance found?",
@@ -3489,40 +3838,56 @@ def cells(e):
             for W in weight_members(e["weight_class"])]
 
 
+def cell_key(e, cell):
+    """Return the board key of a cell for entry e.
+
+    The code type is a cell dimension: a CSS entry's key is the
+    (locality, weight) pair the grid renders; a stabilizer entry's key
+    carries its type as a third element, so the two boards never share a
+    cell, a frontier, or a record.
+    """
+    ct = e.get("code_type", "CSS")
+    return cell if ct == "CSS" else cell + (ct,)
+
+
 def cells_by_key(entries):
-    """Map each populated (locality, weight) cell to the indices of its members."""
+    """Map each populated cell key (cell_key) to the indices of its members."""
     by_cell = {}
     for i, e in enumerate(entries):
         for cell in cells(e):
-            by_cell.setdefault(cell, []).append(i)
+            by_cell.setdefault(cell_key(e, cell), []).append(i)
     return by_cell
 
 
 def compute_records(entries):
     """Indices of codes on a Pareto frontier (over n, k, d, w) of any primary-track
-    cell they belong to, or of the global frontier. These are the records (starred,
-    shaded): a record is a within-cell claim, so a code only stars where no other
-    code in the SAME computed cell beats it."""
+    cell they belong to, or of the global frontier of their board. These are
+    the records (starred, shaded): a record is a within-cell claim, so a code
+    only stars where no other code in the SAME computed cell, on the same
+    board (code type), beats it."""
     records = set()
     for idxs in cells_by_key(entries).values():
         te = [entries[i] for i in idxs]
         for j in pareto(te):
             records.add(idxs[j])
-    for j in pareto(entries):
-        records.add(j)
+    for ct in sorted({e.get("code_type", "CSS") for e in entries}):
+        idxs = [i for i, e in enumerate(entries) if e.get("code_type", "CSS") == ct]
+        for j in pareto([entries[i] for i in idxs]):
+            records.add(idxs[j])
     return records
 
 
 def cell_frontier_ranked(entries, idxs):
-    """Indices of a cell's Pareto frontier, ranked leader-first by kd^2/n, then
-    d, then k (higher better), then n (lower better). Ties on kd^2/n no longer
-    pick an arbitrary single leader; the whole frontier is returned in order so
-    co-leaders and the runner-up are visible."""
+    """Indices of a cell's Pareto frontier, ranked leader-first by kd^2/n;
+    codes tied on kd^2/n rank by the lowest (n, k) pair, then the higher d
+    (at equal score the smallest code is the one to show). Ties
+    on kd^2/n no longer pick an arbitrary single leader; the whole frontier is
+    returned in order so co-leaders and the runner-up are visible."""
     te = [entries[i] for i in idxs]
     front = pareto(te)
     return sorted((idxs[j] for j in front),
-                  key=lambda i: (-entries[i]["eff"], -entries[i]["d"],
-                                 -entries[i]["k"], entries[i]["n"]))
+                  key=lambda i: (-entries[i]["eff"], entries[i]["n"],
+                                 entries[i]["k"], -entries[i]["d"]))
 
 
 RC_SERIES = [                       # label, weight cap, series color
@@ -3825,17 +4190,20 @@ def record_chart(entries):
             '</section>')
 
 
-def primary_tracks_grid(entries, records):
+def primary_tracks_grid(entries, records, code_type="CSS"):
     """The Layer-1 primary tracks: the computed locality x check-weight grid. Each
     populated cell is a board; membership is derived from H and the layout (never
     self-declared) and nests, so a tighter cell's codes also compete in the looser
-    ones. Each cell lists its Pareto frontier (best kd^2/n first) with a distance-
-    confidence badge; the count and the 'see all' link filter the table below to
-    that exact cell, so the runner-up and the rest of the ranking are one click
-    away."""
+    ones. Each cell lists its Pareto frontier (best kd^2/n first, ties to the
+    lowest (n, k) pair) with a distance-confidence badge; the count and the
+    'see all' link filter the table below to that exact cell, so the runner-up
+    and the rest of the ranking are one click away. code_type picks the
+    board's cells (cell_key): the bare (locality, weight) pair for CSS, the
+    pair tagged with the type for the stabilizer board."""
     by_cell = cells_by_key(entries)
     if not by_cell:
         return ""
+    tag = () if code_type == "CSS" else (code_type,)
     head = ('<tr><th class=gcorner></th>'
             + "".join(f'<th>{html.escape(WEIGHT_LABEL[w])}</th>'
                       for w in WEIGHT_ORDER) + '</tr>')
@@ -3844,7 +4212,7 @@ def primary_tracks_grid(entries, records):
     for L in LOCALITY_ORDER:
         cellshtml = []
         for W in WEIGHT_ORDER:
-            idxs = by_cell.get((L, W), [])
+            idxs = by_cell.get((L, W) + tag, [])
             if not idxs:
                 cellshtml.append('<td class=gempty></td>')
                 continue
@@ -3857,7 +4225,8 @@ def primary_tracks_grid(entries, records):
             by_geo = sorted((i for i in ranked
                              if entries[i]["geo"] is not None
                              and not geo_reference(entries[i])),
-                            key=lambda i: -entries[i]["geo"])
+                            key=lambda i: (-entries[i]["geo"], entries[i]["n"],
+                                           entries[i]["k"]))
             keep = set(ranked[:topn]) | set(by_geo[:topn])
             ranked = [i for i in ranked if i in keep]
             def gitem(i, pos):
@@ -3876,7 +4245,8 @@ def primary_tracks_grid(entries, records):
                     f'{" — reference tiling: the ceiling g is normalized to, not raced" if ref else ""}" '
                     f'data-eff="{e["eff"]}" data-effd="{e["eff"]:g}" '
                     f'data-geo="{"" if geo is None else geo}" '
-                    f'data-geod="{geod}"{" data-ref=1" if ref else ""}>'
+                    f'data-geod="{geod}"{" data-ref=1" if ref else ""} '
+                    f'data-n="{e["n"]}" data-k="{e["k"]}">'
                     f'{badge(e["tier"])}'
                     f'<span class=gcode>[[{e["n"]},{e["k"]},{e["d"]}]]</span>'
                     f'<span class=geff>{e["eff"]:g}</span></a>')
@@ -3893,7 +4263,8 @@ def primary_tracks_grid(entries, records):
             'derived from <code>H</code> and the layout, not self-declared. '
             'Each cell lists its Pareto frontier, ranked by the selected score '
             '(kd&sup2;/n, or geometric efficiency g for codes with a verified '
-            'layout). The code count filters the table below to that cell. '
+            'layout); codes tied on the score rank by the lowest (n, k) pair. '
+            'The code count filters the table below to that cell. '
             'Membership nests: a tighter cell&rsquo;s codes also compete in the '
             'looser ones. In the g view, the seeded surface/toric tilings are '
             'not raced; they set the ceiling g is normalized to '
@@ -3911,7 +4282,8 @@ def primary_tracks_grid(entries, records):
             f'<div class=ptscroll><table class=grid>{head}'
             f'{"".join(body)}</table></div>'
             # the toggle re-ranks every cell by the chosen metric and shows its
-            # top 3; members without a g sort last and display a dot
+            # top 3; members without a g sort last and display a dot. Ties on
+            # the metric rank by the lowest (n, k) pair, as in Python.
             '<script>(function(){'
             'var grid=document.querySelector(".ptgrid");if(!grid)return;'
             'function apply(m){'
@@ -3922,7 +4294,8 @@ def primary_tracks_grid(entries, records):
             'if(isNaN(v))return -2e9;'
             'if(m==="geo"&&el.dataset.ref)return v-1e9;'
             'return v;}'
-            'items.sort(function(a,b){return sv(b)-sv(a);});'
+            'items.sort(function(a,b){return (sv(b)-sv(a))'
+            '||(+a.dataset.n-+b.dataset.n)||(+a.dataset.k-+b.dataset.k);});'
             'items.forEach(function(el,i){'
             'el.classList.toggle("ghide",i>=3);'
             'el.querySelector(".geff").innerHTML='
@@ -3939,7 +4312,8 @@ def primary_tracks_grid(entries, records):
 def latest_codes_panel(entries, records, limit=10):
     """A 'recently added' strip (issue #308): the newest codes by submission
     date, newest first, so a visitor can see the board is live. Each row links
-    to the code page and is starred if it currently holds a cell record."""
+    to the code page and is starred if it currently holds a cell record. It is
+    the last section of the page."""
     rec_slugs = {entries[i]["slug"] for i in records}
     dated = [e for e in entries if e.get("date")]
     dated.sort(key=lambda e: (e["date"], e["slug"]), reverse=True)
@@ -3966,6 +4340,53 @@ def latest_codes_panel(entries, records, limit=10):
             f'<span class=tcount>&middot; last {min(limit, len(dated))} by '
             'submission date</span></h2>'
             f'<ol class=latestlist>{"".join(rows)}</ol></section>')
+
+
+def ler_frontier_panel(entries, lrec):
+    """The (n, k, LER) frontier as a list, lowest measured rate
+    first. Separate from the primary tracks: those rank by kd^2/n over the
+    (n, k, d, w) frontier, this one ignores d and w and ranks by what a
+    device-like simulation measured."""
+    if not lrec:
+        return ""
+    measured = [e for e in entries if e["ler"] is not None]
+    settings = sorted({e["ler_key"] for e in measured})
+    rows = []
+    for e in sorted((entries[i] for i in lrec),
+                    key=lambda e: (e["ler"], e["n"], -e["k"])):
+        ler = e["doc"]["circuit"]["ler"]
+        sides = " &middot; ".join(
+            f'{s} {ler[s]["ler_per_round"]:.3g}' for s in ("X", "Z") if s in ler)
+        circ = (f' &middot; d_circ &le; {e["d_circ"]}'
+                if e["d_circ"] is not None else "")
+        rows.append(
+            f'<li><a class="mono lnkd" href="codes/{e["slug"]}.html">'
+            f'[[{e["n"]},{e["k"]},{e["d"]}]]</a>'
+            f'<span class=lerv title="worse of the two per-round rates">'
+            f'{e["ler"]:.3g}</span>'
+            f'<span class=lfam>{sides}{circ} &middot; w={e["w"]}</span>'
+            f'<span class=lwho>{authors_compact(e["authors_list"])}</span></li>')
+    where = "; ".join(f'p = {p:g}, decoder {html.escape(dec)}'
+                      for p, dec in settings)
+    return ('<section class="latest lerfront" id=lerfront>'
+            '<h2 class=track>Logical error rate frontier '
+            f'<span class=tcount>&middot; {len(rows)} of {len(measured)} '
+            'codes with a measured rate</span></h2>'
+            '<p class=ptsub>Pareto frontier over (n, k, LER): no other '
+            'measured code has at most the qubits, at least the logical '
+            'qubits, and at most the per-round logical error rate, with one '
+            'strict. LER is the worse of the X and Z rates, measured on the '
+            f'committed memory circuits at {where} and re-measured by CI. '
+            'Distance and check weight do not enter: this frontier is '
+            'independent of the (n, k, d, w) frontier that awards the '
+            'record star, and the rows below carry the <span class=lerchip>'
+            'LER record</span> chip in the table.</p>'
+            f'<ol class=latestlist>{"".join(rows)}</ol></section>')
+
+
+# Default upper bound of the Codes weight slider; see
+# board_controls.
+BOARD_DEFAULT_W = 8
 
 
 def board_controls(entries, records):
@@ -4002,6 +4423,11 @@ def board_controls(entries, records):
         for f in families)
     weights = [e["w"] for e in entries if e["w"] is not None]
     wmin, wmax = (min(weights), max(weights)) if weights else (0, 0)
+    # The upper handle starts at BOARD_DEFAULT_W: the heaviest
+    # codes carry kd^2/n values that dwarf the rest, and the low-weight region
+    # is the one that matters for early fault tolerance. "All" and "clear
+    # filters" open the range back up to the whole board.
+    wdef = min(max(BOARD_DEFAULT_W, wmin), wmax)
     # Dual-handle range slider over the check weight w, styled as a pill so it
     # sits inline with the type-filter pills as one filter group. Two overlapping
     # range inputs share one visual track; replaces the old weight-N filter tags.
@@ -4013,9 +4439,9 @@ def board_controls(entries, records):
         f'<input type=range id=wlo class=wfrange min={wmin} max={wmax} '
         f'value={wmin} step=1 aria-label="minimum check weight">'
         f'<input type=range id=whi class=wfrange min={wmin} max={wmax} '
-        f'value={wmax} step=1 aria-label="maximum check weight">'
+        f'value={wdef} step=1 aria-label="maximum check weight">'
         '</span>'
-        f'<span class=wfval id=wfval>{wmin}&ndash;{wmax}</span>'
+        f'<span class=wfval id=wfval>{wmin}&ndash;{wdef}</span>'
         '</span>')
     dists = [e["d"] for e in entries]
     dmin, dmax = (min(dists), max(dists)) if dists else (0, 0)
@@ -4086,8 +4512,12 @@ def board_controls(entries, records):
             '<p class=searchhelp>Type terms (all must match): a family, author, '
             'or a comparison like <code>k&gt;=10</code> <code>d&gt;8</code> '
             '<code>eff&gt;=5</code> <code>g&gt;=0.1</code> <code>swaps&lt;=50</code>; '
-            '<code>record</code> '
-            'keeps only frontier rows; <code>literature</code> / '
+            '<code>ler&lt;=0.005</code>'
+            + (' <code>asym&gt;=1.5</code> (X/Z distance asymmetry)'
+               if any(e["asym"] is not None for e in entries) else '')
+            + '; <code>record</code> '
+            'keeps only frontier rows and <code>ler-record</code> only the '
+            '(n, k, LER) frontier; <code>literature</code> / '
             '<code>submitted</code> filter by origin; <code>with-layout</code> '
             '/ <code>no-layout</code> filter by layout status; '
             '<code>exact</code> / <code>upper-bound</code> filter by whether '
@@ -4149,10 +4579,11 @@ def charts_block(entries, records):
             f'{xlabel}{legend}')
 
 
-def board_table(entries, records):
+def board_table(entries, records, lrec=frozenset()):
     """The searchable, sortable table of every code, with the track type as a
     column of chips. Search and charts are rendered separately, above; this is
-    the table itself."""
+    the table itself. lrec is the (n, k, LER) frontier, marked
+    with its own chip and searchable as ler-record."""
     def chips(e):
         out = [f'<span class=tchip title="construction family (a tag, not a '
                f'ranking)">{html.escape(family_label(e["family"]))}</span>']
@@ -4167,11 +4598,15 @@ def board_table(entries, records):
                        'per module">modular</span>')
         return "".join(out)
 
+    # the X/Z asymmetry column only exists where there are sides: the
+    # stabilizer board (one Pauli-weight distance per code) has none
+    show_asym = any(e["asym"] is not None for e in entries)
     cols = ('<colgroup><col style="width:3%"><col style="width:11%">'
             '<col style="width:9%"><col style="width:5%"><col style="width:5%">'
             '<col style="width:6%"><col style="width:7%"><col style="width:7%">'
             '<col style="width:5%"><col class=colroute>'
-            '<col style="width:5%"><col style="width:5%"><col style="width:5%">'
+            + ('<col style="width:5%">' if show_asym else '')
+            + '<col style="width:5%"><col style="width:5%">'
             '<col style="width:11%"><col style="width:10%">'
             '<col style="width:6%"></colgroup>')
     head = ('<thead><tr><th></th>'
@@ -4199,18 +4634,23 @@ def board_table(entries, records):
             'step = the layout&rsquo;s minimum qubit spacing). Hover a value '
             'for the worst check; &middot; = no verified layout. A '
             'diagnostic, not a rank">swaps</th>'
-            '<th data-c=asym class=num title="X/Z asymmetry '
-            'max(d_X,d_Z)/min(d_X,d_Z): 1 = both Pauli types equally '
-            'protected, larger = one side protected further (relevant for '
-            'biased noise and erasure decoding); hover a value for the '
-            'per-side distances and check weights">X/Z</th>'
-            '<th data-c=girth class="num col-diag" title="' + html.escape(
-                "Tanner-graph girth, the shorter of the two sides; hover a cell "
-                "for both sides and the small trapping sets. " + GIRTH_TIP)
+            + ('<th data-c=asym class=num title="X/Z asymmetry '
+               'max(d_X,d_Z)/min(d_X,d_Z): 1 = both Pauli types equally '
+               'protected, larger = one side protected further (relevant for '
+               'biased noise and erasure decoding); hover a value for the '
+               'per-side distances and check weights">X/Z</th>'
+               if show_asym else '')
+            + '<th data-c=girth class="num col-diag" title="' + html.escape(
+                ("Tanner-graph girth, the shorter of the two sides; hover a cell "
+                 "for both sides and the small trapping sets. " + GIRTH_TIP)
+                if show_asym else
+                ("Tanner-graph girth of the generator graph; hover a cell for "
+                 "the small trapping sets. " + GIRTH_TIP_STAB))
             + '">girth</th>'
             '<th data-c=ldiam class="num col-diag" title="' + html.escape(
-                "witness diameter, the larger of the X and Z witnesses; "
-                "· = no verified layout. " + LDIAM_TIP) + '">diam</th>'
+                ("witness diameter, the larger of the X and Z witnesses; "
+                 if show_asym else "witness diameter of the Pauli witness; ")
+                + "· = no verified layout. " + LDIAM_TIP) + '">diam</th>'
             '<th data-c=auth class=col-auth title="who submitted it">authors</th>'
             '<th class=model data-c=model title="claimed model that produced '
             'the code (self-reported, not verified); person icon = classical '
@@ -4260,7 +4700,8 @@ def board_table(entries, records):
             f'data-code="{e["slug"]}" data-name="[[{e["n"]},{e["k"]},{e["d"]}]]" '
             f'data-n="{e["n"]}" data-k="{e["k"]}" data-d="{e["d"]}" '
             f'data-codekey="{e["n"]*1000000 + e["k"]*1000 + e["d"]}" '
-            f'data-eff="{e["eff"]}" data-w="{e["w"]}" data-asym="{e["asym"]}" '
+            f'data-eff="{e["eff"]}" data-w="{e["w"]}" '
+            f'data-asym="{e["asym"] if e["asym"] is not None else -1}" '
             f'data-geo="{e["geo"] if e["geo"] is not None else -1}" '
             f'data-route="{e["route_total"] if e["route_total"] is not None else -1}" '
             # acyclic sides have no cycle to bound: sort them past every girth
@@ -4269,6 +4710,8 @@ def board_table(entries, records):
             f'data-tracks="{html.escape(search_terms)}" '
             f'data-cells="{html.escape(cell_keys)}" '
             f'data-record="{1 if fr else 0}" '
+            f'data-ler="{e["ler"] if e["ler"] is not None else -1}" '
+            f'data-lrec="{1 if i in lrec else 0}" '
             f'data-tier="{e["tier"]}" '
             f'data-circ="{1 if e["d_circ"] is not None else 0}" '
             f'data-origin="{"literature" if e["origin"] == "baseline" else "submitted"}" '
@@ -4287,6 +4730,10 @@ def board_table(entries, records):
                 f'{" + measured logical error rate" if e["has_ler"] else ""}'
                 f'">&#9881;{e["d_circ"]}</span>')
                if e["d_circ"] is not None else "")
+            + (f'<span class=lerchip title="LER record: Pareto-best on (n, k, '
+               f'measured logical error rate {e["ler"]:.3g}/round) among '
+               'codes with a measured rate; independent of the distance '
+               'record star">LER record</span>' if i in lrec else "")
             + f'</td><td class="typecell col-type" data-label="type">{chips(e)}</td>'
             f'<td class="num col-n" data-label="n">{e["n"]}</td>'
             f'<td class="num col-k" data-label="k">{e["k"]}</td>'
@@ -4306,9 +4753,9 @@ def board_table(entries, records):
                if e["route_total"] is not None else
                '<td class="num col-route" data-label="swaps" title="no verified '
                'layout; routing cost undefined">&middot;</td>')
-            + f'<td class="num m3" data-label="X/Z" title="{asym_detail(e)}">'
-            f'{e["asym"]:.3g}</td>'
-            f'<td class="num col-diag" data-label="girth" '
+            + (f'<td class="num m3" data-label="X/Z" title="{asym_detail(e)}">'
+               f'{e["asym"]:.3g}</td>' if show_asym else '')
+            + f'<td class="num col-diag" data-label="girth" '
             f'title="{html.escape(girth_cell_title(e))}">'
             f'{e["girth"] if e["girth"] is not None else "acyclic"}</td>'
             f'<td class="num col-diag" data-label="diam" '
@@ -4352,43 +4799,217 @@ def not_found_page():
     return "\n".join(P)
 
 
+def page_hero(title, lead, board_link):
+    """The hero banner shared by the two leaderboards: brand, Participate,
+    title, lead, and the top navigation. board_link is the (href, label) of
+    the other board, first in the nav so the two boards point at each other."""
+    href, label = board_link
+    return ('<header class=hero>' + HERO_FLOW + '<div class=wrap>'
+            '<div class=brand>'
+            '<span class=brandmark>'
+            '<a href="https://unitary.foundation" '
+            f'aria-label="Unitary Foundation">{UF_LOGO}</a>'
+            '</span>'
+            '<button class="lbcta herocta" type=button '
+            'onclick="(function(){var d=document.getElementById('
+            '&quot;participate&quot;);if(d&&d.showModal){d.showModal();'
+            'plausible(&quot;Participate Opened&quot;,{props:{location:'
+            '&quot;hero&quot;}});}})()">Participate</button>'
+            '</div>'
+            f'<h1>{title}</h1>'
+            f'<p>{lead}</p>'
+            '<nav class=topnav>'
+            f'<a href="{href}">{label}</a>'
+            '<a href="faq.html">FAQ</a>'
+            '<a href="research-log.html">Research log</a>'
+            '<a href="references.html">References</a>'
+            f'<a href="{REPO_ROOT}">{GH_ICON}GitHub</a>'
+            '</nav>'
+            '</div></header>')
+
+
+def page_footer():
+    return (
+        '<footer class=foot><div class=footmain>'
+        '<div class=footbrand><div class=fb>'
+        f'<svg width=34 height=34 viewBox="0 0 64 64" aria-hidden="true">{MARK}'
+        '</svg><span>QEC Challenge</span></div>'
+        '<p>An open, automatically verified leaderboard for quantum '
+        'low-density parity-check codes.</p></div>'
+        '<nav class=footlinks>'
+        f'<a href="{REPO_ROOT}">{GH_ICON}GitHub</a>'
+        f'<a href="{REPO}/CONTRIBUTING.md">Contribute</a>'
+        f'<a href="{REPO}/schema/SCHEMA.md">Schema</a>'
+        f'<a href="{REPO}/TRACKS.md">Tracks</a>'
+        '<a href="index.html">CSS board</a>'
+        '<a href="stabilizer.html">Stabilizer board</a>'
+        '<a href="faq.html">FAQ</a>'
+        '<a href="research-log.html">Research log</a>'
+        '<a href="references.html">References</a>'
+        '<a href="qec_challenge.pdf">Whitepaper</a>'
+        '</nav></div>'
+        '<div class=footbar>&copy; 2026 &middot; Built by '
+        '<a href="https://unitary.foundation">Unitary Foundation</a> '
+        f'&middot; <a href="{REPO}/LICENSE">Apache 2.0</a> '
+        '&middot; Cookie-free analytics by '
+        '<a href="https://plausible.io">Plausible</a></div></footer>')
+
+
+def board_legend(asym=True):
+    """The legend above the board table. asym adds the X/Z column's entry,
+    which the stabilizer board (no sides) leaves out."""
+    return ('<div class=legend>'
+            '<span class=legbreak><span class=swatch></span>&#9733; '
+            '<b>record</b> (shaded rows): Pareto-best on (n, k, d) within at '
+            'least one computed cell, among the codes listed here. It is a '
+            'board-relative marker, not a claim against the wider literature; '
+            'a code the literature beats may still be seeded.</span>'
+            '<span><span class="dot ex"></span> certified exact '
+            '(<span class="b exact">d =</span>)</span>'
+            '<span><span class="dot ac"></span> upper bound '
+            '(<span class="b ub">d &le;</span>): a verified logical of that '
+            'weight; independent refutation searches found nothing lighter, '
+            'but it is not a proof</span>'
+            f'<span><span class=hexwrap style="margin-left:0">{HEX_MARK}</span> '
+            'submitted through the challenge (not a novelty claim; '
+            'unmarked = literature baseline)</span>'
+            '<span><span class=novelty style="margin-left:0">known params</span> '
+            'parameter set exists in the literature; see provenance notes</span>'
+            '<span><span class=lerchip style="margin-left:0">LER record</span> '
+            'Pareto-best on (n, k, measured logical error rate) among the '
+            'codes with a measured rate; independent of the (n, k, d, w) '
+            'record star</span>'
+            '<span class=collegend><b>columns:</b> '
+            '<b>n</b> physical qubits &middot; <b>k</b> logical qubits '
+            '&middot; <b>d</b> distance (smallest undetectable error'
+            + ('' if asym else '; the Pauli weight of the lightest logical '
+               'operator, a Y factor counting one qubit')
+            + ') &middot; <b>kd&sup2;/n</b> operational efficiency (per track) '
+            '&middot; <b>g</b> geometric efficiency 4kd&sup2;/(n&rho;&sup2;'
+            'r&#8308;), priced by the layout&rsquo;s radius r and layers '
+            '&rho; (surface code = 1; 2&radic;2kd/(n&rho;r&sup3;) for a 3D '
+            'layout; &middot; = no verified layout) '
+            '&middot; <b>w</b> max check weight'
+            + ('' if asym else ' (qubits a generator acts on, X, Z or Y)')
+            + ' &middot; <b>swaps</b> (optional) heuristic routing cost: '
+            'nearest-neighbor SWAPs per round to connect every check on the '
+            'verified layout, an MST lower bound with one lattice step = the '
+            'minimum qubit spacing; a diagnostic, never a rank'
+            + (' &middot; <b>X/Z</b> distance asymmetry max(d_X,d_Z)/min(d_X,d_Z) '
+               '(1 = symmetric; hover for the per-side distances and check '
+               'weights)' if asym else '')
+            + '</span></div>')
+
+
+def stabilizer_page(entries):
+    """Render the general (non-CSS) stabilizer leaderboard (issue #2131).
+
+    The same computed grid, filters, and table as the CSS board, over the
+    entries typed code_type "stabilizer" only, so the two boards never
+    compare. What differs is stated up front: one Pauli-weight distance, no
+    X/Z sides, no circuit tier yet, dedup up to local Hadamards against the
+    CSS board.
+    """
+    records = compute_records(entries)
+    lrec = ler_frontier(entries)
+    n_exact = sum(1 for e in entries if e["tier"] == "exact")
+    P = [head("Stabilizer board · QEC Challenge",
+              page_properties={"page_type": "leaderboard_stabilizer"})]
+    P.append(page_hero(
+        'Stabilizer board',
+        'General (non-CSS) stabilizer codes, verified and ranked apart from '
+        'the CSS board. <a href="index.html">Back to the CSS board.</a>',
+        ("index.html", "CSS board")))
+    P.append('<div class=wrap>')
+    P.append(
+        '<section class=stabintro>'
+        '<p>A general stabilizer code has one binary symplectic check matrix '
+        '<span class=mono>S = (A | B)</span>: generator i acts as X on '
+        '<span class=mono>A<sub>i</sub></span> and Z on '
+        '<span class=mono>B<sub>i</sub></span>, Y where both. A CSS code is '
+        'the special case where every row is pure X or pure Z; here every code '
+        'has at least one mixed generator (a code that is CSS up to a Hadamard '
+        'on some qubits is filed as a duplicate of its CSS image, not listed '
+        'twice). These codes are ranked on their own board because the '
+        'quantities the CSS board reads per side have no side here:</p>'
+        '<table><tr><th></th><th>CSS board</th><th>this board</th></tr>'
+        '<tr><td>checks</td><td class=mono>H_X, H_Z</td>'
+        '<td class=mono>S = (A | B), isotropic: A B&#x1D40; + B A&#x1D40; = 0</td></tr>'
+        '<tr><td>k</td><td class=mono>n &minus; rank H_X &minus; rank H_Z</td>'
+        '<td class=mono>n &minus; rank S</td></tr>'
+        '<tr><td>distance</td><td>d = min(d_X, d_Z), one witness per side</td>'
+        '<td>one d: the minimum <b>Pauli weight</b> of a nontrivial logical '
+        'operator (Y counts once); one Pauli-operator witness</td></tr>'
+        '<tr><td>check weight w</td><td>row weight</td>'
+        '<td class=mono>|A<sub>i</sub> &cup; B<sub>i</sub>|</td></tr>'
+        '<tr><td>kd&sup2;/n, g, tracks</td><td colspan=2>unchanged; the '
+        'primary-track cells are computed the same way, but carry the code '
+        'type, so a record here is never a record there</td></tr>'
+        '<tr><td>certificate</td><td>MILP per side</td>'
+        '<td>not built yet: every entry stands as d &le;</td></tr>'
+        '<tr><td>circuit tier</td><td>memory circuits per basis</td>'
+        '<td>not accepted yet: syndrome extraction needs a general '
+        'stabilizer-measurement schedule</td></tr>'
+        '</table>'
+        '<p>Symplectic doubling maps any [[n, k, d]] stabilizer code to a CSS '
+        'code [[2n, 2k, d&prime;]] with d &le; d&prime; &le; 2d, so the two '
+        'boards are linked; halving that map is how the highest-rate entries '
+        'here were built. See the '
+        f'<a href="{REPO}/schema/SCHEMA.md">schema</a>, '
+        f'<a href="{REPO}/TRACKS.md">tracks</a>, and '
+        f'<a href="{REPO}/CONTRIBUTING.md">how to submit</a> a stabilizer '
+        'code (bring S, or A and B, as an .npz).</p>'
+        '</section>')
+    if not entries:
+        P.append('<section class=blk><h3>No stabilizer entries yet</h3>'
+                 '<div class=kv style="color:var(--mut)">the first verified '
+                 'general stabilizer code submitted under <code>codes/</code> '
+                 'opens this board</div></section>')
+    else:
+        P.append(primary_tracks_grid(entries, records, code_type="stabilizer"))
+        P.append(board_controls(entries, records))
+        P.append('<div class=explorer>')
+        P.append(charts_block(entries, records))
+        P.append(board_legend(asym=False))
+        P.append(board_table(entries, records, lrec))
+        P.append('</div>')
+        P.append(latest_codes_panel(entries, records))
+    P.append('</div>')
+    P.append(page_footer())
+    P.append('<div id=tip></div>')
+    P.append(f'<script>{JS}</script></body></html>')
+    print(f"  stabilizer board: {len(entries)} entries, "
+          f"{len(records)} records, {n_exact} certified exact")
+    return "\n".join(P)
+
+
 def build():
-    entries = load_entries()
+    all_entries = load_entries()
+    # two boards (issue #2131): CSS entries make the main board exactly as
+    # before; general stabilizer entries make stabilizer.html. Every panel on
+    # the main page sees CSS entries only, so nothing there compares across
+    # the boards; the code pages, downloads, references, and research log
+    # cover both.
+    entries = [e for e in all_entries if e["code_type"] == "CSS"]
+    stab_entries = [e for e in all_entries if e["code_type"] == "stabilizer"]
     n_exact = sum(1 for e in entries if e["tier"] == "exact")
     best_eff = max((e["eff"] for e in entries), default=0)
-    best_eff_e = max(entries, key=lambda e: (e["eff"], -e["n"]), default=None)
     geo_pool = [e for e in entries
                 if e["geo"] is not None and e["d"] >= GEO_MIN_D]
     best_geo_e = max(geo_pool, key=lambda e: (e["geo"], -e["n"]),
                      default=None)
     records = compute_records(entries)
+    lrec = ler_frontier(entries)
 
     P = [head("QEC Challenge",
               page_properties={"page_type": "leaderboard"})]
-    P.append('<header class=hero>' + HERO_FLOW + '<div class=wrap>'
-             '<div class=brand>'
-             '<span class=brandmark>'
-             '<a href="https://unitary.foundation" '
-             f'aria-label="Unitary Foundation">{UF_LOGO}</a>'
-             '</span>'
-             '<button class="lbcta herocta" type=button '
-             'onclick="(function(){var d=document.getElementById('
-             '&quot;participate&quot;);if(d&&d.showModal){d.showModal();'
-             'plausible(&quot;Participate Opened&quot;,{props:{location:'
-             '&quot;hero&quot;}});}})()">Participate</button>'
-             '</div>'
-             '<h1>QEC Challenge</h1>'
-             '<p>Find better quantum LDPC codes. '
-             '<a href="whitepaper.html">Read the whitepaper.</a></p>'
-             '<nav class=topnav>'
-             '<a href="faq.html">FAQ</a>'
-             '<a href="research-log.html">Research log</a>'
-             '<a href="references.html">References</a>'
-             f'<a href="{REPO_ROOT}">{GH_ICON}GitHub</a>'
-             '</nav>'
-             '</div></header>')
+    P.append(page_hero(
+        'QEC Challenge',
+        'Find better quantum LDPC codes. '
+        '<a href="whitepaper.html">Read the whitepaper.</a>',
+        ("stabilizer.html", "Stabilizer board")))
     P.append('<div class=wrap>')
-    P.append(progress_panel(entries, best_eff_e, best_geo_e))
+    P.append(progress_panel(entries, best_geo_e))
     # plain-sight definitions of the two headline scores (issue #276 review:
     # tooltips are invisible on mobile and undiscoverable in general)
     P.append(
@@ -4422,55 +5043,34 @@ def build():
         'as &rho;&sup2; so stacking must earn its density)</div>'
         '</section>')
     P.append(record_chart(entries))
+    # the leaderboard follows the record chart: the chart shows
+    # the records climbing, the leaderboard shows who set them
+    P.append(contributors_panel(entries))
     P.append(primary_tracks_grid(entries, records))
-    P.append(latest_codes_panel(entries, records))
+    P.append(ler_frontier_panel(entries, lrec))
+    # the other board, in plain sight above the table it is kept apart from
+    ns = len(stab_entries)
+    P.append('<div class=xboard>'
+             f'<span><b>General (non-CSS) stabilizer codes</b> rank on their own '
+             f'board: {ns} verified code{"s" if ns != 1 else ""}, one '
+             'Pauli-weight distance each, never compared against the CSS '
+             'entries below.</span>'
+             '<a class=lbcta href="stabilizer.html">Stabilizer board &rarr;</a>'
+             '</div>')
     P.append(board_controls(entries, records))
     P.append('<div class=explorer>')
     P.append(charts_block(entries, records))
-    P.append('<div class=legend>'
-             '<span class=legbreak><span class=swatch></span>&#9733; '
-             '<b>record</b> (shaded rows): Pareto-best on (n, k, d) within at '
-             'least one computed cell, among the codes listed here. It is a '
-             'board-relative marker, not a claim against the wider literature; '
-             'a code the literature beats may still be seeded.</span>'
-             '<span><span class="dot ex"></span> certified exact '
-             '(<span class="b exact">d =</span>)</span>'
-             '<span><span class="dot ac"></span> upper bound '
-             '(<span class="b ub">d &le;</span>): a verified logical of that '
-             'weight; independent refutation searches found nothing lighter, '
-             'but it is not a proof</span>'
-             f'<span><span class=hexwrap style="margin-left:0">{HEX_MARK}</span> '
-             'submitted through the challenge (not a novelty claim; '
-             'unmarked = literature baseline)</span>'
-             '<span><span class=novelty style="margin-left:0">known params</span> '
-             'parameter set exists in the literature; see provenance notes</span>'
-             '<span class=collegend><b>columns:</b> '
-             '<b>n</b> physical qubits &middot; <b>k</b> logical qubits '
-             '&middot; <b>d</b> distance (smallest undetectable error) '
-             '&middot; <b>kd&sup2;/n</b> operational efficiency (per track) '
-             '&middot; <b>g</b> geometric efficiency 4kd&sup2;/(n&rho;&sup2;'
-             'r&#8308;), priced by the layout&rsquo;s radius r and layers '
-             '&rho; (surface code = 1; 2&radic;2kd/(n&rho;r&sup3;) for a 3D '
-             'layout; &middot; = no verified layout) '
-             '&middot; <b>w</b> max check weight '
-             '&middot; <b>swaps</b> (optional) heuristic routing cost: '
-             'nearest-neighbor SWAPs per round to connect every check on the '
-             'verified layout, an MST lower bound with one lattice step = the '
-             'minimum qubit spacing; a diagnostic, never a rank '
-             '&middot; <b>X/Z</b> distance asymmetry max(d_X,d_Z)/min(d_X,d_Z) '
-             '(1 = symmetric; hover for the per-side distances and check '
-             'weights)</span>'
-             '</div>')
-    P.append(board_table(entries, records))
+    P.append(board_legend(asym=True))
+    P.append(board_table(entries, records, lrec))
     P.append('</div>')  # close explorer (the viewport-fitted plots+table column)
-    P.append(contributors_panel(entries))  # leaderboard sits below the table
-    # the three steps follow the leaderboard: 'climb the board' should be read
-    # after the board has been seen, not before
+    # the three steps follow the board: 'climb the board' should be read after
+    # the board has been seen, not before
     P.append('<div class=how>'
              f'<a class=card href="{REPO_ROOT}/blob/main/CONTRIBUTING.md">'
              '<span class=n>1</span><h3>Build a code</h3>'
              '<p>A CSS qLDPC code, written as one JSON file with its parity '
-             'checks and a distance witness. <span class=arrow>&rarr;</span></p>'
+             'checks and a distance witness; a general stabilizer code brings '
+             'its symplectic matrix instead. <span class=arrow>&rarr;</span></p>'
              '</a>'
              f'<a class=card href="{REPO_ROOT}/pulls">'
              '<span class=n>2</span><h3>Open a PR</h3>'
@@ -4483,52 +5083,36 @@ def build():
              'Click any row for the witness, certificate, and checks. '
              '<span class=arrow>&rarr;</span></p>'
              '</a></div>')
+    # the newest submissions close the page: a liveness signal,
+    # lower priority than every ranking above it
+    P.append(latest_codes_panel(entries, records))
     P.append('</div>')  # close the main content wrap; footer is full-width
-    P.append(
-        '<footer class=foot><div class=footmain>'
-        '<div class=footbrand><div class=fb>'
-        f'<svg width=34 height=34 viewBox="0 0 64 64" aria-hidden="true">{MARK}'
-        '</svg><span>QEC Challenge</span></div>'
-        '<p>An open, automatically verified leaderboard for quantum '
-        'low-density parity-check codes.</p></div>'
-        '<nav class=footlinks>'
-        f'<a href="{REPO_ROOT}">{GH_ICON}GitHub</a>'
-        f'<a href="{REPO}/CONTRIBUTING.md">Contribute</a>'
-        f'<a href="{REPO}/schema/SCHEMA.md">Schema</a>'
-        f'<a href="{REPO}/TRACKS.md">Tracks</a>'
-        '<a href="faq.html">FAQ</a>'
-        '<a href="research-log.html">Research log</a>'
-        '<a href="references.html">References</a>'
-        '<a href="qec_challenge.pdf">Whitepaper</a>'
-        '</nav></div>'
-        '<div class=footbar>&copy; 2026 &middot; Built by '
-        '<a href="https://unitary.foundation">Unitary Foundation</a> '
-        f'&middot; <a href="{REPO}/LICENSE">Apache 2.0</a> '
-        '&middot; Cookie-free analytics by '
-        '<a href="https://plausible.io">Plausible</a></div></footer>')
+    P.append(page_footer())
     P.append('<div id=tip></div>')
     P.append(f'<script>{JS}</script></body></html>')
 
     os.makedirs(os.path.join(DOCS, "codes"), exist_ok=True)
     # serve the raw static files on GitHub Pages without Jekyll processing
-    open(os.path.join(DOCS, ".nojekyll"), "w").close()
-    with open(os.path.join(DOCS, "index.html"), "w") as f:
+    open(os.path.join(DOCS, ".nojekyll"), "w", encoding="utf-8").close()
+    with open(os.path.join(DOCS, "index.html"), "w", encoding="utf-8") as f:
         f.write("\n".join(P))
-    with open(os.path.join(DOCS, "favicon.svg"), "w") as f:
+    with open(os.path.join(DOCS, "stabilizer.html"), "w", encoding="utf-8") as f:
+        f.write(stabilizer_page(stab_entries))
+    with open(os.path.join(DOCS, "favicon.svg"), "w", encoding="utf-8") as f:
         f.write(FAVICON)
-    with open(os.path.join(DOCS, "style.css"), "w") as f:
+    with open(os.path.join(DOCS, "style.css"), "w", encoding="utf-8") as f:
         f.write(CSS)
-    with open(os.path.join(DOCS, "references.html"), "w") as f:
-        f.write(references_page(entries))
-    with open(os.path.join(DOCS, "faq.html"), "w") as f:
+    with open(os.path.join(DOCS, "references.html"), "w", encoding="utf-8") as f:
+        f.write(references_page(all_entries))
+    with open(os.path.join(DOCS, "faq.html"), "w", encoding="utf-8") as f:
         f.write(faq_page())
-    with open(os.path.join(DOCS, "research-log.html"), "w") as f:
-        f.write(research_log_page(entries, load_fieldnotes()))
-    with open(os.path.join(DOCS, "404.html"), "w") as f:
+    with open(os.path.join(DOCS, "research-log.html"), "w", encoding="utf-8") as f:
+        f.write(research_log_page(all_entries, load_fieldnotes()))
+    with open(os.path.join(DOCS, "404.html"), "w", encoding="utf-8") as f:
         f.write(not_found_page())
     # Wrapper so the whitepaper opens with the site favicon and a proper tab
     # title (a raw PDF tab shows the browser's PDF-viewer icon instead).
-    with open(os.path.join(DOCS, "whitepaper.html"), "w") as f:
+    with open(os.path.join(DOCS, "whitepaper.html"), "w", encoding="utf-8") as f:
         f.write(
             '<!doctype html><html lang=en><head><meta charset=utf-8>'
             '<meta name=viewport content="width=device-width,initial-scale=1">'
@@ -4539,20 +5123,38 @@ def build():
             'embed{width:100%;height:100%}</style></head><body>'
             '<embed src="qec_challenge.pdf" type="application/pdf">'
             '</body></html>')
-    write_code_artifacts(entries)
+    write_code_artifacts(all_entries)
     check_analytics_coverage()
 
     # machine-readable stats; the README badges (shields.io dynamic JSON) read
     # this file from the live site, so there is no committed badge image to fall
     # out of sync.
     n_cells = len(cells_by_key(entries))
-    stats = {"verified_codes": len(entries), "certified_exact": n_exact,
+    # best_kd2_over_n stays for the README badge; the capped bests are the
+    # numbers the headline cards show.
+    # verified_codes counts both boards; the per-board split follows. The
+    # bests and cells are the CSS board's, as the badges have always read.
+    stats = {"verified_codes": len(all_entries), "css_codes": len(entries),
+             "stabilizer_codes": len(stab_entries),
+             "certified_exact": n_exact,
              "tracks": n_cells, "best_kd2_over_n": best_eff,
              "best_geometric_efficiency":
                  best_geo_e["geo"] if best_geo_e else None}
-    with open(os.path.join(DOCS, "stats.json"), "w") as f:
+    # Where the entries came from, computed by isomorphism against the
+    # literature index rather than read off a submitter's label (#1279).
+    # Absent when the table has not been regenerated for this board, because
+    # a stale split is worse than none.
+    prov = provenance_counts({e["slug"] for e in entries})
+    if prov:
+        stats["provenance"] = prov
+    for cap in HERO_CAPS:
+        be = best_eff_at(entries, cap)
+        stats[f"best_kd2_over_n_w{cap}"] = be["eff"] if be else None
+    with open(os.path.join(DOCS, "stats.json"), "w", encoding="utf-8") as f:
         json.dump(stats, f, indent=2)
-    print(f"wrote docs/index.html + {len(entries)} detail pages + "
+    print(f"wrote docs/index.html ({len(entries)} CSS codes) + "
+          f"docs/stabilizer.html ({len(stab_entries)} stabilizer codes) + "
+          f"{len(all_entries)} detail pages + "
           f"references.html ({len(REFS)} refs), "
           f"{n_cells} primary-track cells, {n_exact} certified exact")
 

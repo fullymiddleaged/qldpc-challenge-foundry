@@ -28,7 +28,12 @@ The gate, per candidate (a schema-shaped submission ``doc``):
               the claimed distance (an over-claim is caught here)
   dedup    -- not an exact duplicate of a board entry (WL-equivalent is flagged)
   novelty  -- LABEL only: does it advance its own primary-track cell? (literature
-              novelty is out of scope here)
+              novelty is out of scope here). A win whose only strict axis is d,
+              over a board entry equal in n, k and w, is also reported as
+              ``d_only_gain`` together with ``d_only_peers``, the entries it beat.
+              The label names those peers whenever the candidate beats one of
+              them on d alone -- even if it gained on another axis over a
+              different entry -- and tells you to re-measure at matched depth.
 
 ``passed`` is True iff the verifier accepts it (structure + witnesses), it is not
 refuted, and it is not an exact board duplicate. Novelty is a label, not a pass
@@ -69,11 +74,17 @@ def _board_entries():
             continue                            # a broken board file never blocks a candidate
         try:
             comp = rep.get("computed", {})
+            ceq = rep.get("css_equivalent") or {}
             out.append({
                 "name": os.path.basename(e["path"]),
                 "n": doc["n"], "k": doc["k"], "d": doc["distance"]["d"],
+                "code_type": doc.get("code_type", "CSS"),
                 "fingerprint": rep.get("fingerprint"),
                 "sig": rep.get("signature", {}).get("hash"),
+                # a stabilizer entry that is CSS up to local Hadamards also
+                # carries the fingerprints and signatures of that CSS code
+                "css_fingerprints": list(ceq.get("fingerprints") or []),
+                "css_sigs": list(ceq.get("signatures") or []),
                 "weight_class": comp.get("weight_class"),
                 "w": comp.get("max_check_weight"),
                 "locality_class": comp.get("locality_class"),
@@ -81,6 +92,18 @@ def _board_entries():
         except Exception:
             continue
     return out
+
+
+def _identity_sets(rep):
+    """Return the (fingerprints, signatures) under which a verified code is recognized.
+
+    Its own, plus those of the CSS code it maps to under local Hadamards when
+    the verifier found one (report["css_equivalent"]).
+    """
+    ceq = rep.get("css_equivalent") or {}
+    fps = {rep.get("fingerprint")} | set(ceq.get("fingerprints") or [])
+    sigs = {rep.get("signature", {}).get("hash")} | set(ceq.get("signatures") or [])
+    return fps - {None}, sigs - {None}
 
 
 def validate_candidate(doc, *, seed=None, refute=True):
@@ -138,15 +161,36 @@ def validate_candidate(doc, *, seed=None, refute=True):
         verdict["labels"].append(f"refuted (over-claimed distance): {nd['detail']}")
 
     # 3. DEDUP -- compare against the board by exact fingerprint and WL signature,
-    #    both already computed by the verifier above.
+    #    both already computed by the verifier above. A stabilizer candidate
+    #    that is a CSS code up to a Hadamard on some qubits is
+    #    also compared through that CSS code's fingerprint and signature, in
+    #    both directions, so a relabeled copy of a board entry is marked a
+    #    duplicate of it rather than admitted as a new code. The CSS and
+    #    stabilizer boards are separate, so this is the ONE place the two
+    #    types meet, and only to recognize the same code.
     cand_fp = rep.get("fingerprint")
-    cand_sig = rep.get("signature", {}).get("hash")
+    cand_fps, cand_sigs = _identity_sets(rep)
     board = _board_entries()
-    exact_dup = next((b["name"] for b in board if b["fingerprint"] == cand_fp), None)
+
+    def fps_of(b):
+        return {b["fingerprint"]} | set(b.get("css_fingerprints") or [])
+
+    def sigs_of(b):
+        return {b["sig"]} | set(b.get("css_sigs") or [])
+
+    exact_dup = next((b["name"] for b in board if cand_fps & fps_of(b)), None)
     wl_equiv = next((b["name"] for b in board
-                     if b["sig"] == cand_sig and b["fingerprint"] != cand_fp), None)
+                     if cand_sigs & sigs_of(b) and not (cand_fps & fps_of(b))), None)
     g["dedup"] = {"exact_duplicate_of": exact_dup, "wl_equivalent_of": wl_equiv}
-    if exact_dup:
+    via_hadamard = exact_dup is not None and not any(
+        b["fingerprint"] == cand_fp for b in board if b["name"] == exact_dup)
+    if exact_dup and via_hadamard:
+        g["dedup"]["local_clifford"] = "hadamard"
+        verdict["labels"].append(
+            f"duplicate: identical to board entry {exact_dup} up to a Hadamard "
+            f"on {len(rep.get('css_equivalent', {}).get('hadamard_qubits', []))} "
+            f"qubit(s)")
+    elif exact_dup:
         verdict["labels"].append(f"duplicate: identical to board entry {exact_dup}")
     elif wl_equiv:
         verdict["labels"].append(f"possibly equivalent (same WL signature) to {wl_equiv}")
@@ -161,12 +205,20 @@ def validate_candidate(doc, *, seed=None, refute=True):
     # one whenever n, k and d allowed, which the site's own frontier does not,
     # so a code could be labelled "does not advance its board cell" while
     # starring on the rendered board.
+    #
+    # The code type is a third cell dimension: a stabilizer
+    # code is compared only with stabilizer codes and a CSS code only with
+    # CSS codes, so neither board's entries can dominate the other's.
     n, k, d = doc["n"], doc["k"], claimed_d
     w = comp.get("max_check_weight")
+    code_type = doc.get("code_type", "CSS")
     dominators = []
+    dominated = []                            # (board entry, axes where the candidate is strictly better)
     for b in board:
-        # a board code shares the candidate's cell iff it is stricter-or-equal on both axes
-        if (_WEIGHT_ORDER.get(b["weight_class"], 9) <= _WEIGHT_ORDER.get(wc, 9)
+        # a board code shares the candidate's cell iff it is on the same
+        # board and stricter-or-equal on both axes
+        if (b.get("code_type", "CSS") == code_type
+                and _WEIGHT_ORDER.get(b["weight_class"], 9) <= _WEIGHT_ORDER.get(wc, 9)
                 and _LOCAL_ORDER.get(b["locality_class"], 9) <= _LOCAL_ORDER.get(lc, 9)):
             bw = b.get("w")
             if bw is None:                     # pre-fix cache entry; skip the w axis
@@ -174,6 +226,11 @@ def validate_candidate(doc, *, seed=None, refute=True):
             if (b["n"] <= n and b["k"] >= k and b["d"] >= d and bw <= w
                     and (b["n"] < n or b["k"] > k or b["d"] > d or bw < w)):
                 dominators.append(f"[[{b['n']},{b['k']},{b['d']}]] w={bw} {b['name']}")
+                continue
+            gains = [ax for ax, better in (("n", b["n"] > n), ("k", b["k"] < k),
+                                           ("d", b["d"] < d), ("w", bw > w)) if better]
+            if gains and b["n"] >= n and b["k"] <= k and b["d"] <= d and bw >= w:
+                dominated.append((b, gains, f"[[{b['n']},{b['k']},{b['d']}]] w={bw} {b['name']}"))
     # Novelty against a board that already contains this exact code is not a
     # well-posed question, so say which condition fired rather than reporting a
     # verdict that was never reached. Validating a file already sitting in
@@ -181,16 +238,52 @@ def validate_candidate(doc, *, seed=None, refute=True):
     # board cell", with an empty dominator list) reads as a rejection on
     # merit -- which cost a real submission that was in fact board-advancing.
     board_advancing = None if exact_dup else not dominators
-    g["novelty"] = {"cell": [wc, lc], "board_advancing": board_advancing,
-                    "dominated_by": dominators, "literature_novelty": "unverified"}
+    # Which axes does the candidate beat the board on? A construction fixes n, k
+    # and w, so the only axis left to gain on is d -- and d is a witness-backed
+    # upper bound, so it is the axis most likely to be too high. Two questions,
+    # deliberately kept apart: does the board yield on nothing but d
+    # (d_only_gain, true only when every strict axis is d), and is any single
+    # entry beaten on nothing but d (d_only_peers). The second one drives the
+    # label, because the win over THAT entry is suspect even when the candidate
+    # legitimately gained on another axis over some third entry -- the label is
+    # where the instruction to re-measure lives, so it must not go quiet just
+    # because the candidate is also good somewhere else.
+    advances_by = sorted({ax for _, gains, _ in dominated for ax in gains})
+    d_only_peers = [desc for _, gains, desc in dominated if gains == ["d"]]
+    d_only_gain = bool(board_advancing) and advances_by == ["d"]
+    g["novelty"] = {"cell": [wc, lc], "board": code_type,
+                    "board_advancing": board_advancing,
+                    "dominated_by": dominators, "advances_by": advances_by,
+                    "d_only_gain": d_only_gain,
+                    "d_only_peers": d_only_peers,
+                    "literature_novelty": "unverified"}
+    # the CSS board is the unqualified one, so only a non-CSS candidate
+    # names its board in the label
+    kind = "" if code_type == "CSS" else f" {code_type}"
     if exact_dup:
         verdict["labels"].append(
             "novelty not assessed: this code is already on the board "
             f"as {exact_dup}")
+    elif board_advancing and d_only_peers:
+        peers = ", ".join(d_only_peers)
+        if d_only_gain:
+            verdict["labels"].append(
+                f"advances the {wc} x {lc}{kind} board ONLY on d "
+                f"over {peers}: "
+                "distance is the suspect axis; re-measure the peer and this "
+                "candidate at matched depth "
+                "(research/audits/leader_audit.py pair) before packaging")
+        else:
+            verdict["labels"].append(
+                f"advances the {wc} x {lc}{kind} board on "
+                f"{', '.join(advances_by)}; "
+                f"its gain over {peers} is d-only: distance is the suspect "
+                "axis; re-measure the peer and this candidate at matched depth "
+                "(research/audits/leader_audit.py pair) before packaging")
     else:
         verdict["labels"].append(
-            f"advances the {wc} x {lc} board" if board_advancing
-            else "does not advance its board cell")
+            f"advances the {wc} x {lc}{kind} board" if board_advancing
+            else f"does not advance its{kind} board cell")
     verdict["labels"].append("literature novelty UNVERIFIED")
 
     verdict["passed"] = bool(verify_ok and not refuted and not exact_dup)

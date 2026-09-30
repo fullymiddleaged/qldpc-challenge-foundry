@@ -64,7 +64,10 @@ for trial in range(30):
 else:
     check("rank+kernel parity (30 random matrices)", True)
 
-# 2. compute_k parity on every certified code on the board.
+# 2. k parity on every certified code on the board. A general stabilizer entry
+#    (schema 0.4) carries checks.S rather than H_X / H_Z, and its k is n - rank S,
+#    so parity for it is the fast rank checked against both the Python rank and
+#    the recorded k; compute_k remains the CSS path.
 codes_dir = os.path.join(_HERE, "..", "codes")
 mismatch = []
 for fname in sorted(os.listdir(codes_dir)):
@@ -72,11 +75,21 @@ for fname in sorted(os.listdir(codes_dir)):
         continue
     doc = json.load(open(os.path.join(codes_dir, fname)))
     n = doc["n"]
-    HX = _matrix(doc["checks"]["X"], n)
-    HZ = _matrix(doc["checks"]["Z"], n)
+    checks = doc["checks"]
+    if "S" in checks:
+        gens = checks["S"]
+        A = _matrix([g["X"] for g in gens], n)
+        B = _matrix([g["Z"] for g in gens], n)
+        S = np.concatenate([A, B], axis=1)
+        r_fast = gf2_fast.gf2_rank(S)
+        if r_fast != gf2.rank(S) or n - r_fast != doc["k"]:
+            mismatch.append(fname)
+        continue
+    HX = _matrix(checks["X"], n)
+    HZ = _matrix(checks["Z"], n)
     if gf2_fast.compute_k(HX, HZ) != doc["k"]:
         mismatch.append(fname)
-check("compute_k parity (all board codes)", not mismatch, str(mismatch))
+check("k parity (all board codes)", not mismatch, str(mismatch))
 
 # 3. distance_rand re-finds the known distance of a small certified code.
 doc = json.load(open(os.path.join(codes_dir, "72-6-6.json")))

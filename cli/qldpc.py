@@ -1,4 +1,4 @@
-"""qldpc submit: one command from parity checks to a verified submission.
+r"""qldpc submit: one command from parity checks to a verified submission.
 
 The friction in contributing used to be "read CONTRIBUTING.md, learn the JSON
 schema, hand-write a distance witness, hope CI agrees." This collapses that into
@@ -26,7 +26,7 @@ before anything leaves your machine.
 
 Usage:
   uv run python cli/qldpc.py submit mycode.npz --authors @me
-  uv run python cli/qldpc.py submit mycode.npz --authors @me "Jane Roe" \\
+  uv run python cli/qldpc.py submit mycode.npz --authors @me "Jane Roe" \
       --construction "bivariate bicycle (x^3+y+y^2, ...)" --model "Opus 4.8"
   ./qldpc submit mycode.npz --authors @me        # via the launcher shim
   ./qldpc submit mycode.npz --authors @me --no-circuit   # code tier only
@@ -34,6 +34,10 @@ Usage:
 Input:
   .npz  with H_X and H_Z under keys hx/HX/H_X and hz/HZ/H_Z (dense 0/1 arrays
         or scipy sparse). Optional 'coords' (n x 2) for the 2d-local tracks.
+        A general stabilizer code instead carries its binary symplectic
+        matrix S = (A | B) under key s/S (m x 2n), or its halves under a/A
+        and b/B (m x n each). It is typed code_type "stabilizer": one
+        Pauli-weight distance side P, no circuit tier, its own board.
   .json an existing draft carrying a checks block (re-verify / re-score it).
 """
 
@@ -82,33 +86,64 @@ def _pick(d, names):
 
 
 def load_checks(path):
-    """Return (HX, HZ, coords_or_None). Accepts .npz (matrices) or .json
-    (a draft with a checks block).
+    """Return (HX, HZ, coords_or_None, draft_or_None).
+
+    Accepts .npz (matrices) or .json (a draft with a checks block). For a
+    general stabilizer code the pair is (A, B), the two halves of the
+    symplectic matrix S = (A | B), and the returned draft (a dict with
+    code_type "stabilizer", or None) tells build_submission which it got.
     """
     if path.endswith(".json"):
         try:
-            with open(path) as f:
+            with open(path, encoding="utf-8") as f:
                 doc = json.load(f)
         except json.JSONDecodeError as e:
             raise SystemExit(f"{path}: not valid JSON ({e})")
         n = doc["n"]
-        HX = _matrix_from_supports(doc["checks"]["X"], n)
-        HZ = _matrix_from_supports(doc["checks"]["Z"], n)
         coords = None
         if "locality" in doc:
             coords = np.asarray(doc["locality"]["coordinates"], dtype=float)
+        if doc.get("code_type") == "stabilizer":
+            gens = doc["checks"]["S"]
+            A = _matrix_from_supports([g["X"] for g in gens], n)
+            B = _matrix_from_supports([g["Z"] for g in gens], n)
+            return A, B, coords, doc
+        HX = _matrix_from_supports(doc["checks"]["X"], n)
+        HZ = _matrix_from_supports(doc["checks"]["Z"], n)
         return HX, HZ, coords, doc
     z = np.load(path, allow_pickle=True)
+    coords = _pick(z, ("coords", "coordinates", "xy"))
+    if coords is not None:
+        coords = np.asarray(coords, dtype=float)
+    S = _pick(z, ("s", "S"))
+    A = _pick(z, ("a", "A"))
+    B = _pick(z, ("b", "B"))
+    if S is not None or A is not None or B is not None:
+        if S is not None:
+            S = _as_dense_gf2(S)
+            if S.ndim != 2 or S.shape[1] % 2:
+                raise SystemExit(f"{path}: key s must be an m x 2n matrix "
+                                 f"(A | B); got shape {S.shape}")
+            n = S.shape[1] // 2
+            A, B = S[:, :n], S[:, n:]
+        elif A is None or B is None:
+            raise SystemExit(f"{path}: a stabilizer code needs both a and b "
+                             f"(the X and Z halves of S), or s = (A | B); "
+                             f"found {list(z.keys())}")
+        else:
+            A, B = _as_dense_gf2(A), _as_dense_gf2(B)
+            if A.shape != B.shape:
+                raise SystemExit(f"{path}: a has shape {A.shape} but b has "
+                                 f"shape {B.shape}; both are m x n")
+        return A, B, coords, {"code_type": "stabilizer"}
     HX = _pick(z, ("hx", "HX", "H_X", "Hx"))
     HZ = _pick(z, ("hz", "HZ", "H_Z", "Hz"))
     if HX is None or HZ is None:
         raise SystemExit(
-            f"{path}: need H_X and H_Z arrays (keys hx/HX/H_X and hz/HZ/H_Z); "
+            f"{path}: need H_X and H_Z arrays (keys hx/HX/H_X and hz/HZ/H_Z), "
+            f"or a stabilizer code's s = (A | B) (or a and b); "
             f"found {list(z.keys())}")
     HX, HZ = _as_dense_gf2(HX), _as_dense_gf2(HZ)
-    coords = _pick(z, ("coords", "coordinates", "xy"))
-    if coords is not None:
-        coords = np.asarray(coords, dtype=float)
     return HX, HZ, coords, None
 
 
@@ -126,6 +161,101 @@ def _supports(H):
 # ----------------------------------------------------------------------------
 # building the submission
 # ----------------------------------------------------------------------------
+def build_stabilizer_submission(A, B, args):
+    """Build the submission of a general stabilizer code S = (A | B).
+
+    Isotropy in place of CSS commutation, k = n - rank S, check weight
+    |A_i union B_i|, and one Pauli-weight distance witness (RIS by Pauli
+    weight, tightened by the accelerator on the doubled matrices and
+    re-scored). Writes code_type "stabilizer" at schema 0.4. A code whose
+    every row is pure X or pure Z is refused here with the same instruction
+    the verifier gives: type it CSS.
+    """
+    n = A.shape[1]
+    if B.shape != A.shape:
+        raise SystemExit(f"A has shape {A.shape} but B has shape {B.shape}")
+    if bool(((A @ B.T + B @ A.T) % 2).any()):
+        raise SystemExit("A B^T + B A^T != 0 over GF(2): the generators do not "
+                         "commute (check your matrices / ordering)")
+    if all(not (A[i].any() and B[i].any()) for i in range(A.shape[0])):
+        raise SystemExit("every generator is pure X or pure Z: this is a CSS "
+                         "code; submit it as H_X / H_Z (keys hx, hz) so it is "
+                         "typed CSS and ranked on the CSS board")
+    S = np.concatenate([A, B], axis=1)
+    k = n - gf2.rank(S)
+    if k < 1:
+        raise SystemExit(f"computed k={k}: no logical qubits, nothing to submit")
+    wmax = int(max(((A[i] | B[i]).sum() for i in range(A.shape[0])), default=0))
+
+    print(f"  building stabilizer submission... n={n} k={k} w={wmax}", flush=True)
+    print(f"  searching for a Pauli-weight distance witness ({args.trials} RIS "
+          f"trials)...", flush=True)
+    dP, witP = hd.ris_min_pauli_logical(A, B, trials=args.trials, seed=args.seed)
+    if dP is None:
+        raise SystemExit("RIS found no logical operator; cannot certify a distance")
+    if hd._fast is not None and args.fast_trials > 0:
+        # accelerator on the symplectic doubling; its Hamming weight is an
+        # upper bound on the Pauli weight, so the proposal is mapped back,
+        # validated by gf2, and re-scored before it may tighten the claim
+        print(f"  accelerator pass on the doubled matrices ({args.fast_trials} "
+              f"trials)...", flush=True)
+        HX2, HZ2 = hd.doubled_matrices(A, B)
+        wf, side, sup = hd._fast.distance_rand_witness(
+            HX2, HZ2, args.fast_trials, args.seed, 8, 8)
+        if wf is not None and side in ("X", "Z"):
+            v = np.zeros(2 * n, dtype=np.int8)
+            v[list(sup)] = 1
+            v = hd._pauli_from_doubled(v, side, n)
+            wp = int(hd.pauli_weight_rows(v[None, :], n)[0])
+            if wp < dP and hd.valid_pauli_logical(v, A, B):
+                dP, witP = wp, v
+                print(f"    accelerator tightened d to {wp}", flush=True)
+    print(f"  distance (RIS upper bound, Pauli weight) d<={dP}", flush=True)
+
+    dist = {"d": int(dP),
+            "P": {"value": int(dP), "confidence": "upper_bound",
+                  "witness": hd.pauli_witness(witP, n)}}
+    prov = {"authors": args.authors,
+            "construction": args.construction or "contributed via qldpc submit",
+            "origin": "submission",
+            "date": args.date or datetime.date.today().isoformat()}
+    if args.model:
+        prov["model"] = args.model
+    if args.notes:
+        prov["notes"] = args.notes
+    budget = search_budget_from_args(args)
+    if budget:
+        prov["search_budget"] = budget
+    gens = [{"X": _supports(A[i:i + 1])[0], "Z": _supports(B[i:i + 1])[0]}
+            for i in range(A.shape[0])]
+    doc = {
+        "schema_version": "0.4",         # code_type stabilizer is a 0.4 feature
+        "name": args.name or f"[[{n},{k},{dP}]]",
+        "code_type": "stabilizer",
+        "n": n, "k": int(k),
+        "checks": {"S": gens},
+        "distance": dist,
+        "provenance": prov,
+    }
+    if args.family:
+        doc["family"] = args.family
+    _attach_layout(doc, args, n)
+    return doc
+
+
+def _attach_layout(doc, args, n):
+    if args._coords is not None:
+        if len(args._coords) != n:
+            raise SystemExit(f"coords has {len(args._coords)} rows, need n={n}")
+        coords = [[float(v) for v in row] for row in args._coords]
+        if any(len(row) not in (2, 3) for row in coords):
+            raise SystemExit("coords rows must be [x, y] or [x, y, z]")
+        doc["locality"] = {
+            "coordinates": coords,
+            "layers": int(args.layers),
+        }
+
+
 def build_submission(HX, HZ, args):
     n = HX.shape[1]
     if HZ.shape[1] != n:
@@ -207,16 +337,7 @@ def build_submission(HX, HZ, args):
     # field; provide a layout below and the locality class is derived.
     if args.family:
         doc["family"] = args.family
-    if args._coords is not None:
-        if len(args._coords) != n:
-            raise SystemExit(f"coords has {len(args._coords)} rows, need n={n}")
-        coords = [[float(v) for v in row] for row in args._coords]
-        if any(len(row) not in (2, 3) for row in coords):
-            raise SystemExit("coords rows must be [x, y] or [x, y, z]")
-        doc["locality"] = {
-            "coordinates": coords,
-            "layers": int(args.layers),
-        }
+    _attach_layout(doc, args, n)
     return doc
 
 
@@ -263,7 +384,7 @@ def search_budget_from_args(args):
             if raw.lstrip().startswith("{"):
                 loaded = json.loads(raw)
             else:
-                with open(raw) as f:
+                with open(raw, encoding="utf-8") as f:
                     loaded = json.load(f)
         except (OSError, json.JSONDecodeError) as e:
             raise SystemExit(f"--budget-json: cannot read {raw!r} ({e})")
@@ -342,8 +463,9 @@ def pr_body(doc, report, args, out, note_out=None):
     wmax = comp.get("max_check_weight")
     track = " / ".join(x for x in (comp.get("locality_class"),
                                    comp.get("weight_class")) if x)
+    stab = doc.get("code_type") == "stabilizer"
     conf = {side: doc["distance"][side]["confidence"]
-            for side in ("X", "Z") if side in doc["distance"]}
+            for side in (("P",) if stab else ("X", "Z")) if side in doc["distance"]}
     conf_line = ", ".join(f"{s}: {c}" for s, c in conf.items())
     rel_out = _repo_path(out)
 
@@ -354,8 +476,11 @@ def pr_body(doc, report, args, out, note_out=None):
         "## Code submission",
         "",
         f"- Parameters: [[n, k, d]] = [[{n},{k},{d}]]",
-        f"- Tracks: {track} (computed by the verifier from H and the layout)",
-        f"- Distance confidence: {conf_line}",
+        f"- Tracks: {track} (computed by the verifier from H and the layout)"
+        + ("; general stabilizer code, ranked on the stabilizer board"
+           if stab else ""),
+        f"- Distance confidence: {conf_line}"
+        + (" (Pauli weight, one side)" if stab else ""),
     ]
     circ = doc.get("circuit")
     if circ:
@@ -419,7 +544,7 @@ def pr_body(doc, report, args, out, note_out=None):
 def write_pr_body(slug, body):
     """Stage the body where --open-pr and the manual path can both use it."""
     fd, path = tempfile.mkstemp(prefix=f"qldpc-pr-{slug}-", suffix=".md")
-    with os.fdopen(fd, "w") as f:
+    with os.fdopen(fd, "w", encoding="utf-8") as f:
         f.write(body + "\n")
     return path
 
@@ -453,6 +578,7 @@ def _entry_for(doc, report):
     return {
         "slug": f"{n}-{k}-{d}",
         "n": n, "k": k, "d": d,
+        "code_type": doc.get("code_type", "CSS"),
         "eff": round(k * d * d / n, 3),
         "w": comp.get("max_check_weight"),
         "locality_class": comp.get("locality_class", "unrestricted"),
@@ -474,7 +600,10 @@ def frontier_summary(doc, report):
     lines = []
     for cell in cells(cand):
         L, W = cell
-        idxs = [i for i, e in enumerate(entries) if cell in cells(e)]
+        # peers share the cell and the board: CSS and stabilizer codes
+        # rank separately
+        idxs = [i for i, e in enumerate(entries) if cell in cells(e)
+                and e.get("code_type", "CSS") == cand["code_type"]]
         peers = [entries[i] for i in idxs]
         # pareto() returns the set of indices on the frontier; the candidate is
         # appended last, so its index is len(peers).
@@ -554,7 +683,8 @@ def dry_run_summary(doc, report, out):
     entry = _entry_for(doc, report)
     dist = doc["distance"]
     per_side = []
-    for side in ("X", "Z"):
+    stab = doc.get("code_type") == "stabilizer"
+    for side in (("P",) if stab else ("X", "Z")):
         s = dist.get(side, {})
         witness = "witness found" if s.get("witness") else "no witness"
         per_side.append(f"{side}: <= {s.get('value')} ({s.get('confidence')}, {witness})")
@@ -563,7 +693,8 @@ def dry_run_summary(doc, report, out):
         for L, W in cells(entry)
     )
     lines = [
-        f"  code         [[{doc['n']},{doc['k']},{dist['d']}]]",
+        f"  code         [[{doc['n']},{doc['k']},{dist['d']}]]"
+        + ("  (general stabilizer code, stabilizer board)" if stab else ""),
         f"  score        kd^2/n = {entry['eff']}",
         f"  checks       max weight {entry['w']} ({comp.get('weight_class', '?')})",
         f"  locality     {comp.get('locality_class', 'unrestricted')}",
@@ -597,8 +728,13 @@ def dry_run_summary(doc, report, out):
 # the circuit tier (RFC 0001, issue #505; default since issue #1848)
 # ----------------------------------------------------------------------------
 def schema_version_for(doc):
-    """The oldest schema version that describes the document: 0.3 with a
-    search budget, 0.2 with a circuit block, else 0.1."""
+    """Return the oldest schema version that describes the document.
+
+    0.4 for a stabilizer code, 0.3 with a search budget, 0.2 with a circuit
+    block, else 0.1.
+    """
+    if doc.get("code_type") == "stabilizer":
+        return "0.4"
     if (doc.get("provenance") or {}).get("search_budget"):
         return "0.3"
     if doc.get("circuit"):
@@ -645,7 +781,8 @@ def attach_circuit_tier(doc, args):
     trial["schema_version"] = schema_version_for(trial)
     with tempfile.TemporaryDirectory(prefix="qldpc-circuits-") as tmp:
         for name, text in files.items():
-            with open(os.path.join(tmp, name), "w") as f:
+            with open(os.path.join(tmp, name), "w", encoding="utf-8",
+                      newline="\n") as f:
                 f.write(text)
         report = verify_circuit(trial, tmp)
     problems = [f"{c['check']}: {c['detail']}" for c in report["checks"]
@@ -681,9 +818,22 @@ def cmd_submit(args):
         coords = np.asarray(coords, dtype=float)
     args._coords = coords
 
-    doc = build_submission(HX, HZ, args)
-
-    print("  verifying (CSS / k / weight / witnesses / locality)...", flush=True)
+    stabilizer = (_draft or {}).get("code_type") == "stabilizer"
+    if stabilizer:
+        if args.circuits:
+            raise SystemExit("--circuits: the circuit tier is not available "
+                             "for stabilizer codes; drop the flag")
+        if not args.no_circuit:
+            print("  circuit tier: not available for stabilizer codes (the "
+                  "memory experiments are per basis); submitting the code "
+                  "tier only", flush=True)
+            args.no_circuit = True
+        doc = build_stabilizer_submission(HX, HZ, args)
+        print("  verifying (isotropy / k / weight / Pauli witness / locality)...",
+              flush=True)
+    else:
+        doc = build_submission(HX, HZ, args)
+        print("  verifying (CSS / k / weight / witnesses / locality)...", flush=True)
     report = verify(doc, refute=True)
     for c in report["checks"]:
         if not c["ok"]:
@@ -716,14 +866,15 @@ def cmd_submit(args):
             print(dry_run_summary(doc, report, out))
         return 0
     os.makedirs(args.out, exist_ok=True)
-    with open(out, "w") as f:
+    with open(out, "w", encoding="utf-8", newline="\n") as f:
         json.dump(doc, f, indent=1)
         f.write("\n")
     print(f"  wrote {out}")
     if circuit_files:
         os.makedirs(circuits_dir, exist_ok=True)
         for name, text in circuit_files.items():
-            with open(os.path.join(circuits_dir, name), "w") as f:
+            with open(os.path.join(circuits_dir, name), "w",
+                      encoding="utf-8", newline="\n") as f:
                 f.write(text)
         print(f"  wrote {circuits_dir}/memory_{{x,z}}.{{stim,dem}}")
     else:
@@ -735,14 +886,14 @@ def cmd_submit(args):
     # research log. See notes/README.md and notes/TEMPLATE.md.
     note_out = None
     if args.note_file:
-        with open(args.note_file) as f:
+        with open(args.note_file, encoding="utf-8") as f:
             note_md = f.read()
         if len(note_md.encode()) > 10 * 1024:
             print(f"\n{args.note_file} exceeds the 10 KiB note cap; trim it.")
             return 1
         note_out = os.path.join(_ROOT, "notes", f"{slug}.md")
         os.makedirs(os.path.dirname(note_out), exist_ok=True)
-        with open(note_out, "w") as f:
+        with open(note_out, "w", encoding="utf-8", newline="\n") as f:
             f.write(note_md)
         print(f"  wrote {note_out}")
     else:
@@ -887,13 +1038,54 @@ def cmd_targets(args):
     return 0
 
 
+def _plural(n, word):
+    return f"{n} {word}" + ("" if n == 1 else "s")
+
+
+def _fieldnote_meta(path):
+    """Read a fieldnote's title and topics.
+
+    Taken from its YAML frontmatter, falling back to the first heading and no
+    topics. Only the frontmatter is read.
+    """
+    title, topics = "", []
+    try:
+        with open(path, encoding="utf-8") as f:
+            if f.readline().strip() != "---":
+                f.seek(0)
+                for line in f:
+                    if line.startswith("#"):
+                        return line.lstrip("#").strip(), []
+                return "", []
+            for line in f:
+                head = line.rstrip("\n")
+                if head.strip() == "---":
+                    break
+                if head.startswith("title:"):
+                    title = head[6:].strip().strip('"')
+                elif head.startswith("topics:"):
+                    topics = [t.strip().strip('"')
+                              for t in head[7:].strip().strip("[]").split(",")
+                              if t.strip()]
+    except OSError:
+        pass
+    return title, topics
+
+
 def cmd_recent(args):
     """What moved on the board recently: codes merged, research notes, and
     fieldnotes, from git history. The 'stay current' step — read this (and
     the linked notes) before spending compute, so a new search starts from
     the community's frontier of knowledge, not just the frontier of scores.
+
+    Bounded by default: a count line plus the newest --limit rows per section,
+    because a busy fortnight is hundreds of codes and printing all of them
+    buries the reader (and fills an agent's context). --full prints every row;
+    --family / --topic narrow both sections to what a given search cares
+    about.
     """
     since = f"--since={args.days} days ago"
+    want = [t.lower() for t in (args.family, args.topic) if t]
 
     def added(path):
         r = subprocess.run(
@@ -910,31 +1102,410 @@ def cmd_recent(args):
                 out.append((date, line.strip()))
         return out
 
-    codes = added("codes/")
-    notes = {os.path.basename(f)[:-3] for _, f in added("notes/")
-             if f.endswith(".md")}
-    fnotes = [f for _, f in added("fieldnotes/")
-              if f.endswith(".md") and not f.endswith("README.md")]
+    def code_row(date, f):
+        """Build one code row, reading its JSON for the family tag.
 
-    print(f"board activity, last {args.days} days:")
-    if not codes:
-        print("  no new codes")
-    for date, f in codes:
+        Called only for rows that are printed or filtered on, never for the
+        whole history.
+        """
         slug = os.path.splitext(os.path.basename(f))[0]
-        has_note = (slug in notes
-                    or os.path.exists(os.path.join(_ROOT, "notes",
-                                                   slug + ".md")))
-        tag = "note: notes/%s.md" % slug if has_note else "no research note"
-        print(f"  {date}  [[{slug.replace('-', ',')}]]  ({tag})")
-    if fnotes:
+        fam, name = "", ""
+        try:
+            with open(os.path.join(_ROOT, f), encoding="utf-8") as fh:
+                doc = json.load(fh)
+            fam, name = doc.get("family") or "", doc.get("name") or ""
+        except (OSError, ValueError):
+            pass
+        has_note = os.path.exists(os.path.join(_ROOT, "notes", slug + ".md"))
+        return {"date": date, "slug": slug, "family": fam, "name": name,
+                "note": has_note,
+                "hay": f"{slug} {fam} {name}".lower()}
+
+    codes = [code_row(d, f) for d, f in added("codes/")
+             if f.endswith(".json")]
+    fnotes = []
+    for d, f in added("fieldnotes/"):
+        if not f.endswith(".md") or f.endswith("README.md"):
+            continue
+        title, topics = _fieldnote_meta(os.path.join(_ROOT, f))
+        fnotes.append({"date": d, "path": f, "title": title, "topics": topics,
+                       "hay": f"{f} {title} {' '.join(topics)}".lower()})
+
+    n_codes, n_fnotes = len(codes), len(fnotes)
+    if want:
+        codes = [c for c in codes if any(w in c["hay"] for w in want)]
+        fnotes = [f for f in fnotes if any(w in f["hay"] for w in want)]
+    n_note = sum(1 for c in codes if c["note"])
+
+    lim = None if args.full else max(1, args.limit)
+    filt = f" matching {' + '.join(want)}" if want else ""
+    print(f"board activity, last {args.days} days{filt}: "
+          f"{_plural(len(codes), 'code')} ({n_note} with a research note), "
+          f"{_plural(len(fnotes), 'fieldnote')}")
+    if want:
+        print(f"  (of {_plural(n_codes, 'code')} and "
+              f"{_plural(n_fnotes, 'fieldnote')} in the window)")
+
+    shown = codes if lim is None else codes[:lim]
+    if shown:
+        print("codes:")
+    for c in shown:
+        tag = f"notes/{c['slug']}.md" if c["note"] else "no research note"
+        fam = f"  {c['family']}" if c["family"] else ""
+        print(f"  {c['date']}  [[{c['slug'].replace('-', ',')}]]{fam}  ({tag})")
+    if lim is not None and len(codes) > lim:
+        print(f"  ... {len(codes) - lim} more (--limit N, --full)")
+
+    shown = fnotes if lim is None else fnotes[:lim]
+    if shown:
         print("fieldnotes (negative results / calibration):")
-        for f in fnotes:
-            print(f"  {f}")
+    for f in shown:
+        print(f"  {f['date']}  {f['path']}")
+        if f["title"]:
+            topics = f"  [{', '.join(f['topics'])}]" if f["topics"] else ""
+            print(f"      {f['title']}{topics}")
+    if lim is not None and len(fnotes) > lim:
+        print(f"  ... {len(fnotes) - lim} more (--limit N, --full)")
+
     print("full log: docs research-log page, or ls notes/ fieldnotes/")
     return 0
 
 
+
+# ---------------------------------------------------------------------------
+# reproduce: one command that re-runs an entry's evidence chain (issue #2220)
+# ---------------------------------------------------------------------------
+# Orchestration only. Every stage below calls the trusted module that already
+# owns it -- validate_candidate, circuit_verify, ler_verify, certify -- so
+# there is no second implementation of any check here, and verify/ is imported
+# read-only. The receipt this produces is NON-AUTHORITATIVE: running it never
+# changes whether an entry passes, what tier it holds, or where it ranks.
+
+REPRO_STAGES = ("verify", "circuits", "ler", "certify", "construction")
+
+# What a stage can come back as. Kept apart on purpose: "the claim re-derived
+# bit for bit" and "a Monte Carlo re-measurement landed inside the declared
+# interval" are different evidence, and collapsing them would overstate the
+# weaker one.
+ST_SKIPPED = "skipped"                      # flag not requested
+ST_NOT_APPLICABLE = "not_applicable"        # the entry makes no such claim
+ST_NOT_REPRODUCIBLE = "not_reproducible"    # the claim exists, nothing can re-derive it
+ST_BUDGET = "budget_exceeded"               # hit its declared bound
+ST_VERIFIED = "verified"                    # trusted gate passed at the declared seed
+ST_RECONSTRUCTED = "reconstructed"          # code object rebuilt and fingerprint matched
+ST_CERTIFIED = "certified"                  # certify.py re-run and agreed with certs/
+ST_BENCH = "benchmark_reproduced"           # circuits bit-exact / ler within its interval
+ST_FAILED = "failed"                        # ran, and disagreed
+
+
+def _repro_root():
+    return _ROOT
+
+
+def _sha256_file(path):
+    import hashlib
+    h = hashlib.sha256()
+    with open(path, "rb") as f:
+        for chunk in iter(lambda: f.read(65536), b""):
+            h.update(chunk)
+    return h.hexdigest()
+
+
+def _repro_manifest(slug):
+    """Read the committed manifest for an entry, or None.
+
+    A manifest is optional because everything except the construction status is
+    derivable from the entry itself. It exists to declare the one thing the
+    entry cannot: whether the search that found the code was committed.
+    """
+    path = os.path.join(_repro_root(), "repro", f"{slug}.json")
+    if not os.path.exists(path):
+        return None
+    with open(path, encoding="utf-8") as f:
+        return json.load(f)
+
+
+def _stage_decl(manifest, stage):
+    return ((manifest or {}).get("stages") or {}).get(stage) or {}
+
+
+def _repro_environment():
+    """Record what this reproduction is actually running under."""
+    env = {"python": sys.version.split()[0]}
+    try:
+        import stim
+        env["stim"] = stim.__version__
+    except Exception:
+        env["stim"] = None
+    lock = os.path.join(_repro_root(), "uv.lock")
+    env["uv_lock_sha256"] = _sha256_file(lock) if os.path.exists(lock) else None
+    try:
+        import validate_candidate as _vc
+        env["validator_source_sha256"] = _vc.source_sha256()
+    except Exception:
+        env["validator_source_sha256"] = None
+    env["commit"] = _git_head()
+    return env
+
+
+def _git_head():
+    try:
+        out = subprocess.run(["git", "rev-parse", "HEAD"], cwd=_repro_root(),
+                             capture_output=True, text=True, check=False)
+        return out.stdout.strip() or None
+    except OSError:
+        return None
+
+
+def _repro_verify(doc, decl, seed):
+    """Stage 1: the trusted gate, at the declared seed."""
+    import validate_candidate as vc
+    verdict = vc.validate_candidate(doc, seed=seed, refute=False)
+    gates = verdict.get("gates", {})
+    cand = verdict.get("candidate", {})
+    ok = bool(gates.get("verify", {}).get("ok"))
+    return {
+        "status": ST_VERIFIED if ok else ST_FAILED,
+        "seed": verdict.get("validator", {}).get("seed", seed),
+        "computed": {"n": cand.get("n"), "k": cand.get("k"), "d": cand.get("d"),
+                     "fingerprint": cand.get("fingerprint"),
+                     "signature": cand.get("signature")},
+        "detail": "structural checks and both witnesses re-checked"
+        if ok else "; ".join(c["detail"] for c in
+                             gates.get("verify", {}).get("checks", [])
+                             if not c.get("ok"))[:400],
+    }
+
+
+def _repro_circuits(doc, slug, decl):
+    """Stage 2: re-derive the .dem from the committed .stim, bit for bit."""
+    if not doc.get("circuit"):
+        return {"status": ST_NOT_APPLICABLE, "detail": "no circuit block"}
+    from circuit_verify import verify_circuit
+    cdir = os.path.join(_repro_root(), "circuits", slug)
+    if not os.path.isdir(cdir):
+        return {"status": ST_NOT_REPRODUCIBLE,
+                "detail": f"circuits/{slug}/ is not in the tree"}
+    rep = verify_circuit(doc, cdir)
+    bad = [c["detail"] for c in rep.get("checks", []) if not c.get("ok")]
+    return {
+        "status": ST_BENCH if rep.get("ok") else ST_FAILED,
+        "determinism": "bit_exact_under_pin",
+        "stim_version": (doc.get("circuit") or {}).get("stim_version"),
+        "detail": "detector error model re-derived from the committed .stim"
+        if rep.get("ok") else "; ".join(bad)[:400],
+    }
+
+
+def _repro_ler(doc, slug, decl):
+    """Stage 3: the LER arithmetic exactly, then a seeded re-measurement.
+
+    ``verify_ler`` owns both halves. Agreement here is agreement inside the
+    entry's own ci95, which is what a Monte Carlo claim can offer and is
+    reported as such rather than as a match.
+    """
+    circ = doc.get("circuit") or {}
+    if not circ.get("ler"):
+        return {"status": ST_NOT_APPLICABLE, "detail": "no circuit.ler block"}
+    from ler_verify import verify_ler
+    cdir = os.path.join(_repro_root(), "circuits", slug)
+    if not os.path.isdir(cdir):
+        return {"status": ST_NOT_REPRODUCIBLE,
+                "detail": f"circuits/{slug}/ is not in the tree"}
+    rep = verify_ler(doc, cdir)
+    bad = [c["detail"] for c in rep.get("checks", []) if not c.get("ok")]
+    if any("ldpc is not installed" in b for b in bad):
+        return {"status": ST_NOT_REPRODUCIBLE,
+                "detail": "the decoder is missing; install the research extra"}
+    return {
+        "status": ST_BENCH if rep.get("ok") else ST_FAILED,
+        "determinism": "arithmetic_exact_remeasurement_within_ci95",
+        "detail": "ler_per_round and ci95 recomputed, and re-measured on an "
+                  "independent seed inside the declared interval"
+        if rep.get("ok") else "; ".join(bad)[:400],
+    }
+
+
+def _repro_certify(doc, slug, decl):
+    """Stage 4: re-run the bounded exact certifier and compare to certs/."""
+    cert_path = os.path.join(_repro_root(), "certs", f"{slug}.json")
+    if not os.path.exists(cert_path):
+        return {"status": ST_NOT_APPLICABLE, "detail": "no committed cert"}
+    with open(cert_path, encoding="utf-8") as f:
+        committed = json.load(f)
+    tlim = decl.get("tlim_seconds", 600)
+    try:
+        from certify import certify
+    except ImportError as e:
+        return {"status": ST_NOT_REPRODUCIBLE,
+                "detail": f"the certifier is unavailable: {e}"}
+    got = certify(doc, tlim=tlim)
+    if not got.get("d_exact") and committed.get("d_exact"):
+        return {"status": ST_BUDGET,
+                "detail": f"the solver did not close both sides within "
+                          f"{tlim}s; the committed cert claims exact"}
+    same = (got.get("d_exact") == committed.get("d_exact")
+            and all(got.get("sides", {}).get(s, {}).get("value")
+                    == committed.get("sides", {}).get(s, {}).get("value")
+                    for s in ("X", "Z")))
+    return {
+        "status": ST_CERTIFIED if same else ST_FAILED,
+        "tlim_seconds": tlim,
+        "solver": got.get("solver"),
+        "detail": "re-certified and agreed with certs/" + slug + ".json"
+        if same else f"disagrees with the committed cert: {got.get('sides')}",
+    }
+
+
+def _repro_construction(doc, slug, decl):
+    """Stage 5: re-derive H_X and H_Z from a committed recipe, if there is one.
+
+    The code object always reconstructs, because the matrices are in the entry.
+    What usually does not is the SEARCH that found it. An entry with no
+    committed recipe says not_reproducible and says why, which is a first-class
+    answer rather than a gap.
+    """
+    status = decl.get("status")
+    if status in (None, "not_reproducible"):
+        return {"status": ST_NOT_REPRODUCIBLE,
+                "detail": decl.get("reason")
+                or "no constructor recipe is declared for this entry"}
+    if status == "not_applicable":
+        return {"status": ST_NOT_APPLICABLE, "detail": decl.get("reason", "")}
+    script = decl.get("script")
+    if not script:
+        return {"status": ST_NOT_REPRODUCIBLE,
+                "detail": "the manifest declares the stage applicable but "
+                          "names no script"}
+    path = os.path.join(_repro_root(), script)
+    if not os.path.exists(path):
+        return {"status": ST_NOT_REPRODUCIBLE,
+                "detail": f"{script} is not in this tree"}
+    cmd = [sys.executable, path] + [str(a) for a in decl.get("args", [])]
+    budget = decl.get("budget_seconds", 900)
+    try:
+        run = subprocess.run(cmd, cwd=_repro_root(), capture_output=True,
+                             text=True, timeout=budget, check=False)
+    except subprocess.TimeoutExpired:
+        return {"status": ST_BUDGET,
+                "detail": f"{script} exceeded {budget}s"}
+    if run.returncode != 0:
+        return {"status": ST_FAILED,
+                "detail": f"{script} exited {run.returncode}: "
+                          f"{run.stderr.strip()[:300]}"}
+    # The recipe is matched by the fingerprint the verifier computes, not by
+    # the bytes of a rebuilt file: two runs may order rows differently and
+    # still be the same stabilizer code.
+    from qldpc_verify import verify as _verify
+    want = (_verify(doc) or {}).get("fingerprint")
+    got = None
+    for line in (run.stdout or "").splitlines():
+        if line.strip().startswith("fingerprint="):
+            got = line.strip().split("=", 1)[1].strip()
+    if got is None:
+        return {"status": ST_FAILED,
+                "detail": f"{script} printed no 'fingerprint=' line to compare"}
+    return {
+        "status": ST_RECONSTRUCTED if got == want else ST_FAILED,
+        "script": script,
+        "detail": "the recipe rebuilt this entry's stabilizer code"
+        if got == want else f"rebuilt a different code ({got} != {want})",
+    }
+
+
+def cmd_reproduce(args):
+    """Re-run one board entry's evidence chain and write a receipt.
+
+    The cheap deterministic core (the trusted gate) runs by default; every
+    expensive stage is opt-in behind its own flag, because an exact
+    certification or an LER re-measurement is minutes to hours and CI is not
+    where they belong.
+    """
+    slug = args.slug[:-5] if args.slug.endswith(".json") else args.slug
+    slug = os.path.basename(slug)
+    path = os.path.join(_repro_root(), "codes", f"{slug}.json")
+    if not os.path.exists(path):
+        print(f"no such board entry: codes/{slug}.json", file=sys.stderr)
+        return 2
+    with open(path, encoding="utf-8") as f:
+        doc = json.load(f)
+    manifest = _repro_manifest(slug)
+    digest = _sha256_file(path)
+
+    want = {s: getattr(args, s) for s in REPRO_STAGES}
+    if args.all:
+        want = {s: True for s in REPRO_STAGES}
+    want["verify"] = True                     # the core is never skipped
+
+    print(f"reproduce {slug}  sha256={digest[:16]}...")
+    if manifest:
+        print(f"  manifest: repro/{slug}.json (version "
+              f"{manifest.get('manifest_version')})")
+        declared = manifest.get("artifact_sha256")
+        if declared and declared != digest:
+            print("  note: the entry has changed since the manifest was "
+                  "written; both digests are in the receipt")
+    else:
+        print("  manifest: none committed; stages derived from the entry")
+
+    runners = {
+        "verify": lambda d: _repro_verify(doc, d, args.seed),
+        "circuits": lambda d: _repro_circuits(doc, slug, d),
+        "ler": lambda d: _repro_ler(doc, slug, d),
+        "certify": lambda d: _repro_certify(doc, slug, d),
+        "construction": lambda d: _repro_construction(doc, slug, d),
+    }
+    stages = {}
+    for name in REPRO_STAGES:
+        decl = _stage_decl(manifest, name)
+        if not want[name]:
+            stages[name] = {"status": ST_SKIPPED,
+                            "detail": f"--{name} not requested"}
+        elif decl.get("status") == "not_applicable":
+            stages[name] = {"status": ST_NOT_APPLICABLE,
+                            "detail": decl.get("reason", "declared not applicable")}
+        else:
+            stages[name] = runners[name](decl)
+        st = stages[name]
+        print(f"  {name:<13} {st['status']:<22} {st.get('detail', '')[:90]}")
+
+    failed = [n for n, s in stages.items() if s["status"] == ST_FAILED]
+    overall = "disagreed" if failed else "reproduced"
+    receipt = {
+        "receipt_version": "1",
+        "receipt_kind": "reproduction",
+        "artifact": {"slug": slug, "path": f"codes/{slug}.json",
+                     "sha256": digest,
+                     "manifest_sha256": (
+                         _sha256_file(os.path.join(_repro_root(), "repro",
+                                                   f"{slug}.json"))
+                         if manifest else None),
+                     "manifest_artifact_sha256": (manifest or {}).get(
+                         "artifact_sha256")},
+        "environment": _repro_environment(),
+        "stages": stages,
+        "overall": overall,
+        "authority": "non-authoritative: this receipt records a reproduction "
+                     "attempt and never changes an entry's verdict, tier, or "
+                     "ranking",
+    }
+    if args.out:
+        with open(args.out, "w", encoding="utf-8", newline="\n") as f:
+            json.dump(receipt, f, indent=2, sort_keys=True)
+            f.write("\n")
+        print(f"  receipt -> {args.out}")
+    print(f"  overall: {overall}")
+    return 1 if failed else 0
+
+
 def main(argv=None):
+    # Windows consoles default to a legacy code page, and the summaries print
+    # "≤" (d <= 12, weight ≤ 6). Without this the run dies in the final print,
+    # after the search and the verification have already succeeded.
+    for stream in (sys.stdout, sys.stderr):
+        if hasattr(stream, "reconfigure") and (stream.encoding or "").lower().replace("-", "") != "utf8":
+            stream.reconfigure(encoding="utf-8", errors="replace")
+
     p = argparse.ArgumentParser(
         prog="qldpc", description="qLDPC challenge submission tool")
     sub = p.add_subparsers(dest="cmd", required=True)
@@ -1053,7 +1624,44 @@ def main(argv=None):
                                       "notes, fieldnotes (read before you "
                                       "search)")
     r.add_argument("--days", type=int, default=14)
+    r.add_argument("--limit", type=int, default=10,
+                   help="rows per section (default 10); --full for all")
+    r.add_argument("--full", action="store_true",
+                   help="print every row instead of the newest --limit")
+    r.add_argument("--family", default="",
+                   help="only rows mentioning this family tag, e.g. "
+                        "bivariate-bicycle")
+    r.add_argument("--topic", default="",
+                   help="only rows mentioning this topic, matched against "
+                        "fieldnote topics and titles and against code names")
     r.set_defaults(func=cmd_recent)
+
+    rp = sub.add_parser("reproduce",
+                        help="re-run one entry's evidence chain and write a "
+                             "reproduction receipt")
+    rp.add_argument("slug", help="board entry, e.g. 25-1-5")
+    rp.add_argument("--verify", action="store_true",
+                    help="the trusted gate (always runs; the flag is for "
+                         "symmetry with the others)")
+    rp.add_argument("--circuits", action="store_true",
+                    help="re-derive the detector error model from the "
+                         "committed .stim under the pinned version")
+    rp.add_argument("--ler", action="store_true",
+                    help="recheck the ler arithmetic and re-measure on an "
+                         "independent seed (needs the research extra)")
+    rp.add_argument("--certify", action="store_true",
+                    help="re-run the bounded exact certifier and compare it "
+                         "with certs/<slug>.json")
+    rp.add_argument("--construction", action="store_true",
+                    help="re-derive the code from its committed recipe, when "
+                         "the manifest declares one")
+    rp.add_argument("--all", action="store_true",
+                    help="every applicable stage; expensive")
+    rp.add_argument("--seed", type=int, default=None,
+                    help="seed for the trusted gate")
+    rp.add_argument("--out", default="",
+                    help="write the reproduction receipt to this path")
+    rp.set_defaults(func=cmd_reproduce)
 
     g = sub.add_parser("targets", help="which track cells are open: occupancy "
                                        "and frontier per cell (read before you "

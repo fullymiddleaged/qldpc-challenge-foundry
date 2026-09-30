@@ -1,0 +1,52 @@
+{
+  "campaign": {
+    "schema_version": 1,
+    "id": "w8-2dlocal-n700-1000",
+    "name": "Weight-8 2D-local codes, n=700-1000",
+    "status": "draft",
+    "objective": { "metric": "kd2_over_n", "direction": "maximize" },
+    "constraints": {
+      "locality": "local-2d-bilayer",
+      "max_check_weight": 8,
+      "n": [700, 1000],
+      "min_distance": 8
+    },
+    "methods": {
+      "families": ["lifted-product", "bivariate-bicycle"],
+      "generators": [
+        "research/local2d/boundary_engine.py::build_planar",
+        "research/local2d/planar.py::grid_coordinates"
+      ],
+      "screening": {
+        "seeds": [101, 211, 307],
+        "ladder": [[20000, 22], [100000, 20]]
+      },
+      "escalation_gate": true
+    },
+    "run_contract": {
+      "template": "python research/local2d/boundary_engine.py --lx {lx} --ly {ly} --weight {weight} --trials {trials} --screen {screen} --seed {seed} --threads {threads}",
+      "parameters": {
+        "lx": 20,
+        "ly": 22,
+        "weight": 8,
+        "trials": 100000,
+        "screen": 20000,
+        "seed": [101, 211, 307],
+        "threads": 8
+      }
+    },
+    "budget": { "cpu_hours": 500, "gpu_hours": 100, "walltime_hours": 72 },
+    "stopping": [
+      { "type": "budget_exhausted" },
+      { "type": "no_progress", "experiments": 8 }
+    ],
+    "required_outputs": [
+      "experiment_ledger",
+      "surviving_candidates",
+      "research_note",
+      "negative_results",
+      "campaign_summary"
+    ],
+    "notes": "Above n=700 the board only admits check weight <= 8 with d <= 40, which is why the weight cap and the blocklength window are what they are: outside that box a find cannot be submitted at all. The locality constraint is reachable only through a generator that emits per-qubit coordinates, which is why the generators are the boundary engine and its layout helper rather than a torus sampler: the verifier reads the locality class off the layout, and a code submitted without one lands in the unrestricted cell. n = 2*Lx*Ly before cleanup, so the window needs Lx*Ly in [350, 500]. Weight 8 needs boundary_engine rather than planar.build_open_directional, which covers weight-6 families only. There is deliberately no frontier_advance stop: this is a sweep of a cell, and one advance is a reason to keep going, not to stop."
+  }
+}

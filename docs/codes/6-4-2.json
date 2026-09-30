@@ -1,0 +1,59 @@
+{
+ "schema_version": "0.1",
+ "name": "[[6,4,2]]",
+ "code_type": "CSS",
+ "n": 6,
+ "k": 4,
+ "checks": {
+  "X": [
+   [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+   ]
+  ],
+  "Z": [
+   [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+   ]
+  ]
+ },
+ "distance": {
+  "d": 2,
+  "X": {
+   "value": 2,
+   "confidence": "upper_bound",
+   "witness": [
+    0,
+    1
+   ]
+  },
+  "Z": {
+   "value": 2,
+   "confidence": "upper_bound",
+   "witness": [
+    0,
+    1
+   ]
+  }
+ },
+ "provenance": {
+  "authors": [
+   "@MathysRennela"
+  ],
+  "construction": "error-detecting CSS code (H_X = H_Z = the all-ones row on 6 qubits; reproduced from the Error Correction Zoo entry stab_6_4_2, https://errorcorrectionzoo.org/c/stab_6_4_2)",
+  "origin": "submission",
+  "date": "2026-09-27",
+  "model": "Mimo-V2.6-Flash",
+  "notes": "Reproduced from the Error Correction Zoo entry stab_6_4_2 (https://errorcorrectionzoo.org/c/stab_6_4_2); gate found no exact or WL-equivalent board entry."
+ },
+ "family": "other"
+}

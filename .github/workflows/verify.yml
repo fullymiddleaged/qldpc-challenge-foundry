@@ -7,11 +7,19 @@ on:
   pull_request:
     paths:
       - ".github/workflows/**"
+      # run_tests.py collects cli/test_*.py too, so a cli-only PR must trigger
+      # the suite: without this entry the tests below never run for it and the
+      # PR merges with only ruff and prose on its rollup (PR #2321).
+      - "cli/**"
       - "codes/**"
       - "verify/**"
       - "decode/**"
       - "schema/**"
       - "research/**"
+      # run_tests.py collects site/test_*.py too (and site/build.py renders every
+      # verdict on the board), so a site/-only PR has to trigger the suite rather
+      # than merge on ruff and prose alone.
+      - "site/**"
       - "Makefile"
       - "run_tests.py"
       - "pyproject.toml"
@@ -145,11 +153,11 @@ jobs:
       - name: distance refutation gate (trusted verifier for code changes)
         if: github.event_name == 'pull_request' && steps.changes.outputs.codes_changed == 'true'
         working-directory: trusted
-        run: uv run --frozen --with ldpc python verify/gate_changed.py --code-root ../submitted origin/${{ github.base_ref || 'main' }} --receipt-dir ../receipts --pr-number "${{ github.event.pull_request.number }}" --pr-author "${{ github.event.pull_request.user.login }}" --base-sha "${{ github.event.pull_request.base.sha }}" --head-sha "${{ github.event.pull_request.head.sha }}"
+        run: uv run --frozen python verify/gate_changed.py --code-root ../submitted origin/${{ github.base_ref || 'main' }} --receipt-dir ../receipts --pr-number "${{ github.event.pull_request.number }}" --pr-author "${{ github.event.pull_request.user.login }}" --base-sha "${{ github.event.pull_request.base.sha }}" --head-sha "${{ github.event.pull_request.head.sha }}"
       - name: distance refutation gate (changed submissions only)
         if: github.event_name != 'pull_request'
         working-directory: submitted
-        run: uv run --frozen --with ldpc python verify/gate_changed.py origin/${{ github.base_ref || 'main' }}
+        run: uv run --frozen python verify/gate_changed.py origin/${{ github.base_ref || 'main' }}
       - name: upload verification receipts
         if: always() && github.event_name == 'pull_request' && steps.changes.outputs.codes_changed == 'true'
         uses: actions/upload-artifact@v4
