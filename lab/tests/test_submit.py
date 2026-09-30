@@ -117,3 +117,11 @@ def test_qldpc_args_passes_provenance_notes_only_when_set():
     cmd = submit.qldpc_args(dict(INFO, provenance_notes="Checked, not equivalent."), Path("c.npz"), "@me", **kw)
     assert cmd[cmd.index("--notes") + 1] == "Checked, not equivalent."
     assert "--notes" not in submit.qldpc_args(INFO, Path("c.npz"), "@me", **kw)
+
+
+def test_free_slug_takes_the_next_suffix(tmp_path):
+    assert submit.free_slug(tmp_path, 144, 12, 12) == "144-12-12"
+    (tmp_path / "144-12-12.json").write_text("{}")
+    assert submit.free_slug(tmp_path, 144, 12, 12) == "144-12-12-b"
+    (tmp_path / "144-12-12-b.json").write_text("{}")
+    assert submit.free_slug(tmp_path, 144, 12, 12) == "144-12-12-c"

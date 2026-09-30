@@ -85,6 +85,15 @@ def claim_mismatch(doc: dict, d: int) -> str | None:
     return None if got == d else f"qldpc would submit d={got}, but the proven distance is {d}"
 
 
+def free_slug(codes_dir: Path, n: int, k: int, d: int) -> str:
+    """First unused board slug for these parameters: n-k-d, then n-k-d-b, -c, ... (the board's own convention)."""
+    base = f"{n}-{k}-{d}"
+    for suffix in [""] + [f"-{c}" for c in "bcdefghijklmnopqrstuvwxyz"]:
+        if not (codes_dir / f"{base}{suffix}.json").exists():
+            return base + suffix
+    raise RuntimeError(f"no free slug for {base}")
+
+
 def qldpc_args(info: dict, npz: Path, handle: str, *, family: str, model: str, has_layout: bool,
                circuits: bool, note: Path | None, for_real: bool, json_doc: bool = False) -> list[str]:
     """Arguments for the challenge CLI's `submit` subcommand."""
@@ -179,6 +188,11 @@ def main(argv=None):
         sh(["gh", "repo", "set-default", UPSTREAM_REPO], cwd=FORK)
 
     wt = prepare_worktree(args.name, args.for_real)
+    # qldpc submit always writes codes/<n>-<k>-<d>.json; when the board already has that slug (another code with
+    # these parameters, e.g. IBM's gross code for our bilayer layout of it) it must go in as <slug>-b by hand
+    if (slug := free_slug(wt / "codes", *params(info))) != "{}-{}-{}".format(*params(info)):
+        sys.exit(f"codes/{'{}-{}-{}'.format(*params(info))}.json already exists upstream. Run `qldpc submit ... --out <tmp>` "
+                 f"in {wt}, then commit it as codes/{slug}.json with notes/{slug}.md (as PR #2394 did).")
     common = dict(family=args.family, model=args.model, has_layout=has_layout, note=note)
 
     # gate: upstream's trusted validator on the exact doc qldpc would write (no circuits: they don't affect it)

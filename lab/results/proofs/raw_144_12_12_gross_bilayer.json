@@ -1,0 +1,57 @@
+{
+ "status": 0,
+ "message": "Optimization terminated successfully. (HiGHS Status 7: Optimal)",
+ "seconds": 62.2,
+ "best_weight": 12,
+ "witness": [
+  72,
+  87,
+  93,
+  96,
+  99,
+  105,
+  108,
+  123,
+  129,
+  132,
+  135,
+  141
+ ],
+ "lower_bound": 12,
+ "exact": true,
+ "witness_valid": true,
+ "genome": {
+  "l": 12,
+  "m": 6,
+  "A": [
+   [
+    0,
+    1
+   ],
+   [
+    0,
+    2
+   ],
+   [
+    3,
+    0
+   ]
+  ],
+  "B": [
+   [
+    0,
+    3
+   ],
+   [
+    2,
+    0
+   ],
+   [
+    7,
+    0
+   ]
+  ]
+ },
+ "claimed": 12,
+ "verdict": "PROVEN: minimum distance is exactly 12"
+}

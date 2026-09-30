@@ -1,0 +1,64 @@
+{
+ "code": "[[144,12,12]]",
+ "genome": {
+  "l": 12,
+  "m": 6,
+  "A": [
+   [
+    0,
+    1
+   ],
+   [
+    0,
+    2
+   ],
+   [
+    3,
+    0
+   ]
+  ],
+  "B": [
+   [
+    0,
+    3
+   ],
+   [
+    2,
+    0
+   ],
+   [
+    7,
+    0
+   ]
+  ]
+ },
+ "result": "minimum distance proven exact",
+ "d": 12,
+ "solver_status": "Optimization terminated successfully. (HiGHS Status 7: Optimal)",
+ "seconds": 62.2,
+ "side_solved": "Z-type",
+ "method": "MILP (scipy.optimize.milp / HiGHS), as in distance_proof_216_8_16.json; torus translations fix one support cell.",
+ "symmetry": "d_X = d_Z by a verified X/Z duality permutation (qec_search.automorphisms.find_duality).",
+ "cross_check": "DistQLDPC over one orbital cube: 12. This is IBM's gross code relabelled; the board's 144-12-12 is certified d = 12.",
+ "witness": [
+  72,
+  87,
+  93,
+  96,
+  99,
+  105,
+  108,
+  123,
+  129,
+  132,
+  135,
+  141
+ ],
+ "date": "2026-09-30",
+ "environment": {
+  "scipy": "1.18.1",
+  "numpy": "2.5.3",
+  "python": "3.13.7"
+ },
+ "reproduce": "python -m qec_search.exact_distance --genome '{\"l\":12,\"m\":6,\"A\":[[0,1],[0,2],[3,0]],\"B\":[[0,3],[2,0],[7,0]]}' --claimed 12"
+}

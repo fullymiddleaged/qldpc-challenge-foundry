@@ -162,7 +162,7 @@
   "construction": "Bivariate bicycle code on Z_12 x Z_6: A = y + x^3 + x^10, B = y^3 + x + x^2. Found by an evolutionary search over BB polynomials. Bilayer layout (max check diameter 6.708) found by simulated annealing from a folded-torus start.",
   "not_our_code": false,
   "status": "submitted",
-  "status_reason": "non-dominated in 2D-local bilayer weight-6 (board of 28 Sep); d = 12 proven by MILP and DistQLDPC. Displaced once anyone lays out the gross code within the bilayer cap.",
+  "status_reason": "non-dominated in 2D-local bilayer weight-6 (board of 28 Sep); d = 12 proven by MILP and DistQLDPC. Displaced once anyone lays out the gross code within the bilayer cap. Dominated by the gross-code bilayer layout (PR #2394) once that merges.",
   "layers": 2,
   "pr": 2337
  },
@@ -290,5 +290,49 @@
   "status_reason": "hunt 2026-09-29: non-dominated in 2D-local bilayer weight-6; d = 18 proven by MILP (12.2 h) and DistQLDPC",
   "layers": 2,
   "pr": 2382
+ },
+ "bb_144_12_12_gross_bilayer": {
+  "params": "[[144,12,12]]",
+  "radius": 6.708,
+  "genome": {
+   "l": 12,
+   "m": 6,
+   "A": [
+    [
+     0,
+     1
+    ],
+    [
+     0,
+     2
+    ],
+    [
+     3,
+     0
+    ]
+   ],
+   "B": [
+    [
+     0,
+     3
+    ],
+    [
+     2,
+     0
+    ],
+    [
+     7,
+     0
+    ]
+   ]
+  },
+  "construction": "The gross code of Bravyi, Cross, Gambetta, Maslov, Rall and Yoder (arXiv:2308.07915), written on Z_12 x Z_6 as A = y + y^2 + x^3, B = y^3 + x^2 + x^7 (a relabelling of their A = x^3 + y + y^2, B = y^3 + x + x^2). New here: a bilayer layout (max check diameter 6.708) found by simulated annealing from a folded-torus start.",
+  "provenance_notes": "Equivalent to the board's 144-12-12.json (IBM's gross code, arXiv:2308.07915): same spectral fingerprint and WL signature. The code is theirs; this entry contributes only the bilayer layout within the 7.0 cap, which the board did not have. Parameters are known (novelty: known_parameters).",
+  "not_our_code": true,
+  "status": "submitted",
+  "status_reason": "user approved 2026-09-30: IBM's gross code, credited, submitted for its bilayer layout; displaces our [[144,8,12]] (#2337)",
+  "layers": 2,
+  "pr": 2394,
+  "slug": "144-12-12-b"
  }
 }
