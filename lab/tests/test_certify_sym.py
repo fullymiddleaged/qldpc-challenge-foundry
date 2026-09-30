@@ -69,13 +69,14 @@ def test_orbital_cubes_are_disjoint_on_their_heads():
 
 
 @pytest.mark.skipif(not HAS_SAT, reason="needs pycryptosat and python-sat (pip install -e .[cert])")
-def test_pairing_set_is_complete_where_upstream_is_not():
+def test_pairing_set_is_complete_and_upstream_now_agrees():
     hx, hz, _ = certify_sym.load_code(CODES / "37-1-7.json")
     gf2 = certify_sym._upstream().gf2
     t = certify_sym.pairing_set(hx, hz)
     assert len(t) == 1 and gf2.rank(np.vstack([hz, t])) == gf2.rank(hz) + 1
+    # upstream's _logicals returned a stabiliser here (no logical class) until our issue #2273, fixed by #2343
     upstream = certify_sym._upstream()._logicals(hz, hx)
-    assert gf2.rank(np.vstack([hz, upstream])) == gf2.rank(hz)   # the bug: a stabiliser, no logical class
+    assert gf2.rank(np.vstack([hz, upstream])) == gf2.rank(hz) + 1
 
 
 @pytest.mark.skipif(not HAS_SAT, reason="needs pycryptosat and python-sat (pip install -e .[cert])")

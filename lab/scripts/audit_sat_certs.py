@@ -5,7 +5,9 @@
 sat_certify pairs candidate logicals against sat_certify._logicals(H_opp, H_same), which takes rows
 rank(H_same):rank(R) of the RREF of [H_same; ker H_opp]. Those rows need not complement rowspace(H_same). When
 they span fewer than k logical classes, a nontrivial logical that commutes with every row escapes the query, so
-UNSAT no longer proves the distance.
+UNSAT no longer proves the distance. Historical: upstream fixed _logicals in #2343 (28 Sep 2026, our issue #2273),
+so against current upstream Stage 1 finds no deficient pairing sets; results/logs/sat_cert_audit.json records the
+audit as run against the old code.
 
 Stage 1 (static, seconds): for each SAT certificate, count the logical classes its pairing set spans on each side.
 Stage 2 (--recertify): re-prove each deficient certificate with lab/qec_search/certify_sym.py. That uses a complete

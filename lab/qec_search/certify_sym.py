@@ -5,9 +5,9 @@
 The question per side is upstream's (verify/sat_certify.py): is there a nontrivial logical of weight <= d - 1? The
 encoding is also upstream's: native XOR clauses for the checks, one selector per logical generator, and a
 sequential-counter weight bound. One deliberate difference: the logical generators come from upstream's
-gf2.logical_basis, and a check confirms they span all k classes. Upstream's sat_certify._logicals takes rows
-rank(H_same):rank(R) of a row-reduced stack. Those rows need not complement the stabiliser space, and on most board
-codes they span fewer than k classes, so its UNSAT does not rule out a lighter logical (see pairing_set).
+gf2.logical_basis, and a check confirms they span all k classes. Upstream's sat_certify._logicals used to take rows
+rank(H_same):rank(R) of a row-reduced stack, which on most board codes spanned fewer than k classes, so its UNSAT did
+not rule out a lighter logical. We reported it (issue #2273); upstream fixed it in #2343 (28 Sep 2026).
 
 On top of that encoding:
 
