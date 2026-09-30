@@ -36,10 +36,11 @@ LAB = pathlib.Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(LAB))
 from qec_search import gf2, tile  # noqa: E402
 from qec_search.bbcode import CSSCode  # noqa: E402
+from qec_search import frontier as fr  # noqa: E402
 
 _spec = importlib.util.spec_from_file_location("hunt_bilayer", LAB / "scripts" / "hunt_bilayer.py")
 hb = importlib.util.module_from_spec(_spec)
-_spec.loader.exec_module(hb)                      # parse_frontier, dominated, board_twin, read_jsonl
+_spec.loader.exec_module(hb)                      # board_twin, read_jsonl
 
 
 def tile_radius(x_tile, B: int) -> float:
@@ -92,12 +93,11 @@ def screen_one(x_tile, B: int, w: int, frontier, kmin: int, n_max: int, trials: 
         k = n - gf2.rank(hx) - gf2.rank(hz)
         if k < kmin:
             continue
-        code = CSSCode(hx=hx, hz=hz, name="t", meta={})
-        d = code.distance_upper_bound(trials=max(5, trials // 10))
-        if hb.dominated((n, k, d, w), frontier):
+        if fr.bar(n, k, w, frontier) > n:                      # nothing this size could be new
             continue
-        d = min(d, code.distance_upper_bound(trials=trials, seed=1))
-        if hb.dominated((n, k, d, w), frontier):
+        code = CSSCode(hx=hx, hz=hz, name="t", meta={})
+        d = fr.screen_distance(code, w, frontier, trials)      # stops at the first logical below the bar
+        if d is None:
             continue
         out.append({"tile": [list(e) for e in sorted(x_tile)], "B": B, "l": l, "m": m, "n": n, "k": k, "d_ub": d,
                     "w": w, "radius": round(tile_radius(x_tile, B), 3), "key": tile_key(x_tile, B),
@@ -108,7 +108,7 @@ def screen_one(x_tile, B: int, w: int, frontier, kmin: int, n_max: int, trials: 
 def cmd_screen(a) -> None:
     out = pathlib.Path(a.out)
     out.mkdir(parents=True, exist_ok=True)
-    frontier = hb.parse_frontier((LAB / "results" / "hunt" / f"frontier_single_w{a.w}.txt").read_text(encoding="utf-8"))
+    frontier = fr.load("single", a.w)
     seen = {h for p in (LAB / "results" / "hunt").glob("*/screened.txt") for h in p.read_text().split()}
     tiles = [t for t in all_tiles(a.B, a.w, a.samples, a.seed) if key_hash(tile_key(t, a.B)) not in seen]
     print(f"{len(tiles)} tiles (B={a.B}, w={a.w}) to screen against {len(frontier)} frontier entries", flush=True)
@@ -154,11 +154,10 @@ def cmd_prove(a) -> None:
         for stem, (hx, hz, r) in codes.items():
             exact = [s["exact"] for s in sol[stem]["sides"].values()]
             d = None if None in exact else min(exact)
-            frontier = hb.parse_frontier(
-                (LAB / "results" / "hunt" / f"frontier_single_w{r['w']}.txt").read_text(encoding="utf-8"))
+            frontier = fr.load("single", r["w"])
             p = {**r, "npz": f"{out.as_posix()}/cand/{stem}.npz", "sides": sol[stem]["sides"], "d_exact": d,
                  "board_twin": hb.board_twin(r["n"], r["sig"]),
-                 "new_entry": d is not None and not hb.dominated((r["n"], r["k"], d, r["w"]), frontier)}
+                 "new_entry": d is not None and not fr.dominated((r["n"], r["k"], d, r["w"]), frontier)}
             f.write(json.dumps(p) + "\n")
             print(f"[[{p['n']},{p['k']},{d}]] (ub {p['d_ub']}) new_entry={p['new_entry']} twin={p['board_twin']} {stem}",
                   flush=True)

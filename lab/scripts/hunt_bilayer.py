@@ -40,27 +40,17 @@ import numpy as np
 LAB = pathlib.Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(LAB))
 from qec_search.bbcode import BBGenome, build_bb  # noqa: E402
+from qec_search.frontier import bar, dominated, screen_distance  # noqa: E402,F401
+from qec_search.frontier import parse as parse_frontier  # noqa: E402
 
 CAP = 7.0
 
 
 # ------------------------------------------------------------------ frontier
 
-def parse_frontier(text: str) -> list[tuple[int, int, int, int]]:
-    """(n, k, d, w) for every '[[n,k,d]] w=W' entry in qldpc targets output."""
-    return [tuple(map(int, m)) for m in re.findall(r"\[\[(\d+),(\d+),(\d+)\]\]\s+w=(\d+)", text)]
-
-
 def load_frontier(a, w: int) -> list[tuple[int, int, int, int]]:
     p = pathlib.Path(a.frontier) if a.frontier else LAB / "results" / "hunt" / f"frontier_bilayer_w{w}.txt"
     return parse_frontier(p.read_text(encoding="utf-8"))
-
-
-def dominated(c: tuple[int, int, int, int], frontier) -> bool:
-    """Some entry is at least as good on n (lower), k, d (higher) and w (lower). Equal parameters count as dominated:
-    a tie is no new record."""
-    n, k, d, w = c
-    return any(fn <= n and fk >= k and fd >= d and fw <= w for fn, fk, fd, fw in frontier)
 
 
 # ------------------------------------------------------------------ genomes
@@ -129,11 +119,8 @@ def screen_one(gj: dict, frontier, kmin: int, trials: int) -> dict | None:
     if k < kmin or code.components() > 1:
         return None
     w = len(g.A) + len(g.B)
-    d_ub = code.distance_upper_bound(trials=max(5, trials // 10))   # more trials only lower it, so a cheap
-    if dominated((code.n, k, d_ub, w), frontier):                  # bound that is already beaten is final
-        return None
-    d_ub = min(d_ub, code.distance_upper_bound(trials=trials, seed=1))
-    if dominated((code.n, k, d_ub, w), frontier):
+    d_ub = screen_distance(code, w, frontier, trials)           # stops at the first logical below the bar
+    if d_ub is None:
         return None
     return {"genome": g.to_json(), "key": g.canonical_key(), "n": code.n, "k": k, "d_ub": d_ub, "w": w,
             "sig": code.signature()}
@@ -194,8 +181,10 @@ def cmd_screen(a) -> None:
 
 def refine_one(r: dict, frontier, trials: int) -> dict | None:
     """Tighter d_ub (a new seed, many more trials); None if the frontier now dominates the code."""
-    d = min(r["d_ub"], build_bb(BBGenome.from_json(r["genome"])).distance_upper_bound(trials=trials, seed=2))
-    return None if dominated((r["n"], r["k"], d, r["w"]), frontier) else {**r, "d_ub": d, "refined": trials}
+    need = bar(r["n"], r["k"], r["w"], frontier)
+    code = build_bb(BBGenome.from_json(r["genome"]))
+    d = min(r["d_ub"], code.distance_upper_bound(trials=trials, seed=2, stop_at=need - 1))
+    return None if d < need else {**r, "d_ub": d, "refined": trials}
 
 
 def layout_one(r: dict, steps: int, restarts: int, npz_dir: str) -> dict:
