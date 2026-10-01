@@ -388,8 +388,9 @@
   "layers": 1,
   "construction": "Tile code (Steffan, Choe, Breuckmann, Pereira, Eberhardt, arXiv:2504.09171) with box B = 3 on a 10 x 10 bulk, open boundaries as in the paper; X-tile {h00,h01,h11,h22,v02,v10,v20,v21}, Z-tile by their condition T2. Tile found by our exhaustive screen of 3 x 3 weight-8 tiles for the single-layer cell. Single-layer layout: each edge on its own integer site of the 45-degree rotated lattice, interaction radius 4.000.",
   "not_our_code": false,
-  "status": "submit",
-  "status_reason": "tile hunt 2026-10-01: non-dominated in 2D-local single weight-8; d exact by DistQLDPC (rule 1, tile codes)"
+  "status": "submitted",
+  "status_reason": "tile hunt 2026-10-01: non-dominated in 2D-local single weight-8; d exact by DistQLDPC (rule 1, tile codes)",
+  "pr": 2590
  },
  "tile_338_8_16_a637": {
   "params": "[[338,8,16]]",
