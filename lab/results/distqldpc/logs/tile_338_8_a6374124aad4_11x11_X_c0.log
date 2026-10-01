@@ -1,0 +1,26 @@
+c args: -cpu-lim=10800  /mnt/c/vscode/qldpc-challenge-foundry/lab/results/distqldpc/tile_338_8_a6374124aad4_11x11_X_c0
+c trying d: 1
+c d_lb: 1
+c trying d: 2
+c d_lb: 2
+c trying d: 4
+c d_lb: 4
+c trying d: 8
+c d_lb: 8
+c trying d: 16
+c d_lb: 16
+c trying d: 32
+c d_ub: 31
+c d_ub: 30
+c d_ub: 29
+c d_ub: 28
+c d_ub: 27
+c d_ub: 25
+c d_ub: 21
+c d_ub: 20
+c d_ub: 18
+c d_ub: 17
+c d_ub: 16
+c d  : 16
+o 16
+wall 2994.64 s

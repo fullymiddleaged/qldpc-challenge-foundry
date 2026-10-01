@@ -1,0 +1,31 @@
+c args: -cpu-lim=10800  /mnt/c/vscode/qldpc-challenge-foundry/lab/results/distqldpc/tile_392_8_286a9a581a45_12x12_Z_c0
+c trying d: 1
+c d_lb: 1
+c trying d: 2
+c d_lb: 2
+c trying d: 4
+c d_lb: 4
+c trying d: 8
+c d_lb: 8
+c trying d: 16
+c d_lb: 16
+c trying d: 32
+c d_ub: 31
+c d_ub: 30
+c d_ub: 29
+c d_ub: 28
+c d_ub: 27
+c d_ub: 26
+c d_ub: 24
+c d_ub: 22
+c d_ub: 21
+c d_ub: 20
+c d_ub: 19
+c d_ub: 18
+c d_lb: 16
+c d_ub: 18
+c status: TIMEOUT (child killed after -cpu-lim)
+c d  : UNKNOWN
+s UNKNOWN
+Command exited with non-zero status 1
+wall 10800.29 s
