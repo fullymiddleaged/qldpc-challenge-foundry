@@ -1,0 +1,41 @@
+Downloading cpython-3.11.16-windows-x86_64-none (download) (24.1MiB)
+ Downloaded cpython-3.11.16-windows-x86_64-none (download)
+Downloading numpy (12.0MiB)
+Downloading scipy (34.9MiB)
+ Downloaded numpy
+ Downloaded scipy
+Installed 2 packages in 22.16s
+scipy 1.17.1
+[[216,4,<=18]]  l=18, m=6, A = y^2 + x^8 + x^13, B = y + x^7 + x^11
+solver log follows; 'dual bound' is the proven minimum so far, it rises over time
+Running HiGHS 1.12.0 (git hash: 4f96ee8): Copyright (c) 2025 HiGHS under MIT licence terms
+MIP has 114 rows; 332 cols; 930 nonzeros; 332 integer variables (220 binary)
+Coefficient ranges:
+  Matrix  [1e+00, 2e+00]
+  Cost    [1e+00, 1e+00]
+  Bound   [1e+00, 2e+01]
+  RHS     [1e+00, 1e+00]
+Presolving model
+114 rows, 332 cols, 930 nonzeros  0s
+114 rows, 332 cols, 930 nonzeros  0s
+Presolve reductions: rows 114(-0); columns 332(-0); nonzeros 930(-0) - Not reduced
+Objective function is integral with scale 1
+
+Solving MIP model with:
+   114 rows
+   332 cols (220 binary, 112 integer, 0 implied int., 0 continuous, 0 domain fixed)
+   930 nonzeros
+
+Src: B => Branching; C => Central rounding; F => Feasibility pump; H => Heuristic;
+     I => Shifting; J => Feasibility jump; L => Sub-MIP; P => Empty MIP; R => Randomized rounding;
+     S => Solve LP; T => Evaluate node; U => Unbounded; X => User solution; Y => HiGHS solution;
+     Z => ZI Round; l => Trivial lower; p => Trivial point; u => Trivial upper; z => Trivial zero
+
+        Nodes      |    B&B Tree     |            Objective Bounds              |  Dynamic Constraints |       Work      
+Src  Proc. InQueue |  Leaves   Expl. | BestBound       BestSol              Gap |   Cuts   InLp Confl. | LpIters     Time
+
+         0       0         0   0.00%   1               inf                  inf        0      0      0         0     0.0s
+         0       0         0   0.00%   1               inf                  inf        0      0     13         3     0.1s
+        59       0         1   0.00%   6               inf                  inf     1542     68   1083      6665     7.1s
+ B      88       0        15   0.00%   6               70                91.43%     1542     68   1702      7533     7.6s
+       123      57        16   0.00%   6               70                91.43%     3441    200   1789     40204    22.7s

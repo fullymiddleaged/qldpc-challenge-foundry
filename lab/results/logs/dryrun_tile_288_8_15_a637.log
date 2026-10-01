@@ -1,0 +1,27 @@
+$ git fetch upstream --quiet
+$ git worktree add --quiet --detach 'C:\vscode\qldpc-challenge-foundry\.worktrees\tile_288_8_15_a637' upstream/main
+$ uv run python cli/qldpc.py submit 'C:\vscode\qldpc-challenge-foundry\lab\results\candidates\tile_288_8_15_a637.npz' --authors @fullymiddleaged --family tile --construction 'Tile code (Steffan, Choe, Breuckmann, Pereira, Eberhardt, arXiv:2504.09171) with box B = 3 on a 10 x 10 bulk, open boundaries as in the paper; X-tile {h00,h01,h11,h22,v02,v10,v20,v21}, Z-tile by their condition T2. Tile found by our exhaustive screen of 3 x 3 weight-8 tiles for the single-layer cell. Single-layer layout: each edge on its own integer site of the 45-degree rotated lattice, interaction radius 4.000.' --model 'Claude Opus 5.5' --layers 1 --coords 'C:\vscode\qldpc-challenge-foundry\lab\results\candidates\tile_288_8_15_a637.npz' --no-circuit --note-file 'C:\vscode\qldpc-challenge-foundry\lab\notes\288-8-15.md' --dry-run --json
+$ uv run python verify/validate_candidate.py C:\Users\psalm\AppData\Local\Temp\tmpip3uirwp\tile_288_8_15_a637.json
+validate_candidate: passed=True  advances the weight-8 x local-2d-single board | literature novelty UNVERIFIED
+$ 'C:\vscode\qldpc-challenge-foundry\lab\.venv\Scripts\uv.EXE' run --quiet python cli/qldpc.py submit 'C:\vscode\qldpc-challenge-foundry\lab\results\candidates\tile_288_8_15_a637.npz' --authors @fullymiddleaged --family tile --construction 'Tile code (Steffan, Choe, Breuckmann, Pereira, Eberhardt, arXiv:2504.09171) with box B = 3 on a 10 x 10 bulk, open boundaries as in the paper; X-tile {h00,h01,h11,h22,v02,v10,v20,v21}, Z-tile by their condition T2. Tile found by our exhaustive screen of 3 x 3 weight-8 tiles for the single-layer cell. Single-layer layout: each edge on its own integer site of the 45-degree rotated lattice, interaction radius 4.000.' --model 'Claude Opus 5.5' --layers 1 --coords 'C:\vscode\qldpc-challenge-foundry\lab\results\candidates\tile_288_8_15_a637.npz' --no-circuit --note-file 'C:\vscode\qldpc-challenge-foundry\lab\notes\288-8-15.md' --dry-run
+  building submission... n=288 k=8 w=8
+  searching for distance witnesses (20000 RIS trials)...
+  distance (RIS upper bound) d<=15  (d_X<=15, d_Z<=15)
+  verifying (CSS / k / weight / witnesses / locality)...
+  OK  verified. score kd^2/n = 6.25
+
+--dry-run: would write C:\vscode\qldpc-challenge-foundry\.worktrees\tile_288_8_15_a637\codes\288-8-15.json
+  code         [[288,8,15]]
+  score        kd^2/n = 6.25
+  checks       max weight 8 (weight-8)
+  locality     local-2d-single
+  track cells  2D-local single / weight ≤ 8, 2D-local single / any weight, 2D-local bilayer / weight ≤ 8, 2D-local bilayer / any weight, unrestricted / weight ≤ 8, unrestricted / any weight
+  distance     d <= 15 (upper_bound)
+               X: <= 15 (upper_bound, witness found)  |  Z: <= 15 (upper_bound, witness found)
+  authors      @fullymiddleaged
+  family       tile
+  model        Claude Opus 5.5
+  construction Tile code (Steffan, Choe, Breuckmann, Pereira, Eberhardt, arXiv:2504.09171) with box B = 3 on a 10 x 10 bulk, open boundaries as in the paper; X-tile {h00,h01,h11,h22,v02,v10,v20,v21}, Z-tile by their condition T2. Tile found by our exhaustive screen of 3 x 3 weight-8 tiles for the single-layer cell. Single-layer layout: each edge on its own integer site of the 45-degree rotated lattice, interaction radius 4.000.
+  next         --json prints the full document; drop --dry-run to write
+
+Dry run only (checked against upstream/main in C:\vscode\qldpc-challenge-foundry\.worktrees\tile_288_8_15_a637). Re-run with --for-real to open the PR.

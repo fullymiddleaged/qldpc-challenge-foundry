@@ -14,3 +14,6 @@ results/logs/*.sym_audit_*.status.json
 # DistQLDPC inputs: regenerate with scripts/export_distqldpc.py
 results/distqldpc/*.txt
 !results/distqldpc/logs/*.log
+
+# hunt candidates: regenerable from screen/proofs.jsonl (submitted ones are copied to results/candidates/)
+results/hunt/*/cand/

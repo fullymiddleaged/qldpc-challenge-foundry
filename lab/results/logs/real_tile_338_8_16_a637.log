@@ -1,0 +1,37 @@
+$ gh repo set-default unitaryfoundation/qldpc-challenge
+$ git fetch upstream --quiet
+$ git checkout --quiet --detach upstream/main
+$ uv run python cli/qldpc.py submit 'C:\vscode\qldpc-challenge-foundry\lab\results\candidates\tile_338_8_16_a637.npz' --authors @fullymiddleaged --family tile --construction 'Tile code (Steffan, Choe, Breuckmann, Pereira, Eberhardt, arXiv:2504.09171) with box B = 3 on a 11 x 11 bulk, open boundaries as in the paper; X-tile {h00,h01,h11,h22,v02,v10,v20,v21}, Z-tile by their condition T2. Tile found by our exhaustive screen of 3 x 3 weight-8 tiles for the single-layer cell. Single-layer layout: each edge on its own integer site of the 45-degree rotated lattice, interaction radius 4.000.' --model 'Claude Opus 5.5' --layers 1 --coords 'C:\vscode\qldpc-challenge-foundry\lab\results\candidates\tile_338_8_16_a637.npz' --no-circuit --note-file 'C:\vscode\qldpc-challenge-foundry\lab\notes\338-8-16.md' --dry-run --json
+$ uv run python verify/validate_candidate.py C:\Users\psalm\AppData\Local\Temp\tmp58g2z7x0\tile_338_8_16_a637.json
+validate_candidate: passed=True  advances the weight-8 x local-2d-single board | literature novelty UNVERIFIED
+$ 'C:\vscode\qldpc-challenge-foundry\lab\.venv\Scripts\uv.EXE' run --quiet python cli/qldpc.py submit 'C:\vscode\qldpc-challenge-foundry\lab\results\candidates\tile_338_8_16_a637.npz' --authors @fullymiddleaged --family tile --construction 'Tile code (Steffan, Choe, Breuckmann, Pereira, Eberhardt, arXiv:2504.09171) with box B = 3 on a 11 x 11 bulk, open boundaries as in the paper; X-tile {h00,h01,h11,h22,v02,v10,v20,v21}, Z-tile by their condition T2. Tile found by our exhaustive screen of 3 x 3 weight-8 tiles for the single-layer cell. Single-layer layout: each edge on its own integer site of the 45-degree rotated lattice, interaction radius 4.000.' --model 'Claude Opus 5.5' --layers 1 --coords 'C:\vscode\qldpc-challenge-foundry\lab\results\candidates\tile_338_8_16_a637.npz' --no-circuit --note-file 'C:\vscode\qldpc-challenge-foundry\lab\notes\338-8-16.md' --open-pr
+  building submission... n=338 k=8 w=8
+  searching for distance witnesses (20000 RIS trials)...
+  distance (RIS upper bound) d<=16  (d_X<=16, d_Z<=16)
+  verifying (CSS / k / weight / witnesses / locality)...
+Prose check failed: the text points at things a reviewer cannot open.
+
+  PR body: leftover scaffolding
+    unticked checklist box
+
+Anything labelled 'PR body' above is in the PR description, not in a
+committed file: fix it by editing the PR body. Nothing in the tree has to
+change for it.
+
+Fix by pointing at something that exists in this PR, or by naming the
+external source and pinning it (e.g. 'github.com/org/repo @ abc1234,
+`path/in/that/repo.py`'). research/candidates/ is gitignored working
+output and can never be cited as evidence. See AGENTS.md, 'Writing the
+submission'.
+
+For a number that came out of a campaign run, cite the run manifest
+committed beside the note (research/campaigns/<id>/manifest.json). It
+carries the code snapshot, the parameters actually invoked, the seeds,
+and any log excerpt the claim rests on. See research/campaigns/README.md.
+  OK  verified. score kd^2/n = 6.059
+  wrote C:\vscode\qldpc-challenge-foundry\.worktrees\tile_338_8_16_a637\codes\338-8-16.json
+  wrote C:\vscode\qldpc-challenge-foundry\.worktrees\tile_338_8_16_a637\notes\338-8-16.md
+  warning: notes/528-4-34.md exceeds 10240 bytes; truncating on render
+  warning: notes/682-172-72.md exceeds 10240 bytes; truncating on render
+
+prose pre-flight FAILED (1); no PR was opened. Fix the issues above (the drafted body is at C:\Users\psalm\AppData\Local\Temp\qldpc-pr-338-8-16-pf4zbji2.md) and re-run with --open-pr.
