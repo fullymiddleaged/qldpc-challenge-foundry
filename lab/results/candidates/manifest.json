@@ -334,5 +334,117 @@
   "layers": 2,
   "pr": 2394,
   "slug": "144-12-12-b"
+ },
+ "tile_288_8_15_a637": {
+  "params": "[[288,8,15]]",
+  "radius": 4.0,
+  "genome": {
+   "tile": [
+    [
+     "h",
+     0,
+     0
+    ],
+    [
+     "h",
+     0,
+     1
+    ],
+    [
+     "h",
+     1,
+     1
+    ],
+    [
+     "h",
+     2,
+     2
+    ],
+    [
+     "v",
+     0,
+     2
+    ],
+    [
+     "v",
+     1,
+     0
+    ],
+    [
+     "v",
+     2,
+     0
+    ],
+    [
+     "v",
+     2,
+     1
+    ]
+   ],
+   "B": 3,
+   "l": 10,
+   "m": 10
+  },
+  "layers": 1,
+  "construction": "Tile code (Steffan, Choe, Breuckmann, Pereira, Eberhardt, arXiv:2504.09171) with box B = 3 on a 10 x 10 bulk, open boundaries as in the paper; X-tile {h00,h01,h11,h22,v02,v10,v20,v21}, Z-tile by their condition T2. Tile found by our exhaustive screen of 3 x 3 weight-8 tiles for the single-layer cell. Single-layer layout: each edge on its own integer site of the 45-degree rotated lattice, interaction radius 4.000.",
+  "not_our_code": false,
+  "status": "submit",
+  "status_reason": "tile hunt 2026-10-01: non-dominated in 2D-local single weight-8; d exact by DistQLDPC (rule 1, tile codes)"
+ },
+ "tile_338_8_16_a637": {
+  "params": "[[338,8,16]]",
+  "radius": 4.0,
+  "genome": {
+   "tile": [
+    [
+     "h",
+     0,
+     0
+    ],
+    [
+     "h",
+     0,
+     1
+    ],
+    [
+     "h",
+     1,
+     1
+    ],
+    [
+     "h",
+     2,
+     2
+    ],
+    [
+     "v",
+     0,
+     2
+    ],
+    [
+     "v",
+     1,
+     0
+    ],
+    [
+     "v",
+     2,
+     0
+    ],
+    [
+     "v",
+     2,
+     1
+    ]
+   ],
+   "B": 3,
+   "l": 11,
+   "m": 11
+  },
+  "layers": 1,
+  "construction": "Tile code (Steffan, Choe, Breuckmann, Pereira, Eberhardt, arXiv:2504.09171) with box B = 3 on a 11 x 11 bulk, open boundaries as in the paper; X-tile {h00,h01,h11,h22,v02,v10,v20,v21}, Z-tile by their condition T2. Tile found by our exhaustive screen of 3 x 3 weight-8 tiles for the single-layer cell. Single-layer layout: each edge on its own integer site of the 45-degree rotated lattice, interaction radius 4.000.",
+  "not_our_code": false,
+  "status": "submit",
+  "status_reason": "tile hunt 2026-10-01: non-dominated in 2D-local single weight-8; d exact by DistQLDPC (rule 1, tile codes)"
  }
 }

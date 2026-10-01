@@ -60,6 +60,9 @@ def params(info: dict) -> tuple[int, int, int]:
 
 
 def _genome_key(g: dict) -> tuple:
+    """A BB genome (l, m, A, B) or a tile code (qec_search.tile: box B, bulk l x m, X-tile edges)."""
+    if "tile" in g:
+        return "tile", g["B"], g["l"], g["m"], tuple(sorted(map(tuple, g["tile"])))
     return g["l"], g["m"], tuple(sorted(map(tuple, g["A"]))), tuple(sorted(map(tuple, g["B"])))
 
 

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import importlib.util
+import json
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -125,3 +126,14 @@ def test_free_slug_takes_the_next_suffix(tmp_path):
     assert submit.free_slug(tmp_path, 144, 12, 12) == "144-12-12-b"
     (tmp_path / "144-12-12-b.json").write_text("{}")
     assert submit.free_slug(tmp_path, 144, 12, 12) == "144-12-12-c"
+
+
+def test_proof_refusal_handles_tile_genomes(tmp_path):
+    tile = {"tile": [["h", 0, 0], ["v", 1, 2]], "B": 3, "l": 11, "m": 11}
+    info = {"params": "[[338,8,16]]", "genome": tile}
+    proof = {"result": "minimum distance proven exact", "d": 16, "genome": {**tile, "tile": [["v", 1, 2], ["h", 0, 0]]}}
+    (tmp_path / "distance_proof_338_8_16.json").write_text(json.dumps(proof))
+    assert submit.proof_refusal("t", info, tmp_path) is None                       # edge order does not matter
+    proof["genome"] = {**tile, "l": 12}
+    (tmp_path / "distance_proof_338_8_16.json").write_text(json.dumps(proof))
+    assert "different genome" in submit.proof_refusal("t", info, tmp_path)
