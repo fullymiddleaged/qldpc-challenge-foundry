@@ -97,7 +97,7 @@
 <h4>Tools</h4>
 <p>Kimi K3 (matches <code>provenance.model</code>), Amicode harness; repo kit (<code>css.py</code>, <code>surrogate.py</code>, <code>submit.py</code>), <code>verify/gf2_fast</code> RIS, <code>verify/validate_candidate.py</code> as the gate; scipy MILP for the puncture bounds. Compute: ~2 CPU-hours on an M-series MacBook.</p>
 <h4>Reproduction</h4>
-<p><code>research/campaigns/rotated_holey.py</code> (in our working clone): odd L; qubits at integer points of [0, L)²; X-plaquettes on even cells + top/bottom boundary pairs, Z on odd + left/right pairs; holes = period-3 parity-matched cell sublattice, margin 3. This code: L = 25.</p></div></section>
+<p>The odd-L rotated holey builder used for this sweep (a local script, never committed here): odd L; qubits at integer points of [0, L)²; X-plaquettes on even cells + top/bottom boundary pairs, Z on odd + left/right pairs; holes = period-3 parity-matched cell sublattice, margin 3. This code: L = 25.</p></div></section>
 <section class=blk><h3>Parity checks</h3>
 <div class=kv><b>X-checks</b> 287 (max weight 4) &middot; <b style="min-width:auto">Z-checks</b> 288 (max weight 4)</div>
 <details><summary>H_X (287 checks, sparse supports)</summary><div class=wit>[0, 1, 25, 26]

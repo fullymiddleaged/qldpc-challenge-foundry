@@ -21,7 +21,8 @@
         "0.1",
         "0.2",
         "0.3",
-        "0.4"
+        "0.4",
+        "0.5"
       ]
     },
     "name": {
@@ -34,7 +35,7 @@
         "CSS",
         "stabilizer"
       ],
-      "description": "CSS: checks.X and checks.Z, per-side distance witnesses. stabilizer (schema 0.4): checks.S, one list of Pauli generators, and a single Pauli-weight distance witness distance.P. A code whose every generator is pure X or pure Z is a CSS code and must be typed CSS; the verifier rejects it otherwise. The two types are ranked on separate leaderboards."
+      "description": "CSS: checks.X and checks.Z, per-side distance witnesses. stabilizer (schema 0.4): checks.S, one list of Pauli generators, and a single Pauli-weight distance witness distance.P. A code whose every generator is pure X or pure Z, or becomes so under single-qubit Cliffords on some qubits, is a CSS code and must be typed CSS (as that image); the verifier rejects it otherwise. The two types are ranked on separate leaderboards."
     },
     "n": {
       "type": "integer",
@@ -147,7 +148,7 @@
         },
         "ler": {
           "type": "object",
-          "description": "optional measured logical-error-rate tier: the same committed memory circuits, sampled under the canonical noise recipe and decoded with the pinned decoder. Distance is a floor; this is the measured rate a device-like simulation actually sees, prefactors included.",
+          "description": "optional measured logical-error-rate tier: the same committed memory circuits, sampled under the canonical noise recipe at one or more physical rates and decoded with the pinned decoder. Distance is a floor; this is the measured rate a device-like simulation actually sees, prefactors included. Since 0.5 each basis is a list of points (a curve), compared across entries only at equal p.",
           "required": [
             "X",
             "Z"
@@ -155,120 +156,266 @@
           "additionalProperties": false,
           "properties": {
             "X": {
-              "type": "object",
-              "description": "one basis's measured rate: the committed memory circuit sampled at the canonical reference rate and decoded with the pinned decoder. Self-reported measurement; CI re-measures with an independent seed and rejects claims outside sampling error (verify/ler_verify.py).",
-              "required": [
-                "p",
-                "shots",
-                "failures",
-                "seed",
-                "decoder",
-                "ler_per_round",
-                "ci95"
-              ],
-              "additionalProperties": false,
-              "properties": {
-                "p": {
-                  "const": 0.001,
-                  "description": "physical rate of the canonical noise recipe; fixed so rates are comparable across entries"
-                },
-                "shots": {
-                  "type": "integer",
-                  "minimum": 10000,
-                  "description": "sampled shots; the floor keeps a claim statistically meaningful"
-                },
-                "failures": {
-                  "type": "integer",
-                  "minimum": 100,
-                  "description": "shots where the decoder's predicted observable flips disagreed with the sampled ones; at least 100, so the claim carries ~10% statistical error and prefactor comparisons between schedules are resolvable (raise shots until the count is reached)"
-                },
-                "seed": {
-                  "type": "integer",
-                  "minimum": 0,
-                  "description": "stim sampler seed; with shots and the pinned stim version this determines the sample"
-                },
-                "decoder": {
-                  "enum": [
-                    "bposd-cs-10"
-                  ],
-                  "description": "the pinned decoder (BP+OSD, minimum-sum, scaling 0.625, osd_cs order 10, 30 iterations, DEM-prob channel prior)"
-                },
-                "ler_per_round": {
-                  "type": "number",
-                  "minimum": 0,
-                  "maximum": 0.5,
-                  "description": "per-round logical error rate via the parity-aware conversion from failures/shots and circuit.rounds"
-                },
-                "ci95": {
+              "oneOf": [
+                {
                   "type": "array",
-                  "minItems": 2,
-                  "maxItems": 2,
+                  "minItems": 1,
+                  "maxItems": 4,
                   "items": {
-                    "type": "number",
-                    "minimum": 0,
-                    "maximum": 0.5
+                    "type": "object",
+                    "description": "one measured point: the committed memory circuit, its canonical noise recipe re-applied at physical rate p, sampled and decoded with the pinned decoder. Self-reported measurement; CI re-measures with an independent seed (verify/ler_verify.py): the highest-rate point at PR time, the rest weekly post-merge with receipts under receipts/ler/.",
+                    "required": [
+                      "p",
+                      "shots",
+                      "failures",
+                      "seed",
+                      "decoder",
+                      "ler_per_round",
+                      "ci95"
+                    ],
+                    "additionalProperties": false,
+                    "properties": {
+                      "p": {
+                        "enum": [
+                          0.01,
+                          0.005,
+                          0.002,
+                          0.001
+                        ],
+                        "description": "physical rate of the canonical noise recipe, on the board's grid so points are comparable across entries at equal p; a point whose per-shot failure fraction exceeds 1/2 is saturated and rejected"
+                      },
+                      "shots": {
+                        "type": "integer",
+                        "minimum": 10000,
+                        "description": "sampled shots; the floor keeps a claim statistically meaningful"
+                      },
+                      "failures": {
+                        "type": "integer",
+                        "minimum": 100,
+                        "description": "shots where the decoder's predicted observable flips disagreed with the sampled ones; at least 100, so the claim carries ~10% statistical error and prefactor comparisons between schedules are resolvable (raise shots until the count is reached)"
+                      },
+                      "seed": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "description": "stim sampler seed; with shots and the pinned stim version this determines the sample"
+                      },
+                      "decoder": {
+                        "enum": [
+                          "bposd-cs-10"
+                        ],
+                        "description": "the pinned decoder (BP+OSD, minimum-sum, scaling 0.625, osd_cs order 10, 30 iterations, DEM-prob channel prior)"
+                      },
+                      "ler_per_round": {
+                        "type": "number",
+                        "minimum": 0,
+                        "maximum": 0.5,
+                        "description": "per-round logical error rate via the parity-aware conversion from failures/shots and circuit.rounds"
+                      },
+                      "ci95": {
+                        "type": "array",
+                        "minItems": 2,
+                        "maxItems": 2,
+                        "items": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 0.5
+                        },
+                        "description": "Wilson 95% interval on ler_per_round, from the same conversion"
+                      }
+                    }
                   },
-                  "description": "Wilson 95% interval on ler_per_round, from the same conversion"
+                  "description": "schema 0.5 (issue #1278): a list of points, one per physical rate, highest rate first by convention. Distinct rates; the verifier replicates the highest rate at PR time and defers the rest to the weekly post-merge replication."
+                },
+                {
+                  "type": "object",
+                  "description": "pre-0.5 form: one point at the canonical rate 0.001. Accepted on entries that declare schema 0.4 or earlier; a 0.5 entry carries the list form (verify/ler_verify.py checks the pairing).",
+                  "required": [
+                    "p",
+                    "shots",
+                    "failures",
+                    "seed",
+                    "decoder",
+                    "ler_per_round",
+                    "ci95"
+                  ],
+                  "additionalProperties": false,
+                  "properties": {
+                    "p": {
+                      "const": 0.001,
+                      "description": "physical rate of the canonical noise recipe; fixed so rates are comparable across entries"
+                    },
+                    "shots": {
+                      "type": "integer",
+                      "minimum": 10000,
+                      "description": "sampled shots; the floor keeps a claim statistically meaningful"
+                    },
+                    "failures": {
+                      "type": "integer",
+                      "minimum": 100,
+                      "description": "shots where the decoder's predicted observable flips disagreed with the sampled ones; at least 100, so the claim carries ~10% statistical error and prefactor comparisons between schedules are resolvable (raise shots until the count is reached)"
+                    },
+                    "seed": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "description": "stim sampler seed; with shots and the pinned stim version this determines the sample"
+                    },
+                    "decoder": {
+                      "enum": [
+                        "bposd-cs-10"
+                      ],
+                      "description": "the pinned decoder (BP+OSD, minimum-sum, scaling 0.625, osd_cs order 10, 30 iterations, DEM-prob channel prior)"
+                    },
+                    "ler_per_round": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 0.5,
+                      "description": "per-round logical error rate via the parity-aware conversion from failures/shots and circuit.rounds"
+                    },
+                    "ci95": {
+                      "type": "array",
+                      "minItems": 2,
+                      "maxItems": 2,
+                      "items": {
+                        "type": "number",
+                        "minimum": 0,
+                        "maximum": 0.5
+                      },
+                      "description": "Wilson 95% interval on ler_per_round, from the same conversion"
+                    }
+                  }
                 }
-              }
+              ]
             },
             "Z": {
-              "type": "object",
-              "description": "one basis's measured rate: the committed memory circuit sampled at the canonical reference rate and decoded with the pinned decoder. Self-reported measurement; CI re-measures with an independent seed and rejects claims outside sampling error (verify/ler_verify.py).",
-              "required": [
-                "p",
-                "shots",
-                "failures",
-                "seed",
-                "decoder",
-                "ler_per_round",
-                "ci95"
-              ],
-              "additionalProperties": false,
-              "properties": {
-                "p": {
-                  "const": 0.001,
-                  "description": "physical rate of the canonical noise recipe; fixed so rates are comparable across entries"
-                },
-                "shots": {
-                  "type": "integer",
-                  "minimum": 10000,
-                  "description": "sampled shots; the floor keeps a claim statistically meaningful"
-                },
-                "failures": {
-                  "type": "integer",
-                  "minimum": 100,
-                  "description": "shots where the decoder's predicted observable flips disagreed with the sampled ones; at least 100, so the claim carries ~10% statistical error and prefactor comparisons between schedules are resolvable (raise shots until the count is reached)"
-                },
-                "seed": {
-                  "type": "integer",
-                  "minimum": 0,
-                  "description": "stim sampler seed; with shots and the pinned stim version this determines the sample"
-                },
-                "decoder": {
-                  "enum": [
-                    "bposd-cs-10"
-                  ],
-                  "description": "the pinned decoder (BP+OSD, minimum-sum, scaling 0.625, osd_cs order 10, 30 iterations, DEM-prob channel prior)"
-                },
-                "ler_per_round": {
-                  "type": "number",
-                  "minimum": 0,
-                  "maximum": 0.5,
-                  "description": "per-round logical error rate via the parity-aware conversion from failures/shots and circuit.rounds"
-                },
-                "ci95": {
+              "oneOf": [
+                {
                   "type": "array",
-                  "minItems": 2,
-                  "maxItems": 2,
+                  "minItems": 1,
+                  "maxItems": 4,
                   "items": {
-                    "type": "number",
-                    "minimum": 0,
-                    "maximum": 0.5
+                    "type": "object",
+                    "description": "one measured point: the committed memory circuit, its canonical noise recipe re-applied at physical rate p, sampled and decoded with the pinned decoder. Self-reported measurement; CI re-measures with an independent seed (verify/ler_verify.py): the highest-rate point at PR time, the rest weekly post-merge with receipts under receipts/ler/.",
+                    "required": [
+                      "p",
+                      "shots",
+                      "failures",
+                      "seed",
+                      "decoder",
+                      "ler_per_round",
+                      "ci95"
+                    ],
+                    "additionalProperties": false,
+                    "properties": {
+                      "p": {
+                        "enum": [
+                          0.01,
+                          0.005,
+                          0.002,
+                          0.001
+                        ],
+                        "description": "physical rate of the canonical noise recipe, on the board's grid so points are comparable across entries at equal p; a point whose per-shot failure fraction exceeds 1/2 is saturated and rejected"
+                      },
+                      "shots": {
+                        "type": "integer",
+                        "minimum": 10000,
+                        "description": "sampled shots; the floor keeps a claim statistically meaningful"
+                      },
+                      "failures": {
+                        "type": "integer",
+                        "minimum": 100,
+                        "description": "shots where the decoder's predicted observable flips disagreed with the sampled ones; at least 100, so the claim carries ~10% statistical error and prefactor comparisons between schedules are resolvable (raise shots until the count is reached)"
+                      },
+                      "seed": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "description": "stim sampler seed; with shots and the pinned stim version this determines the sample"
+                      },
+                      "decoder": {
+                        "enum": [
+                          "bposd-cs-10"
+                        ],
+                        "description": "the pinned decoder (BP+OSD, minimum-sum, scaling 0.625, osd_cs order 10, 30 iterations, DEM-prob channel prior)"
+                      },
+                      "ler_per_round": {
+                        "type": "number",
+                        "minimum": 0,
+                        "maximum": 0.5,
+                        "description": "per-round logical error rate via the parity-aware conversion from failures/shots and circuit.rounds"
+                      },
+                      "ci95": {
+                        "type": "array",
+                        "minItems": 2,
+                        "maxItems": 2,
+                        "items": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 0.5
+                        },
+                        "description": "Wilson 95% interval on ler_per_round, from the same conversion"
+                      }
+                    }
                   },
-                  "description": "Wilson 95% interval on ler_per_round, from the same conversion"
+                  "description": "schema 0.5 (issue #1278): a list of points, one per physical rate, highest rate first by convention. Distinct rates; the verifier replicates the highest rate at PR time and defers the rest to the weekly post-merge replication."
+                },
+                {
+                  "type": "object",
+                  "description": "pre-0.5 form: one point at the canonical rate 0.001. Accepted on entries that declare schema 0.4 or earlier; a 0.5 entry carries the list form (verify/ler_verify.py checks the pairing).",
+                  "required": [
+                    "p",
+                    "shots",
+                    "failures",
+                    "seed",
+                    "decoder",
+                    "ler_per_round",
+                    "ci95"
+                  ],
+                  "additionalProperties": false,
+                  "properties": {
+                    "p": {
+                      "const": 0.001,
+                      "description": "physical rate of the canonical noise recipe; fixed so rates are comparable across entries"
+                    },
+                    "shots": {
+                      "type": "integer",
+                      "minimum": 10000,
+                      "description": "sampled shots; the floor keeps a claim statistically meaningful"
+                    },
+                    "failures": {
+                      "type": "integer",
+                      "minimum": 100,
+                      "description": "shots where the decoder's predicted observable flips disagreed with the sampled ones; at least 100, so the claim carries ~10% statistical error and prefactor comparisons between schedules are resolvable (raise shots until the count is reached)"
+                    },
+                    "seed": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "description": "stim sampler seed; with shots and the pinned stim version this determines the sample"
+                    },
+                    "decoder": {
+                      "enum": [
+                        "bposd-cs-10"
+                      ],
+                      "description": "the pinned decoder (BP+OSD, minimum-sum, scaling 0.625, osd_cs order 10, 30 iterations, DEM-prob channel prior)"
+                    },
+                    "ler_per_round": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 0.5,
+                      "description": "per-round logical error rate via the parity-aware conversion from failures/shots and circuit.rounds"
+                    },
+                    "ci95": {
+                      "type": "array",
+                      "minItems": 2,
+                      "maxItems": 2,
+                      "items": {
+                        "type": "number",
+                        "minimum": 0,
+                        "maximum": 0.5
+                      },
+                      "description": "Wilson 95% interval on ler_per_round, from the same conversion"
+                    }
+                  }
                 }
-              }
+              ]
             }
           }
         },
@@ -419,6 +566,16 @@
         "notes": {
           "type": "string"
         },
+        "clifford_relabel_of": {
+          "type": "string",
+          "pattern": "^[0-9]+-[0-9]+-[0-9]+(-[a-z0-9]+)?$",
+          "description": "optional (issue #2802): the slug of a board entry this code is a Clifford image of, under a Clifford acting on blocks of qubits. Such an image has the same n, k and code space as its parent, so its distance was bought with check weight and its kd^2/n is not a construction result; the verifier checks that the named entry exists with the same n and k, refuses novelty new_parameters alongside it, and the site marks the entry. Declaring it is the submitter's duty: multi-qubit Clifford equivalence is not tested, only the single-qubit case is (is_css_up_to_local_clifford)."
+        },
+        "clifford_block_size": {
+          "type": "integer",
+          "minimum": 2,
+          "description": "optional, with clifford_relabel_of: the block size m of the block-local Clifford that produced this entry from its parent."
+        },
         "search_budget": {
           "type": "object",
           "description": "optional, self-reported (schema 0.3): what the search that produced this code cost. The verifier checks none of it (there is nothing trustless to check); it is recorded so the cost of a frontier-advancing code can be compared across entries and over time. Distinct from distance.X/Z.witness_provenance, which budgets the witness search for one operator, not the code search. All fields optional; report what you measured and leave the rest out.",
@@ -487,6 +644,7 @@
         "balanced-product",
         "quantum-tanner",
         "tile",
+        "pair-partition-cpm",
         "topological",
         "other"
       ]
@@ -550,7 +708,8 @@
             "enum": [
               "0.2",
               "0.3",
-              "0.4"
+              "0.4",
+              "0.5"
             ]
           }
         }
@@ -576,7 +735,8 @@
             "enum": [
               "0.2",
               "0.3",
-              "0.4"
+              "0.4",
+              "0.5"
             ]
           }
         }
@@ -595,7 +755,8 @@
             "enum": [
               "0.2",
               "0.3",
-              "0.4"
+              "0.4",
+              "0.5"
             ]
           }
         }
@@ -620,7 +781,8 @@
           "schema_version": {
             "enum": [
               "0.3",
-              "0.4"
+              "0.4",
+              "0.5"
             ]
           }
         }
@@ -645,7 +807,8 @@
           "schema_version": {
             "enum": [
               "0.3",
-              "0.4"
+              "0.4",
+              "0.5"
             ]
           }
         }
@@ -699,7 +862,10 @@
       "then": {
         "properties": {
           "schema_version": {
-            "const": "0.4"
+            "enum": [
+              "0.4",
+              "0.5"
+            ]
           },
           "checks": {
             "required": [
@@ -872,7 +1038,7 @@
     },
     "transversalGate": {
       "type": "object",
-      "description": "one claimed transversal logical gate. `gate` is `permutation` (a bare qubit permutation, which must then be given), `H` or `S` (that Clifford on every qubit, composed with the optional permutation), or `CX` (a CX from qubit i of one block, the control, to qubit permutation[i] of a second block, the target; identity pairing when omitted). `logical_action` maps each logical generator label to the list of generator labels whose product it is sent to, checked up to stabilizers only (a logical factor the gate introduces belongs in this list); a generator not listed is claimed fixed. Labels are X0..X{k-1}, Z0..Z{k-1} for the (control) block and X0'..Z{k-1}' for the target block of a CX.",
+      "description": "one claimed transversal logical gate. `gate` is `permutation` (a bare qubit permutation, which must then be given), `H` or `S` (that Clifford on every qubit, composed with the optional permutation), `CX` (a CX from qubit i of one block, the control, to qubit permutation[i] of a second block, the target; identity pairing when omitted), or `match` (issue #2894: a W<=2 diagonal layer, `clifford` S on the qubits of `support` with CZ on the disjoint matching `pairs`, or SHS on the support with CZ# = (H x H) CZ (H x H) on the matching; no permutation). `logical_action` maps each logical generator label to the list of generator labels whose product it is sent to, checked up to stabilizers only (a logical factor the gate introduces belongs in this list); a generator not listed is claimed fixed. Labels are X0..X{k-1}, Z0..Z{k-1} for the (control) block and X0'..Z{k-1}' for the target block of a CX.",
       "required": [
         "gate",
         "logical_action"
@@ -884,7 +1050,8 @@
             "permutation",
             "H",
             "S",
-            "CX"
+            "CX",
+            "match"
           ]
         },
         "permutation": {
@@ -894,6 +1061,36 @@
           "items": {
             "type": "integer",
             "minimum": 0
+          }
+        },
+        "clifford": {
+          "enum": [
+            "S",
+            "SHS"
+          ],
+          "description": "match only: the single-qubit gate applied on `support`, which fixes the entangler on `pairs` (S with CZ, both Z-diagonal; SHS with CZ#, both X-diagonal)"
+        },
+        "support": {
+          "type": "array",
+          "description": "match only: the qubits the single-qubit gate acts on (distinct, below n; may be empty when `pairs` is not)",
+          "maxItems": 1000,
+          "items": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "pairs": {
+          "type": "array",
+          "description": "match only: the entangler's qubit pairs, a matching (no qubit in two pairs, endpoints distinct and below n); a qubit may be in both `support` and a pair",
+          "maxItems": 500,
+          "items": {
+            "type": "array",
+            "minItems": 2,
+            "maxItems": 2,
+            "items": {
+              "type": "integer",
+              "minimum": 0
+            }
           }
         },
         "logical_action": {
@@ -922,18 +1119,64 @@
           "maxLength": 400
         }
       },
-      "if": {
-        "properties": {
-          "gate": {
-            "const": "permutation"
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "gate": {
+                "const": "permutation"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "permutation"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "gate": {
+                "const": "match"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "clifford",
+              "support",
+              "pairs"
+            ],
+            "not": {
+              "required": [
+                "permutation"
+              ]
+            }
+          },
+          "else": {
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "clifford"
+                  ]
+                },
+                {
+                  "required": [
+                    "support"
+                  ]
+                },
+                {
+                  "required": [
+                    "pairs"
+                  ]
+                }
+              ]
+            }
           }
         }
-      },
-      "then": {
-        "required": [
-          "permutation"
-        ]
-      }
+      ]
     },
     "witnessProvenance": {
       "type": "object",

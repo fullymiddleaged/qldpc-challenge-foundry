@@ -649,12 +649,195 @@ def main():
     run_rename("author may rename an entry to an unrelated slug",
                "60-8-6.json", "60-8-4.json", True, author="alice")
 
+    # The family tag carries no claim, and a mis-tag costs everyone who
+    # searches by family while costing its author nothing, so correcting it
+    # alone binds for anyone (#2633). Everything else about the entry still
+    # does not.
+    def retag(family="pair-partition-cpm", **also):
+        def edit():
+            d = copy.deepcopy(BASE_DOC)
+            d["family"] = "other"
+            d.update(also)
+            return d
+        base = copy.deepcopy(BASE_DOC)
+        base["family"] = family
+        return edit, base
+
+    def tagged(base_family, new_family, **also):
+        base = copy.deepcopy(BASE_DOC)
+        if base_family is not None:
+            base["family"] = base_family
+
+        def edit():
+            d = copy.deepcopy(base)
+            if new_family is None:
+                d.pop("family", None)
+            else:
+                d["family"] = new_family
+            for k, v in also.items():
+                d[k] = v
+            return d
+        return edit, base
+
+    e, b = tagged("other", "pair-partition-cpm")
+    run_case("non-author may correct a family tag", e, True,
+             rename=False, base_doc=b)
+
+    e, b = tagged(None, "pair-partition-cpm")
+    run_case("non-author may add a missing family tag", e, True,
+             rename=False, base_doc=b)
+
+    e, b = tagged("other", None)
+    run_case("non-author may not remove a family tag", e, False,
+             rename=False, base_doc=b)
+
+    e, b = tagged("other", "pair-partition-cpm", n=61)
+    run_case("a family re-tag may not carry another field", e, False,
+             rename=False, base_doc=b)
+
+    def retag_plus_note():
+        d = copy.deepcopy(BASE_DOC)
+        d["family"] = "pair-partition-cpm"
+        d["provenance"] = dict(d["provenance"],
+                               notes="original. and a word from me")
+        return d
+    base = copy.deepcopy(BASE_DOC)
+    base["family"] = "other"
+    run_case("a family re-tag may not append to provenance.notes",
+             retag_plus_note, False, rename=False, base_doc=base)
+
+    e, b = tagged("other", "pair-partition-cpm")
+    run_case("a family re-tag plus a rename is not a family re-tag", e, False,
+             rename=True, base_doc=b)
+
+    # Not through run_case: an unchanged tag with nothing else changed is not
+    # a diff, so there is no commit to make. Asserted against the binding.
+    same = copy.deepcopy(BASE_DOC)
+    same["family"] = "other"
+    ok, why = check_authorship.family_binding("bob", same,
+                                              copy.deepcopy(same))
+    check("an unchanged family tag binds nothing", not ok and "unchanged" in why)
+
+    e, b = tagged("other", "pair-partition-cpm")
+    run_case("an author may re-tag their own entry", e, True,
+             rename=False, base_doc=b, author="alice")
+
     print()
     if _fail:
         print(f"FAILED: {_fail}")
         return 1
     print("ok")
+
+    # A literature match withdraws a novelty claim rather than making one, so
+    # recording it binds for anyone (#1204): novelty to known_parameters, a
+    # reference appended, nothing else.
+    def matched(novelty="known_parameters", refs=("arXiv:2306.16400",), **also):
+        def edit():
+            d = copy.deepcopy(BASE_DOC)
+            if novelty is not None:
+                d["provenance"]["novelty"] = novelty
+            d["provenance"]["references"] = list(BASE_DOC["provenance"].get("references") or []) + list(refs)
+            for k, v in also.items():
+                d[k] = v
+            return d
+        return edit
+
+    run_case("non-author may record a literature match", matched(), True,
+             rename=False)
+    run_case("non-author may add a reference alone", matched(novelty=None), True,
+             rename=False)
+    claimed = copy.deepcopy(BASE_DOC)
+    claimed["provenance"]["novelty"] = "new_parameters"
+    run_case("a literature match may withdraw a new_parameters claim",
+             matched(), True, rename=False, base_doc=claimed)
+    run_case("non-author may not assert new_parameters",
+             matched(novelty="new_parameters"), False, rename=False)
+    run_case("known_parameters without a reference does not bind",
+             matched(refs=()), False, rename=False)
+
+    def dropped_ref():
+        d = copy.deepcopy(BASE_DOC)
+        d["provenance"]["novelty"] = "known_parameters"
+        d["provenance"]["references"] = ["arXiv:2306.16400"]
+        return d
+    with_ref = copy.deepcopy(BASE_DOC)
+    with_ref["provenance"]["references"] = ["arXiv:0000.00001"]
+    run_case("a literature match may not remove a reference", dropped_ref, False,
+             rename=False, base_doc=with_ref)
+    run_case("a literature match may not carry another field",
+             matched(family="other"), False, rename=False)
+    same = copy.deepcopy(BASE_DOC)
+    ok, why = check_authorship.novelty_binding("bob", same, copy.deepcopy(BASE_DOC))
+    check("an unchanged novelty binds nothing", not ok and "nothing" in why)
+
+    _rate_cases()
     return 0
+
+
+def _rate_cases():
+    """Measured-rate points (schema 0.5, #1278): adding points to an existing
+    circuit.ler binds for anyone, since the gate re-measures them; changing
+    or removing an existing point, or anything else, does not."""
+    legacy = {"p": 0.001, "shots": 10000, "failures": 154, "seed": 7,
+              "decoder": "bposd-cs-10", "ler_per_round": 0.0052,
+              "ci95": [0.0044, 0.006]}
+    higher = {"p": 0.005, "shots": 10000, "failures": 1250, "seed": 7,
+              "decoder": "bposd-cs-10", "ler_per_round": 0.045,
+              "ci95": [0.042, 0.048]}
+    base = copy.deepcopy(BASE_DOC)
+    base["circuit"] = {"rounds": 3, "stim_version": "1.16.0",
+                       "d_circ": {"X": {"value": 3, "witness": [0, 1, 2]},
+                                  "Z": {"value": 3, "witness": [3, 4, 5]}},
+                       "ler": {"X": dict(legacy), "Z": dict(legacy)}}
+
+    def migrated(**also):
+        def edit():
+            d = copy.deepcopy(base)
+            d["schema_version"] = "0.5"
+            d["circuit"]["ler"] = {"X": [dict(higher), dict(legacy)],
+                                   "Z": [dict(higher), dict(legacy)]}
+            for k, v in also.items():
+                d[k] = v
+            return d
+        return edit
+
+    run_case("non-author may add measured-rate points to an existing ler",
+             migrated(), True, rename=False, base_doc=base)
+
+    def altered():
+        d = migrated()()
+        d["circuit"]["ler"]["X"][1]["failures"] = 100   # the old point moved
+        return d
+    run_case("non-author may not alter an existing rate point",
+             altered, False, rename=False, base_doc=base)
+
+    def dropped_basis():
+        d = migrated()()
+        del d["circuit"]["ler"]["Z"]
+        return d
+    run_case("non-author may not drop a basis while adding points",
+             dropped_basis, False, rename=False, base_doc=base)
+
+    def nothing_added():
+        d = copy.deepcopy(base)
+        d["schema_version"] = "0.5"
+        d["circuit"]["ler"] = {"X": [dict(legacy)], "Z": [dict(legacy)]}
+        return d
+    run_case("rewriting the legacy object as a one-point list adds nothing",
+             nothing_added, False, rename=False, base_doc=base)
+
+    def other_circuit_field():
+        d = migrated()()
+        d["circuit"]["rounds"] = 4
+        return d
+    run_case("adding rate points may not touch the rest of the circuit block",
+             other_circuit_field, False, rename=False, base_doc=base)
+
+    run_case("adding rate points may not carry another field",
+             migrated(n=61), False, rename=False, base_doc=base)
+
+    run_case("the listed author may add rate points too",
+             migrated(), True, author="alice", rename=False, base_doc=base)
 
 
 def test_main():

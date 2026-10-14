@@ -37,6 +37,47 @@ if led.stop_reason():
 `research/campaigns/smoke-bb-72/run.py` is the same thing end to end, small
 enough to run in a test.
 
+## Starting one
+
+`campaign.json` is the one artifact here the kit could read but not write
+(issue #2780). `scaffold_campaign` fills the required fields with the
+defaults worth having, and `write_campaign` validates and writes it:
+
+```python
+from campaign import scaffold_campaign, write_campaign
+
+spec = scaffold_campaign("gb-z341-probe", "GB over Z_341, one night",
+                         budget={"cpu_hours": 8},
+                         families=["generalized-bicycle"],
+                         constraints={"n": [600, 700]})
+write_campaign(spec, "research/campaigns/<id>/campaign.json")   # <id> = "gb-z341-probe"
+```
+
+The defaults: `kd2_over_n` maximized, `budget_exhausted` as the one stopping
+rule, status `draft`. The budget has no default, because a campaign with
+none is unbounded. Anything else (`constraints`, `methods`, `run_contract`,
+`required_outputs`, `notes`, an `objective` `target`) passes through as a
+keyword and is validated with the rest. `write_campaign` refuses to replace
+an existing file unless told `overwrite=True`, and holds the directory name
+to the campaign id the way `load_campaign` does.
+
+A campaign does not need a file to drive a ledger. `Campaign(spec)` with no
+path works, so a run that does not yet want a directory still records what
+it screened:
+
+```python
+led = Ledger(Campaign(spec))
+led.start_experiment("generalized-bicycle", seed=1, params={"m": 341})
+led.record_screen(trials=1000, d=20, backend="numpy")
+led.record_verdict("not_run")
+led.end_experiment()
+write_summary(led.summary(), "research/campaigns/<id>/summary.json")
+```
+
+The definition is wrapped, `{"campaign": {...}}`; `validate_campaign` says
+so when handed the bare fields. Both the ledger and the writer need the
+`research` extra for `jsonschema`: `uv run --extra research python ...`.
+
 ## The run contract
 
 Depth, trials, and seeds passed as free-form argv leave no record of what a
@@ -103,10 +144,45 @@ opens a PR: unattended runs stage for review, and publication follows
 A campaign owes its ledger and its negative results whether or not it found
 anything. Zero submissions is a complete, reportable outcome, and the closed
 family is the finding. `summary.json` is the machine-readable half;
-`TEMPLATE_report.md` is the human half.
+`TEMPLATE_report.md` is the human half. A committed `summary.json` is what
+`./qldpc recent` lists under campaign summaries (status, experiments,
+survivors, frontier advances, negative results, families), and
+`./qldpc recent --json` hands the same fields to the next session as data,
+so a closed family is learned from the summary rather than from the report.
 
 `abandoned` keeps everything a run produced. Stopping early throws nothing
 away.
+
+An experiment that screened nothing has to say which kind of nothing it was.
+Two broken sweeps in this repo read as clean negatives at summary level: one
+whose sampler raised on a malformed parameter and filed the exception text
+under `negative_results`, and one whose worker died on a deleted helper and
+recorded nothing. Both closed with zero screened, and at the summary neither
+was distinguishable from a search that ran and found nothing. So
+`end_experiment` refuses a zero that gives no reason. A crash is filed with
+`record_error(what, detail)`, which marks the experiment `aborted`, lands it
+under `errors` in the journal, the manifest, and the summary, and keeps it
+out of `negative_results`. A sampler that legitimately yields nothing at
+these parameters closes with `end_experiment(empty_ok=True)`. Any budget
+spend, a `record_screen` reading, a `record_verdict`, or a survivor counts as
+evidence that something ran and closes normally.
+
+```python
+led.start_experiment("bivariate-bicycle", seed=3)
+try:
+    cands = sample(l=3, m=3)
+except Exception as e:                    # the generator failed
+    led.record_error("sweep failed", f"{type(e).__name__}: {e}")
+    led.end_experiment()
+else:
+    if not cands:                         # nothing exists here
+        led.end_experiment(empty_ok=True)
+```
+
+An aborted experiment neither resets nor advances the `no_progress` streak,
+so a campaign cannot stop for lack of progress on the strength of a crash.
+`summary.json` reports `aborted_experiments` beside `experiments`, and the
+`errors` list carries the index of the experiment each one belongs to.
 
 The ledger is held in memory, so a kill loses it. Pass `journal=` and every
 experiment is appended to a JSONL file as it closes, which narrows the loss to
@@ -151,6 +227,7 @@ everything that closed. It records:
 | `snapshot` | git HEAD, plus a hash of the working-tree diff and whether there was one. HEAD alone does not identify a run: campaigns are normally run from a tree with edits in it, and two such runs give different numbers from one sha |
 | `params` | the depth, ladder, seeds and workers actually invoked, recorded as given rather than re-derived from the campaign file |
 | `seeds`, `experiments`, `consumed` | what was run and what it cost |
+| `negative_results` | the dead ends: collapsed ladders and closed routes. A stage-only run drafts no note (`../AUTORESEARCH.md`, "Output & housekeeping"), so if these are not here they are lost with the staging directory |
 | `survivor_verdicts` | `(n, k, d)` and a fingerprint of each survivor's gate verdict, enough to detect one whose verdict changed between the run and the PR |
 | `logs` | excerpts promoted out of gitignored `*.log` files |
 
@@ -177,3 +254,101 @@ nobody can connect to an assertion is weight without evidence.
 Any campaign whose numbers appear in `notes/` or `fieldnotes/` commits its
 manifest beside the note, and the note cites it. A campaign that submits
 nothing does not need one.
+
+## The screening registry
+
+`research/candidates/` is gitignored, so a family screened and discarded
+leaves nothing behind and the next session pays for it again. The committed
+record is the summary, and the registry is what the summaries add up to
+(issue #2726).
+
+Three fields on each experiment row carry the outcome rather than the tally,
+and `research/kit/campaign.py` writes them:
+
+```python
+led.start_experiment("generalized-bicycle", seed=7,
+                     mode="novel_generation",
+                     params={"ring": "Z_341", "a_support": "6+4x2"})
+led.record_screen(trials=300_000, d=78, backend="fast")
+led.record_verdict("not_run")      # screened and dropped before the gate
+led.end_experiment()
+```
+
+| Field | What it carries |
+|---|---|
+| `params` | the construction parameters that identify this family member, beside the resolved run parameters. A family name alone cannot say whether this member was tried |
+| `screened` | the lightest weight the screen found, the trial count it was read at, and which backend read it. The depth is part of the reading: NumPy iterations and fast-RIS samples are not comparable budgets. A sampled reading must carry its trial count; a structural or solver reading has none, and records what it searched instead, rather than borrowing a number from somewhere else |
+| `verdict` | `passed`, `refuted`, `held`, `duplicate`, `dominated`, or `not_run`. `not_run` is the ordinary case and the useful one: it says the member was screened and dropped before the gate |
+| `mode` | how the candidate was arrived at. The kit's samplers are rejection sampling with no memory between candidates, which is `novel_generation`; a survivor count cannot distinguish a budget spread across a family from one spent mutating a single lineage |
+
+`summary()` also computes `screen_quality`: per family, the Spearman rank
+correlation between the screened distance and the gate outcome, with the pair
+count beside it. Rank correlation and not error, because `distance_rand` at
+low trials is a ranking instrument rather than a measuring one, so an error
+bar against a depth-mismatched number would be fiction. A family whose screen
+orders candidates the way the gate does can be trusted to spend a ladder
+budget on the right rung; one whose screen does not is good for discarding
+and not for choosing. The correlation is `null`, not `0.0`, when the rows
+carry no spread: nothing was tested is a different statement from the screen
+is uninformative.
+
+Summaries are validated against
+[`../../schema/campaign_summary.schema.json`](../../schema/campaign_summary.schema.json)
+on the way out, so a reporting bug surfaces where the summary is written.
+
+### Reading it
+
+```
+qldpc screened --family generalized-bicycle --param ring=Z_341
+qldpc screened --param n_side=5 --param t=3 --json
+```
+
+Parameters match as a subset, so a query on the ring alone finds every member
+screened over it. The answer is the committed record of what was tried, at
+what depth, and how it went. It is advisory: the gate remains the only thing
+that admits a code, and a row saying `passed` records that
+`verify/validate_candidate.py` once said so, nothing more.
+
+### Backfilled summaries
+
+A summary reconstructed from prose after the fact carries a `backfilled`
+block naming the sources it was read out of. A backfilled row carries what
+its source stated and nothing more: where a seed or a screening depth was
+never written down, the field is absent rather than guessed. The September
+2026 campaigns are backfilled this way, three of them generated from their
+own committed audit JSON rather than typed from the prose around it.
+
+### The curve
+
+`qldpc curve <id>` plots best-so-far verified efficiency against cumulative
+trials, per family, from the rows the summary already commits (issue #2735).
+It measures nothing and runs nothing.
+
+```
+qldpc curve sat-2dlocal-t2plus --cell local-2d-single/weight-6
+qldpc curve <id> --bar 30.48 --write     # also writes curve.json
+```
+
+Two series, because the disagreement between them is the point. The verified
+series is best-so-far over the rows the gate passed, so it is monotone. The
+screened series is each row's own reading at the depth it was taken, not a
+running maximum, so a ladder that settles downward shows as a descent rather
+than a flat line. The bar is the campaign's `objective.target` when it has
+one, the board's best in a named cell with `--cell`, or an explicit `--bar`.
+
+That is what separates the two failures the fieldnotes describe. A campaign
+whose screen cleared the bar while the gate admitted nothing there reports
+
+```
+never reached it, and the screen did: the ladder read above the bar and the
+gate admitted nothing there
+```
+
+and one whose screen never cleared it says so instead. The first is a
+screening trap and the second is an empty region, and they call for opposite
+responses: deepen the screen, or go somewhere else.
+
+`trials_to_bar` is reported beside the best score because on a Pareto board
+the two disagree, and the disagreement is the result: a family reaching the
+bar in 2M trials and a family reaching a better score in 30M are not the same
+outcome, and a manifest that reports only the best score reads them the same.

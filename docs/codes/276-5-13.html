@@ -104,6 +104,7 @@
 <section class=blk><h3>How this code was found</h3><div class=kv style="color:var(--mut)">the research note submitted with this code &middot; <a href="https://github.com/unitaryfoundation/qldpc-challenge/blob/main/notes/276-5-13.md">raw markdown</a> &middot; <a href="../research-log.html">all notes</a></div><div class=notebody><h3>[[276,5,13]] — reduction of the board&#x27;s [[299,5,13]]</h3>
 <h4>What is new here</h4>
 <p>The source, @FarLab and @vprusso&#x27;s <code>codes/299-5-13.json</code>, carries **ten qubits that are not entangled with anything**. They are removable by an argument, with no distance search of any kind, and the argument is what this note is mainly about. Twenty-three qubits come out in total; the other thirteen come from the graft moves used in my earlier reductions on this board.</p>
+<p>The source entry has since been removed from the board by <code>14095599</code>, so it is pinned: github.com/unitaryfoundation/qldpc-challenge at <code>14095599^</code>, file <code>codes/299-5-13.json</code>. Every path of that name below reads against that revision — the qubit coordinates and matrices the argument depends on are the ones there.</p>
 <h4>Move 0: fixed qubits</h4>
 <p>Call a qubit *q* <b>fixed</b> when the unit vector <code>e_q</code> lies in the <b>row space</b> of <code>H_Z</code> — that is, when some element of the stabilizer group acts on *q* alone. It does not have to be one of the published generators.</p>
 <p>Three consequences, in order:</p>

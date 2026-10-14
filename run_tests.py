@@ -23,9 +23,19 @@ import sys
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 
-# Slow tests (about a minute or more locally); skipped with --skip-slow, by
-# pytest -k expression so the names stay readable here.
-SLOW = []
+# The suite's heavy hitters, as pytest node ids or a whole path. --skip-slow is a
+# local-iteration flag: CI never passes it, so what it skips is the same set CI runs.
+SLOW = [
+    "verify/test_refute_gate.py::test_structural_stage_ordering",
+    "verify/test_refute_gate.py::test_orbit_fold_stage_ordering",
+    "verify/test_validate_candidate.py::test_validate_candidate",
+    "verify/test_stabilizer_codes.py::test_hadamard_copy_of_a_board_code_is_a_duplicate",
+    "verify/test_verifier.py::test_adversarial",
+    "verify/test_verifier.py::test_main",
+    "cli/test_reproduce.py::test_the_cheap_core_reproduces_and_writes_a_receipt",
+    # a whole file, because its module-scoped board load costs more than its tests
+    "verify/test_cli_targets.py",
+]
 
 
 def main(argv):
@@ -36,7 +46,13 @@ def main(argv):
 
     cmd = [sys.executable, "-m", "pytest", "verify", "research", "site", "cli"]
     if args.skip_slow and SLOW:
-        cmd += ["--deselect" if "::" in s else "--ignore=" + s for s in SLOW]
+        for s in SLOW:
+            # --deselect takes its id as a separate argv entry; a bare
+            # "--deselect" is a pytest usage error.
+            if "::" in s:
+                cmd += ["--deselect", s]
+            else:
+                cmd += ["--ignore=" + s]
     cmd += extra
     return subprocess.run(cmd, cwd=ROOT).returncode
 

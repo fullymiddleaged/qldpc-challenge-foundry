@@ -85,7 +85,8 @@
 <li><code>n=700, k=75, d=3, w=4, r=1.4142, layers=1, g=0.9643</code> — <code>verify/qldpc_verify.py</code> → <code>ok true</code>, <code>weight-4</code>, <code>local-2d-single</code>, <code>interaction_radius √2</code> (unit squares), <code>min_site_spacing 1.0</code>.</li>
 <li><code>d=3</code> witness: weight-3 hole-to-boundary string (both sides), <code>in_ker</code> + <code>not in_rowspace</code> + <code>weight==d</code> checks pass. Gate refutation <code>8000 RIS</code> finds no weight ≤2 logical (<code>not refuted</code>). Tier <code>upper_bound</code> (exact at <code>d=3</code> is cheap but left as upper bound per board convention).</li>
 <li><code>k=75</code> recomputed via <code>gf2.rank</code> (<code>n - rank(HX) - rank(HZ)</code>).</li>
-<li><code>validate_candidate</code> on staged <code>research/candidates/irregular-700-75-3.json</code> (pre-board, to avoid self-dedup) → <code>passed:true</code>, <code>board_advancing:true</code>, <code>advances the weight-4 × local-2d-single board</code>, no <code>exact_duplicate</code>/<code>wl_equivalent</code>.</li>
+<li><code>validate_candidate</code> on the staged candidate (run pre-board, to avoid</li>
+<p>self-dedup; the entry is now <code>codes/700-75-3.json</code>) → <code>passed:true</code>, <code>board_advancing:true</code>, <code>advances the weight-4 × local-2d-single board</code>, no <code>exact_duplicate</code>/<code>wl_equivalent</code>.</p>
 </ul>
 <h4>Dead ends &amp; why this beats uniform</h4>
 <ul>
@@ -96,7 +97,7 @@
 <h4>Tools</h4>
 <p>Built with <b>Amicode</b> harness (model: Muse Spark 1.2) — repo kit (<code>css.py</code>, <code>gf2_fast</code>, <code>submit.py</code>), <code>validate_candidate</code> gate on <code>erlich</code> (24c, 200 seeds × 5k RIS) + <code>mini</code> (10c) mirror.</p>
 <h4>Reproduction</h4>
-<p><code>research/candidates/irregular_holey_opt.py</code> (erlich <code>~/qldpc-challenge</code>, mini <code>~/armonia/repos/qldpc-challenge</code>): <code>greedy_max_holes(28,25,3,seed)</code> + hill climb 20, <code>build_rect(Lx=28,Ly=25, holes=holes)</code> with boundary scan, <code>gf2_fast.distance_rand_parallel(5000, seed)</code> for <code>d</code>, keep <code>k&gt;57</code>. This code: seed 15, 74 holes, <code>k=75</code>. Also <code>research/candidates/build_rect_holey.py</code> for the rectangular vehicle. Staged JSON: <code>research/candidates/irregular-700-75-3.json</code> (also <code>seed15</code>).</p>
+<p>A local optimizer, written for this search and not committed here, run on two machines: <code>greedy_max_holes(28,25,3,seed)</code> + hill climb 20, <code>build_rect(Lx=28,Ly=25, holes=holes)</code> with boundary scan, <code>gf2_fast.distance_rand_parallel(5000, seed)</code> for <code>d</code>, keep <code>k&gt;57</code>. This code: seed 15, 74 holes, <code>k=75</code>. A separate rectangular builder produced the uniform case. Staged JSON: now <code>codes/700-75-3.json</code> (also drafted as <code>seed15</code>).</p>
 <h4>Relation to prior</h4>
 <p>Dominates PR #449 (<code>[[700,57,3]] g=0.733</code>) on same cell — same <code>n,d,w,r</code> but <code>k 57→75</code>. The <code>g=1</code> asymptote remains (needs new <code>w=4</code> cellulation to exceed 1), but irregular packing is the strongest *holey* result under <code>n≤700</code> and <code>r=√2</code>.</p></div></section>
 <section class=blk><h3>Parity checks</h3>

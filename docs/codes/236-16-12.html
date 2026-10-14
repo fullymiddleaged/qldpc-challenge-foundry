@@ -117,6 +117,7 @@
 <section class=blk><h3>How this code was found</h3><div class=kv style="color:var(--mut)">the research note submitted with this code &middot; <a href="https://github.com/unitaryfoundation/qldpc-challenge/blob/main/notes/236-16-12.md">raw markdown</a> &middot; <a href="../research-log.html">all notes</a></div><div class=notebody><h3>[[236,16,12]] — reduction of the board&#x27;s [[261,16,12]]</h3>
 <h4>Direction &amp; hypothesis</h4>
 <p>@mathysrennela established on this board that reducing an existing entry is a contribution in its own right: <code>codes/261-16-12.json</code> is theirs and merged. This code is that entry with 25 qubits removed, by a move set their tool does not have.</p>
+<p>The source entry has since been removed from the board by <code>14095599</code>, so it is pinned rather than merely linked: github.com/unitaryfoundation/qldpc-challenge at <code>14095599^</code>, file <code>codes/261-16-12.json</code> — every path of that name below is to be read against that revision.</p>
 <p>The hypothesis is narrow and structural. <code>graft_r1_safe</code> removes a qubit that sits in <b>exactly one</b> stabilizer of a Pauli type. A qubit sitting in two or three is untouchable by it — but it need not stay that way, because which stabilizers a qubit sits in is a property of the *generating set*, not of the code.</p>
 <h4>The move set</h4>
 <p>Three moves, applied to a fixpoint, on the source&#x27;s own coordinates:</p>

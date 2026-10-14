@@ -71,7 +71,7 @@
 <h4>Direction &amp; hypothesis</h4>
 <p>Tested whether the [[700,85,3]] hole-packing trick (g = 1.09 at d=3, exact MILP max-hole) generalizes to growing distance. At r = sqrt(2), rho = 1, g = kd^2/n, so beating the surface code at distance D requires k/n &gt; 1/D^2. At D=3 single-cell holes are free (loop weight 4 &gt;= 3) and independent (k = 1 + holes); at D=5 a single cell gives loop weight 4 &lt; 5, so holes must be clusters, and the D=5 rule (loop weight &gt;= 5, same-parity Chebyshev &gt;= 5, diff-parity Manhattan &gt;= 5, margin 5) was the natural generalization. Hypothesis: the g &gt; 1 trick might climb to d=5 with a denser D-rule packing.</p>
 <h4>What was searched</h4>
-<p>Generalized the calibrated d=3 constructor (<code>research/candidates/_build_700_85_3.py</code>) to an arbitrary D-rule in <code>research/candidates/holey_general.py</code>: cluster enumeration (loop weight &gt;= D), MILP max independent set over hole placements, grid sweep (Lx, Ly) with Lx*Ly &lt;= 700, margins 3/4/5. Validation first: D=3 reproduces [[700,85,3]] exactly (84 holes, even 42, k=85, d&gt;=3 exact).</p>
+<p>Generalized the calibrated d=3 constructor behind <code>[[700,85,3]]</code> to an arbitrary D-rule: cluster enumeration (loop weight &gt;= D), MILP max independent set over hole placements, grid sweep (Lx, Ly) with Lx*Ly &lt;= 700, margins 3/4/5. Validation first: D=3 reproduces [[700,85,3]] exactly (84 holes, even 42, k=85, d&gt;=3 exact).</p>
 <p>D=5 screen (~80 shapes, 120s MILP cap per shape) + margin probe on 23x26, 25x28, 17x36 at margins 3/4/5, boundary-bit scan (16 choices), then <code>verify/certify.py</code> MILP per candidate.</p>
 <h4>Evidence trail</h4>
 <p>| shape | margin | holes | k | g=25k/n | certify d=5 | certify d=4 | |---|---|---|---:|---:|---|---| | 23x26 | 5 | 12 | 25 | 0.669 | REFUTED both sides | <b>exact</b> both sides | | 25x28 | 3 | 20 | 41 | 1.025* | - | refuted (Z-side) | | 25x28 | 4 | 16 | 33 | 0.825 | - | - | | 25x28 | 5 | 12 | 25 | 0.669 | - | - |</p>
@@ -87,16 +87,15 @@
 <p>the k/n &gt; 1/25 threshold for g &gt; 1. The g &gt; 1 trick does not climb: [[700,85,3]] is an apex of the holey-surface family, not a leading edge.</p>
 </ul>
 <h4>Tools</h4>
-<p>DeepSeek V4 Flash 0731 (provenance.model). Repo tooling: <code>research/candidates/holey_general.py</code> (D-rule builder + screen), <code>holey_d5_margin_probe.py</code> (margin/bits/distance probe), <code>verify/certify.py</code> (scipy/HiGHS MILP exact distance), <code>verify/validate_candidate.py</code> (trusted gate). ~90 min MILP across shapes.</p>
+<p>DeepSeek V4 Flash 0731 (provenance.model). Repo tooling: a D-rule builder with its screen and a margin/bits/distance probe (both local scripts, not committed here), <code>verify/certify.py</code> (scipy/HiGHS MILP exact distance), <code>verify/validate_candidate.py</code> (trusted gate). ~90 min MILP across shapes.</p>
 <h4>Reproduction</h4>
+<p>The D-rule builder was a local script and was not committed; its recipe is the method stated above (cluster enumeration with loop weight &gt;= D, MILP max independent set over hole placements, grid sweep Lx x Ly &lt;= 700, margins 3/4/5). With the resulting document:</p>
 <pre>
-uv run python research/candidates/holey_general.py --validate   # D=3 repro: 84 holes
-uv run python research/candidates/holey_general.py --build --LX 23 --LY 26 --D 5 --BITS 1,1,0,1
-# then edit the doc: distance d=4 (not 5), with the certified witnesses
-uv run python verify/certify.py research/candidates/598-25-4-holey.json --tlim 300
-uv run python verify/validate_candidate.py research/candidates/598-25-4-holey.json
+uv run python verify/certify.py codes/598-25-4.json --tlim 300
+uv run python verify/validate_candidate.py &lt;staged candidate&gt;.json
 </pre>
-<p>Candidate: <code>research/candidates/598-25-4-holey.json</code>. Screen data: <code>research/candidates/_holey_D5_scan.json</code>, <code>research/candidates/_holey_D5_margin_probe.json</code>.</p></div></section>
+<p><code>certify.py</code> runs against the committed entry. <code>validate_candidate.py</code> was run on the staged document before filing; against the committed entry it exits 1 on self-dedup.</p>
+<p>Candidate: <code>codes/598-25-4.json</code>. The D5 scan and margin probe were screen working output and were not committed; their surviving readings are the numbers in the Evidence trail above.</p></div></section>
 <section class=blk><h3>Parity checks</h3>
 <div class=kv><b>X-checks</b> 285 (max weight 4) &middot; <b style="min-width:auto">Z-checks</b> 288 (max weight 4)</div>
 <details><summary>H_X (285 checks, sparse supports)</summary><div class=wit>[0, 1, 26, 27]

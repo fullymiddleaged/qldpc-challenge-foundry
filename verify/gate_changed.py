@@ -18,6 +18,16 @@ size, so a small code gets near-exhaustive coverage and a large one a
 proportionate search; frontier-advancing codes get several independent deep
 seeds (tens of thousands of trials each) before they earn the record.
 
+Stage 1b (audit of 2026-10-08) is the orbit-fold pass,
+heuristic_distance.orbit_fold_refute: symmetries read from the matrices,
+and the lightest logical constant on the orbits of each cyclic subgroup
+searched in the folded code, then re-validated on the full matrices. The
+loop runs in the accelerator when it is built (gf2_fast.fold_rand_witness)
+and in python otherwise, so the stage runs on every path; like stage 1, a
+validated hit settles the verdict and a miss proves nothing. The in-verifier
+quick pass and the weekly sweep run the same fold at a smaller budget
+through refute_check.
+
 The gate prices the DIFF, not just the code (issue #654): each changed file
 is classified against its base-revision counterpart, because what changed
 determines what could newly be over-claimed. A layout-only diff (checks and
@@ -68,6 +78,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import circuit_tools as CT
 import gf2
 import heuristic_distance as H
+import refutation_cache as RC
 from circuit_verify import MAX_DEM_MECHANISMS, SIDE_FILES
 from qldpc_verify import file_size_error, generator_supports, is_stabilizer, sides
 from validate_candidate import validate_candidate
@@ -113,6 +124,22 @@ def fast_slices(trials):
 # larger target; everything else gets enough to catch the gross over-claims.
 STRUCT_TRIALS_DEEP = 400_000
 STRUCT_TRIALS_STD = 50_000
+
+# Orbit-fold pass (stage 1b; audit of 2026-10-08). The code's symmetries are
+# read from the matrices and the lightest logical constant on the orbits of
+# each cyclic subgroup is searched in the folded code -- the shape RIS cannot
+# sample and the one 54 board entries were over-stated by (see
+# heuristic_distance.orbit_fold_min_logical). Trials are per folded code and
+# cheap (sub-millisecond: tens to a few hundred columns); the wall-clock cap
+# bounds the pass on entries with many partitions. Measured with the C++
+# loop on the largest board entries (n = 682, k = 172): 10,000 trials in
+# 4-7 s, 50,000 in 15-28 s, and the bound kept tightening with trials (78 ->
+# 66 at 300, 60 at 2,000, 58 at 50,000), so the budgets are set where the
+# wall-clock is still a rounding error against the RIS battery.
+FOLD_TRIALS_DEEP = 50_000
+FOLD_TRIALS_STD = 10_000
+FOLD_SECONDS_DEEP = 300.0
+FOLD_SECONDS_STD = 60.0
 
 
 def map_changed(paths):
@@ -422,26 +449,34 @@ def _budget(n, deep, fast=False):
     return trials, seconds, 1
 
 
-# Circuit-tier refutation budget (RFC 0001 step 6). Per-trial RIS cost on
-# ker(H_dem) fits ~cost * mechanisms^3, dominated by the packed RREF. With
-# the in-C++ DEM trial loop (gf2_fast.dem_rand_witness: kernel packed once,
-# pivot-order permutation instead of physical column moves, 4 threads;
-# measured 2026-08-21: 0.76 ms at m=1687, 10.8 ms at m=5353, 330 ms at
-# m=12411) the asymptotic constant is ~2e-13; the pure numpy fallback loop
-# measured ~1.9e-11 (85 ms at m=1651), hence the 100x factor. The budget
-# targets a wall-clock per basis and converts it to trials through the fit;
-# the hard time cap inside ris_dem bounds CI even where the fit is off. At
-# MAX_DEM_MECHANISMS (~3.1 s/trial) the 120 s target buys ~38 trials, so the
-# cap is genuinely searchable at full depth.
-CIRCUIT_TRIAL_COST = 2.0e-13          # seconds per trial per mechanisms^3
-CIRCUIT_PY_FACTOR = 100               # numpy-loop fallback slowdown, measured
+# Circuit-tier refutation budget (RFC 0001 step 6). The search reduces the
+# r x m DEM check matrix in a random column order each trial (issue #2797;
+# before it, a basis of the kernel, at ~2e-13 m^3 s per trial), so per-trial
+# cost is ~cost * r^2 * m with r the detector count. Measured 2026-10-06 with
+# the in-C++ trial loop on 4 threads: 4.9 ms at (r, m) = (810, 23,940),
+# 44 ms at (1,002, 89,381), 132 ms at (1,728, 96,962), 277 ms at
+# (2,304, 130,972), a constant of 3e-13 to 5e-13; 8e-13 leaves room for a
+# slower runner, and the hard time cap inside ris_dem bounds CI even where
+# the fit is off. The trial ceiling is 10x the old one, so a small DEM gets
+# the depth the budget can pay for rather than stopping at 20,000. The pure numpy loop measured ~190x slower (922 ms against
+# 4.9 ms on the first of those), hence the fallback factor. At the cap with
+# r = m / 30 the 120 s target buys about 200 trials per basis; the old cap
+# bought 38.
+CIRCUIT_TRIAL_COST = 8.0e-13          # seconds per trial per (detectors^2 * mechanisms)
+CIRCUIT_PY_FACTOR = 200               # numpy-loop fallback slowdown, measured
 CIRCUIT_SECONDS = 120.0               # wall-clock target per basis
-CIRCUIT_MAX_TRIALS = 20_000
+CIRCUIT_MAX_TRIALS = 200_000          # raised 10x with the r^2 m search: on
+                                      # a small DEM (m ~ 2,000) the 120 s now
+                                      # buy ~60,000 trials where 20,000 took
+                                      # 15 s before (FarLab on #2811)
 CIRCUIT_MIN_TRIALS = 12
+CIRCUIT_DETECTORS_PER_MECHANISM = 1 / 30   # the densest ratio seen; used when
+                                           # the caller has no detector count
 
 
-def _circuit_budget(m, fast):
-    per = CIRCUIT_TRIAL_COST * m ** 3 * (1 if fast else CIRCUIT_PY_FACTOR)
+def _circuit_budget(m, fast, detectors=None):
+    r = detectors if detectors else max(1, int(m * CIRCUIT_DETECTORS_PER_MECHANISM))
+    per = CIRCUIT_TRIAL_COST * r * r * m * (1 if fast else CIRCUIT_PY_FACTOR)
     per = max(per, 0.002)
     trials = int(max(CIRCUIT_MIN_TRIALS if fast else 3,
                      min(CIRCUIT_MAX_TRIALS, CIRCUIT_SECONDS / per)))
@@ -497,7 +532,8 @@ def _circuit_refute(doc, circuits_dir, seed, trials_override=None):
         # `fast` keys on the DEM entry point specifically: a stale extension
         # without it drops ris_dem to the numpy loop and must be budgeted so.
         trials, cap = _circuit_budget(
-            m, CT._GF is not None and hasattr(CT._GF, "dem_rand_witness"))
+            m, CT._GF is not None and hasattr(CT._GF, "dem_rand_witness"),
+            detectors=dem.num_detectors)
         if trials_override:
             trials = trials_override
         w, wit = CT.ris_dem(Hd, L, trials, seed=seed, max_seconds=cap)
@@ -523,6 +559,36 @@ def _validated_logical(HX, HZ, n, w, side, support):
     return (int(v.sum()) == w
             and not ((Hcheck @ v) % 2).any()
             and bool(((L @ v) % 2).any()))
+
+
+def _revalidated_hits(doc, hits):
+    """Keep only the restored witnesses the pinned stack still confirms.
+
+    A cached refutation is reused, a cached clean result never is, and the
+    asymmetry rests entirely on this: a witness is a checkable fact. The
+    cache directory is writable by the submitted tree's own build step, so a
+    record arriving from it is a proposal exactly like an accelerator
+    proposal, and it is confirmed the same way before anything is believed.
+    The side is not stored, so both are tried; a refutation is a lighter
+    nontrivial logical on either side.
+    """
+    n = int(doc["n"])
+    claimed = int(doc["distance"]["d"])
+    HX = H._matrix(doc["checks"]["X"], n)
+    HZ = H._matrix(doc["checks"]["Z"], n)
+    out = {}
+    for m, (w, support) in hits.items():
+        try:
+            w = int(w)
+            support = [int(q) for q in support]
+        except (TypeError, ValueError):
+            continue
+        if w >= claimed or not support or max(support) >= n or min(support) < 0:
+            continue
+        if any(_validated_logical(HX, HZ, n, w, side, support)
+               for side in ("X", "Z")):
+            out[m] = (w, support)
+    return out
 
 
 def _fast_refute(doc, seed, trials, max_seconds=None):
@@ -654,6 +720,7 @@ def main(argv):
     seed = None
     code_root = ROOT
     receipt_dir = None
+    search_cache = None
     pr_number = None
     pr_author = None
     base_sha = None
@@ -661,6 +728,12 @@ def main(argv):
     if "--receipt-dir" in rest:
         i = rest.index("--receipt-dir")
         receipt_dir = os.path.abspath(rest[i + 1])
+        rest = rest[:i] + rest[i + 2:]
+    # A completed search, reusable by a later run on byte-identical code
+    # (issue #2633). Absent, every run searches, which is today's behavior.
+    if "--search-cache" in rest:
+        i = rest.index("--search-cache")
+        search_cache = os.path.abspath(rest[i + 1]) if rest[i + 1] else None
         rest = rest[:i] + rest[i + 2:]
     if "--pr-number" in rest:
         i = rest.index("--pr-number")
@@ -861,6 +934,30 @@ def main(argv):
         seeds = [seed, seed + 2, seed + 3][:nseeds]
         results = {}
 
+        # A search this run does not have to repeat (issue #2633). The key is
+        # the candidate's bytes plus the pinned closure, so a push that fixed
+        # prose reuses it and a push that touched the code or the verifier does
+        # not. Only the search; everything board-dependent is recomputed below.
+        with open(p, "rb") as _f:
+            doc_bytes = _f.read()
+        # Load AND confirm before the stages below decide whether to run:
+        # a record that does not re-validate has to leave the search in
+        # front of us, not behind us.
+        cached = RC.load(search_cache, doc_bytes, deep=deep,
+                         accelerated=GF is not None)
+        if cached is not None:
+            _rgate, _rhits = RC.restored(cached)
+            _rhits = _revalidated_hits(doc, _rhits)
+            if _rhits:
+                cached = (_rgate, _rhits)
+                print(f"reuse    {f}: refutation from "
+                      f"{(_rgate['reused_from'].get('head_sha') or '?')[:8]} "
+                      f"(seed {_rgate.get('seed')}), witness re-checked")
+            else:
+                print(f"note     {f}: a cached record did not re-validate; "
+                      f"searching")
+                cached = None
+
         # STAGE 1 -- structure-aware pre-pass (issue #942). Cheapest mechanism
         # in the gate and, on the one family it applies to, by far the
         # strongest: it asks the accelerator whether H_X is [circ(a) | circ(b)]
@@ -869,7 +966,7 @@ def main(argv):
         # goes straight to stage 2, which is the ordinary path.
         struct_trials = 0
         struct_refuted = False
-        if GF is not None:
+        if GF is not None and cached is None:
             st = STRUCT_TRIALS_DEEP if deep else STRUCT_TRIALS_STD
             sres = _structural_refute(doc, seed + 11, st)
             struct_trials = sres[3]
@@ -890,13 +987,43 @@ def main(argv):
         # logicals (86+96 of 427 kernel dimensions on the [[682,172]] entry).
         # 52 of the board's 56 circulant GB entries have a mixed-support
         # witness, so a code that survives stage 1 still owes the full battery.
+
+        # STAGE 1b -- orbit-fold pass (audit of 2026-10-08). Pure python, no
+        # accelerator needed, so it runs on every path. It generalises stage 1:
+        # instead of the one restriction "supported on a single block" it
+        # restricts to "constant on the orbits of a cyclic subgroup" for every
+        # symmetry read from the matrices (block shifts, 2-D shifts, affine
+        # multipliers), which is where the lightest logicals of the board's
+        # cyclic entries actually sit -- every 14th qubit of each block on the
+        # [[700,26,100]] filing, weight 50 against a claim the general battery
+        # had passed. Same soundness terms as stage 1: a find counts only after
+        # the lifted vector is re-validated on the full matrices, and a
+        # validated hit settles the verdict. A code with no detected symmetry
+        # reports zero partitions and is left out of the method list.
+        fold_searched = 0
+        fold_trials = 0
+        fold_refuted = False
+        if not struct_refuted and cached is None:
+            fold_trials, fold_seconds = ((FOLD_TRIALS_DEEP, FOLD_SECONDS_DEEP) if deep
+                                         else (FOLD_TRIALS_STD, FOLD_SECONDS_STD))
+            fres = H.orbit_fold_refute(doc, seed=seed + 13, trials=fold_trials,
+                                       max_seconds=fold_seconds)
+            fold_searched = fres[3]
+            if fold_searched:
+                results["orbit-fold"] = fres
+                fold_refuted = fres[0]
+            else:
+                fold_trials = 0
+        settled = struct_refuted or fold_refuted
         ftrials = ftarget = 0
-        if not struct_refuted:
+        if not settled and cached is None:
             # two independent mechanisms; a hit from EITHER (any seed) refutes.
+            # fold_trials=0: stage 1b already ran the fold at a larger budget.
             for si, s in enumerate(seeds):
                 results[f"RIS#{si}"] = H.refute_check(doc, seed=s,
                                                       max_seconds=budget,
-                                                      trials=trials)
+                                                      trials=trials,
+                                                      fold_trials=0)
             # Frontier claims additionally face the accelerated deep search when
             # the extension is built (CI builds it; see Makefile `fast`): ~150x
             # the python trial target in the wall-clock freed by dropping 2 of
@@ -923,6 +1050,12 @@ def main(argv):
             tag = (f"circulant-GB x {struct_trials} (refuted at stage 1; the "
                    f"general battery cannot change a validated refutation and "
                    f"was skipped)")
+        elif fold_refuted:
+            tag = (f"orbit-fold x {fold_searched} partitions @ {fold_trials} "
+                   f"(refuted at stage 1b; the general battery cannot change a "
+                   f"validated refutation and was skipped)")
+            if struct_trials:
+                tag = f"circulant-GB x {struct_trials} + " + tag
         else:
             fast_tag = ""
             if ftrials:
@@ -936,15 +1069,17 @@ def main(argv):
             # The structural pass is priced on BOTH paths (it is cheap and does
             # not depend on record status), so its tag is appended outside the
             # deep/standard branch -- a standard-path run must still show it ran.
+            if fold_searched:
+                tag = f"orbit-fold x {fold_searched} @ {fold_trials} + " + tag
             if struct_trials:
                 tag = f"circulant-GB x {struct_trials} + " + tag
         tag += f"; diff: {cls}"
         gate = {
             "refuted": bool(hits or circ_hits),
             "seed": seed,
-            "seeds": [] if struct_refuted else seeds,
-            "trials": 0 if struct_refuted else trials,
-            "budget_seconds": 0.0 if struct_refuted else budget,
+            "seeds": [] if settled else seeds,
+            "trials": 0 if settled else trials,
+            "budget_seconds": 0.0 if settled else budget,
             "deep": deep,
             # Trials the fast pass actually completed; equal to fast_target
             # unless the wall-clock cap (fast_seconds) ended it first.
@@ -952,13 +1087,31 @@ def main(argv):
             "fast_target": ftarget,
             "fast_seconds": FAST_SECONDS if ftrials else 0.0,
             "structural_trials": struct_trials,
+            # Orbit partitions the fold pass searched (0: no symmetry found,
+            # nothing ran) and its per-fold trial budget.
+            "fold_partitions": fold_searched,
+            "fold_trials": fold_trials,
             # Names the mechanism that ended the run early, so a receipt with a
             # short method list is self-explaining rather than looking truncated.
-            "short_circuited_by": "circulant-GB" if struct_refuted else None,
+            "short_circuited_by": ("circulant-GB" if struct_refuted
+                                   else "orbit-fold" if fold_refuted else None),
             "methods": list(results),
             "diff_class": cls,
             "diff_reason": why,
         }
+        if cached is not None:
+            # The search above did not run; take the confirmed record,
+            # keeping the seed of the run that searched so the printed seed
+            # still reproduces the verdict it belongs to.
+            gate, hits = cached
+            gate["revalidated"] = sorted(hits)
+            tag = ("reused refutation from "
+                   f"{(gate['reused_from'].get('head_sha') or '?')[:8]}"
+                   f" (seed {gate.get('seed')}, witness re-checked); "
+                   f"diff: {cls}")
+        elif search_cache:
+            RC.store(search_cache, doc_bytes, gate, hits, deep=deep,
+                     accelerated=GF is not None, head_sha=head_sha)
         if "circuit" in doc:
             gate["circuit"] = {
                 "searched": run_circuit,
@@ -975,7 +1128,9 @@ def main(argv):
             verdict = validate_candidate(doc, seed=seed, refute=False)
             verdict["gates"]["refute"] = {
                 "refuted": bool(hits),
-                "seed": seed,
+                # the seed of the run that actually searched, so a reused
+                # record does not label itself with a seed nothing used
+                "seed": gate.get("seed", seed),
                 "detail": "distance gate recorded by gate_changed.py",
             }
             verdict["passed"] = bool(

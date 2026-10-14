@@ -1,0 +1,306 @@
+<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><title>[[105,21,6]] · QEC Challenge</title><link rel=icon type="image/svg+xml" href="../favicon.svg"><link rel=preconnect href="https://fonts.googleapis.com"><link rel=preconnect href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&family=Space+Grotesk:wght@500;700&family=Space+Mono:wght@400;700&display=swap" rel=stylesheet><link rel=stylesheet href="../style.css"><!-- Privacy-friendly analytics by Plausible --><script async src="https://plausible.io/js/pa-BZqEmTRv5VBwv3HYwVpoB.js"></script><script>window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};plausible.init({"customProperties":{"code_family":"other","code_origin":"submission","code_tier":"ub","locality_class":"local-2d-bilayer","page_type":"code_detail","weight_class":"weight-8"},"fileDownloads":true,"outboundLinks":true})</script></head><body>
+<div class=wrap>
+<a class=back href="../stabilizer.html">&larr; back to the stabilizer board</a>
+<div class=codehead><span class="mono big">[[105,21,6]]</span> <span class="b ub" title="verified upper bound: an explicit logical of this weight, and independent refutation searches found nothing lighter">d &le;</span><span class="tchip stab" title="general (non-CSS) stabilizer code: one Pauli-weight distance, ranked on the stabilizer board">stabilizer</span></div>
+<div class=params>
+<div class=cell title="physical qubits"><div class=l>n</div><div class=v>105</div></div>
+<div class=cell title="logical qubits"><div class=l>k</div><div class=v>21</div></div>
+<div class=cell title="distance (smallest undetectable error)"><div class=l>d</div><div class=v>6</div></div>
+<div class=cell title="operational efficiency (BPT ratio), compared within a track at comparable n"><div class=l>kd&sup2;/n</div><div class=v>7.2</div></div>
+<div class=cell title="max check weight |supp X_i ∪ supp Z_i| (a Y factor counts one qubit)"><div class=l>w</div><div class=v>8</div></div>
+<div class=cell title="geometric efficiency 4kd²/(nρ²r⁴) from the verified layout; surface code = 1; inherits the upper-bound distance tier"><div class=l>g</div><div class=v>0.007</div></div>
+<div class=cell title="measured interaction radius: the largest check diameter in the layout, in units of the qubit spacing"><div class=l>r</div><div class=v>5.6569</div></div>
+<div class=cell title="physical layers (e.g. 2 for a flip-chip bilayer)"><div class=l>layers</div><div class=v>2</div></div>
+<div class=cell title="heuristic routing cost: 502 nearest-neighbor SWAPs per syndrome-extraction round to make every check&#x27;s support connected on the verified layout, at most 11 for one check. MST lower bound, not an optimal schedule: per check, the minimum-spanning-tree length of its support in lattice steps minus (|support| - 1). One lattice step is the layout&#x27;s minimum qubit spacing (1); qubits at most one step apart are nearest neighbors. A diagnostic, not a rank"><div class=l>swaps</div><div class=v>502</div></div>
+</div>
+<section class=blk><h3>Share this result</h3><div class=share><button class=sharebtn type=button data-copy="https://unitaryfoundation.github.io/qldpc-challenge/codes/105-21-6.html" aria-label="Copy link" title="Copy link"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"/></svg></button><a class=sharebtn href="https://twitter.com/intent/tweet?text=%5B%5B105%2C21%2C6%5D%5D%20quantum%20LDPC%20code%20on%20the%20QEC%20Challenge&amp;url=https%3A//unitaryfoundation.github.io/qldpc-challenge/codes/105-21-6.html" target=_blank rel=noopener aria-label="Post on X" title="Post on X"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a><a class=sharebtn href="https://bsky.app/intent/compose?text=%5B%5B105%2C21%2C6%5D%5D%20quantum%20LDPC%20code%20on%20the%20QEC%20Challenge%20https%3A//unitaryfoundation.github.io/qldpc-challenge/codes/105-21-6.html" target=_blank rel=noopener aria-label="Share on Bluesky" title="Bluesky"><svg viewBox="0 0 568 501" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M123.121 33.664C188.241 82.553 258.281 181.68 284 234.873c25.719-53.193 95.759-152.32 160.879-201.21C491.866-1.611 568-28.906 568 57.947c0 17.346-9.945 145.713-15.778 166.555-20.275 72.453-94.155 90.933-159.875 79.748C507.222 323.8 536.444 388.56 473.333 453.32c-119.86 122.992-172.272-30.859-185.702-70.281-2.462-7.227-3.614-10.608-3.631-7.733-.017-2.875-1.169.506-3.631 7.733-13.43 39.422-65.842 193.273-185.702 70.281-63.111-64.76-33.889-129.52 80.986-149.071-65.72 11.185-139.6-7.295-159.875-79.748C9.945 203.66 0 75.293 0 57.947 0-28.906 76.135-1.611 123.121 33.664Z"/></svg></a><a class=sharebtn href="https://www.linkedin.com/sharing/share-offsite/?url=https%3A//unitaryfoundation.github.io/qldpc-challenge/codes/105-21-6.html" target=_blank rel=noopener aria-label="Share on LinkedIn" title="LinkedIn"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.225 0z"/></svg></a></div></section>
+<section class=blk><h3>Distance</h3>
+<div class=kv style="color:var(--mut)">a general stabilizer code has no X and Z sides: d is the minimum Pauli weight of a nontrivial logical operator (a Y factor counts one qubit), and the witness is one Pauli operator that commutes with every generator and is not a product of them</div>
+<div class=kv><b>d</b> 6 &middot; witness Pauli weight 6 (claimed upper_bound)</div>
+<details><summary>witness operator (Pauli string, 6 qubits)</summary><div class=wit>IIIIIIIIIIIIIIXIIIIIIXIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIXIIIIIIXIIIIIIIIIIIIIIIIIIIIIIIIIII
+X: [14, 21, 70, 77]
+Z: [38, 53]</div></details>
+<div class=kv><b>certificate</b> <span class=cert-no>none yet &middot; distance stands as a self-certified upper bound (d &le;); the Pauli-weight certifier is not built yet, so stabilizer entries cannot earn d= for now</span></div>
+</section>
+<section class=blk><h3>Diagnostics</h3>
+<div class=kv style="color:var(--mut)">computed by the verifier from the parity checks, the layout, and the stored witnesses; shown as evidence, not used for ranking</div>
+<div class=kv title="Tanner-graph girth: the shortest cycle in the generator/qubit graph a decoder runs on (one graph, over the generator supports). Longer is friendlier to belief propagation. A diagnostic computed by the verifier from S, never a ranking axis."><b>girth</b> S 4 <span class=claimed>(shortest cycle of the generator Tanner graph; longer is friendlier to belief propagation)</span></div>
+<div class=kv title="row weights of each side, min to max with the mean"><b>check weights</b> S 8</div>
+<div class=kv title="column weights of each side: how many checks of that type touch a qubit, min to max with the mean"><b>qubit degrees</b> S 8</div>
+<div class=kv title="(a,b) trapping sets: connected sets of a qubits whose error pattern has syndrome weight b; small b at small a is what stalls iterative decoders. Shown: the smallest b at each size and how many sets reach it, sizes up to 3 within the verifier&#x27;s cost cap."><b>trapping sets S</b> (1,8)×105 (2,12)×1260 (3,12)×735 <span class=claimed>(smallest syndrome weight at each size, connected sets of up to 3 qubits)</span></div>
+<details><summary>full (size, syndrome weight): count census for S</summary><div class=wit>(1,8): 105
+(2,12): 1260
+(2,14): 420
+(3,12): 735
+(3,14): 840
+(3,16): 17325
+(3,18): 14700
+(3,20): 2310</div></details>
+<div class=kv title="Euclidean support diameter of the stored distance witnesses in the verified layout, in units of the qubit spacing: how far the exhibited logicals spread, which governs the cost of using them (lattice surgery, logical measurement). An upper bound on the spread of the exhibited logicals only: the witnesses bound the logical weight from above and are not claimed minimal, so a tighter logical may exist."><b>witness diameter</b> P 8.2462 <span class=claimed>(Euclidean support diameter of the stored distance witnesses in the layout; an upper bound on the exhibited logicals&rsquo; spread, not a minimum over all logicals)</span></div>
+</section>
+<section class=blk><h3>Verified 2D layout</h3>
+<div class=kv style="color:var(--mut)">as measured by the verifier: every check drawn over the submitted coordinates; the interaction radius is the longest dashed pair</div>
+<div class=kv style="color:var(--mut)">layout contributed by <a href="https://github.com/dorakingx">@dorakingx</a> &middot; Simulated annealing over site assignments on an integer grid with the repo&#x27;s own research/local2d/fold_layout.search_layout (max-diameter objective, several bounding boxes and seeds); single layer at radius 4 tried first, then two layers at 7. Radius and per-site occupancy re-measured with the verifier&#x27;s rule. &middot; 2026-10-04</div>
+<div class=layoutfig><svg viewBox="0 0 612 402" role="img" class="lofig lo-dense" aria-label="verified 2D layout: 105 qubit sites and 105 checks"><polygon class="lo-chk lo-x" data-sites="12 21 29 31 33 38 50" points="306.0,96.0 376.0,96.0 516.0,236.0 586.0,96.0 516.0,26.0 446.0,26.0 306.0,26.0 306.0,26.0"/><polygon class="lo-chk lo-x" data-sites="4 12 22 32 39 42 51" points="26.0,236.0 26.0,306.0 306.0,306.0 306.0,166.0 306.0,166.0 306.0,26.0 26.0,26.0 26.0,96.0"/><polygon class="lo-chk lo-x" data-sites="5 13 26 39 40 52" points="26.0,236.0 26.0,236.0 96.0,236.0 166.0,376.0 236.0,96.0 96.0,166.0 96.0,166.0 26.0,166.0"/><polygon class="lo-chk lo-x" data-sites="0 14 27 30 33 40 43 49" points="166.0,236.0 446.0,306.0 516.0,236.0 446.0,166.0 446.0,96.0 236.0,26.0 236.0,96.0 166.0,96.0"/><polygon class="lo-chk lo-x" data-sites="2 7 27 28 30 34 41 44" points="306.0,376.0 446.0,306.0 376.0,376.0 516.0,376.0 586.0,376.0 516.0,306.0 516.0,96.0 446.0,96.0"/><polygon class="lo-chk lo-x" data-sites="11 15 21 28 31 35 45" points="306.0,236.0 306.0,236.0 586.0,306.0 586.0,166.0 516.0,96.0 516.0,26.0 306.0,96.0 376.0,166.0"/><polygon class="lo-chk lo-x" data-sites="15 16 32 36 42 44 51" points="26.0,306.0 26.0,306.0 96.0,306.0 96.0,376.0 306.0,376.0 306.0,306.0 306.0,236.0 306.0,166.0"/><polygon class="lo-chk lo-x" data-sites="9 26 32 36 37 39 52" points="26.0,306.0 96.0,376.0 166.0,376.0 236.0,376.0 166.0,166.0 166.0,166.0 26.0,166.0 26.0,236.0"/><polygon class="lo-chk lo-x" data-sites="17 33 37 38 40 41 43" points="166.0,236.0 166.0,236.0 376.0,376.0 446.0,376.0 516.0,236.0 446.0,26.0 236.0,96.0 166.0,166.0"/><polygon class="lo-chk lo-x" data-sites="10 18 33 34 38 41 44" points="306.0,376.0 376.0,376.0 516.0,376.0 516.0,236.0 516.0,166.0 516.0,166.0 446.0,26.0 446.0,236.0"/><polygon class="lo-chk lo-x" data-sites="12 19 33 35 42 45 50" points="236.0,166.0 306.0,166.0 376.0,166.0 516.0,236.0 586.0,166.0 586.0,166.0 586.0,96.0 306.0,26.0"/><polygon class="lo-chk lo-x" data-sites="8 13 35 36 39 42 44 48" points="26.0,236.0 96.0,376.0 306.0,376.0 376.0,236.0 376.0,166.0 306.0,166.0 96.0,96.0 96.0,166.0"/><polygon class="lo-chk lo-x" data-sites="0 13 20 36 37 40 46" points="96.0,166.0 96.0,376.0 166.0,166.0 236.0,96.0 166.0,96.0 166.0,26.0 96.0,26.0 96.0,26.0"/><polygon class="lo-chk lo-x" data-sites="0 14 27 30 31 38 43" points="166.0,236.0 446.0,306.0 446.0,166.0 446.0,96.0 446.0,26.0 306.0,96.0 166.0,96.0 166.0,96.0"/><polygon class="lo-chk lo-x" data-sites="1 18 21 28 30 38" points="446.0,96.0 516.0,166.0 516.0,96.0 516.0,26.0 516.0,26.0 446.0,26.0 376.0,26.0 376.0,26.0"/><polygon class="lo-chk lo-x" data-sites="2 12 15 19 21 24 42 45" points="306.0,236.0 516.0,306.0 586.0,236.0 586.0,166.0 516.0,26.0 306.0,26.0 236.0,166.0 306.0,166.0"/><polygon class="lo-chk lo-x" data-sites="3 22 25 32 35 39 42" points="26.0,236.0 26.0,236.0 26.0,306.0 236.0,306.0 236.0,236.0 376.0,166.0 306.0,166.0 26.0,96.0"/><polygon class="lo-chk lo-x" data-sites="4 23 37 39 40 43 46 47" points="26.0,236.0 26.0,376.0 166.0,306.0 166.0,236.0 166.0,166.0 236.0,96.0 96.0,26.0 26.0,26.0"/><polygon class="lo-chk lo-x" data-sites="5 17 23 27 31 41 43 44" points="166.0,306.0 306.0,376.0 376.0,376.0 446.0,376.0 446.0,306.0 306.0,96.0 166.0,236.0 96.0,236.0"/><polygon class="lo-chk lo-x" data-sites="1 6 24 28 33 44 45" points="306.0,376.0 376.0,306.0 376.0,306.0 516.0,236.0 586.0,236.0 586.0,166.0 516.0,96.0 376.0,26.0"/><polygon class="lo-chk lo-x" data-sites="7 15 24 25 34 42 44 45" points="306.0,376.0 516.0,376.0 586.0,376.0 586.0,236.0 586.0,166.0 306.0,166.0 306.0,236.0 236.0,236.0"/><polygon class="lo-chk lo-x" data-sites="3 13 20 25 32 36 44 48" points="26.0,306.0 96.0,376.0 236.0,306.0 306.0,376.0 376.0,236.0 236.0,236.0 166.0,26.0 96.0,166.0"/><polygon class="lo-chk lo-x" data-sites="0 8 16 26 36 37 43 47" points="26.0,376.0 96.0,306.0 96.0,376.0 166.0,376.0 166.0,236.0 166.0,166.0 166.0,96.0 96.0,96.0"/><polygon class="lo-chk lo-x" data-sites="9 18 23 27 30 41 43 49" points="166.0,306.0 236.0,376.0 376.0,376.0 446.0,306.0 516.0,166.0 446.0,96.0 236.0,26.0 166.0,236.0"/><polygon class="lo-chk lo-x" data-sites="6 10 18 21 28 29 33 45" points="376.0,306.0 446.0,236.0 516.0,236.0 516.0,166.0 586.0,166.0 516.0,96.0 516.0,26.0 376.0,96.0"/><polygon class="lo-chk lo-x" data-sites="11 29 34 35 42 45 50" points="516.0,376.0 586.0,306.0 586.0,166.0 586.0,96.0 376.0,96.0 376.0,166.0 306.0,166.0 306.0,166.0"/><polygon class="lo-chk lo-x" data-sites="12 13 22 35 39 46 48 51" points="96.0,166.0 26.0,236.0 306.0,306.0 376.0,236.0 376.0,166.0 306.0,26.0 96.0,26.0 26.0,96.0"/><polygon class="lo-chk lo-x" data-sites="0 4 5 16 31 43 46 52" points="26.0,166.0 96.0,236.0 96.0,306.0 166.0,236.0 306.0,96.0 166.0,96.0 96.0,26.0 26.0,26.0"/><polygon class="lo-chk lo-x" data-sites="1 13 30 31 44 49" points="96.0,166.0 306.0,376.0 446.0,96.0 446.0,96.0 376.0,26.0 306.0,96.0 236.0,26.0 236.0,26.0"/><polygon class="lo-chk lo-x" data-sites="1 2 14 21 24 29 41 45" points="376.0,376.0 516.0,306.0 586.0,236.0 586.0,166.0 516.0,26.0 376.0,26.0 376.0,96.0 446.0,166.0"/><polygon class="lo-chk lo-x" data-sites="7 11 24 25 31 42 44 50" points="306.0,376.0 586.0,376.0 586.0,306.0 586.0,236.0 586.0,96.0 306.0,96.0 306.0,166.0 236.0,236.0"/><polygon class="lo-chk lo-x" data-sites="15 25 32 36 39 47 51" points="26.0,306.0 26.0,376.0 96.0,376.0 306.0,306.0 306.0,306.0 306.0,236.0 236.0,236.0 26.0,236.0"/><polygon class="lo-chk lo-x" data-sites="16 23 26 43 47 52" points="26.0,376.0 96.0,306.0 166.0,376.0 166.0,306.0 166.0,236.0 166.0,236.0 26.0,166.0 26.0,166.0"/><polygon class="lo-chk lo-x" data-sites="6 9 18 23 33 40 44 49" points="166.0,306.0 236.0,376.0 306.0,376.0 376.0,306.0 516.0,236.0 516.0,166.0 236.0,26.0 236.0,96.0"/><polygon class="lo-chk lo-x" data-sites="6 10 17 34 41 45" points="376.0,306.0 376.0,376.0 446.0,376.0 516.0,376.0 516.0,376.0 586.0,166.0 586.0,166.0 446.0,236.0"/><polygon class="lo-chk lo-x" data-sites="11 18 34 35 44 48 50" points="306.0,376.0 516.0,376.0 586.0,306.0 586.0,96.0 516.0,166.0 376.0,166.0 376.0,166.0 376.0,236.0"/><polygon class="lo-chk lo-x" data-sites="16 19 36 46 48 51" points="96.0,306.0 96.0,376.0 96.0,376.0 306.0,306.0 376.0,236.0 376.0,236.0 236.0,166.0 96.0,26.0"/><polygon class="lo-chk lo-x" data-sites="8 16 31 37 43 46 49 52" points="26.0,166.0 96.0,306.0 166.0,236.0 166.0,166.0 306.0,96.0 236.0,26.0 96.0,26.0 96.0,96.0"/><polygon class="lo-chk lo-x" data-sites="0 1 18 20 29 38 40 49" points="166.0,96.0 236.0,96.0 516.0,166.0 376.0,96.0 446.0,26.0 376.0,26.0 236.0,26.0 166.0,26.0"/><polygon class="lo-chk lo-x" data-sites="1 10 14 24 29 38 45 50" points="446.0,166.0 446.0,236.0 586.0,236.0 586.0,166.0 586.0,96.0 446.0,26.0 376.0,26.0 376.0,96.0"/><polygon class="lo-chk lo-x" data-sites="2 12 21 25 35 50 51" points="376.0,166.0 236.0,236.0 306.0,306.0 516.0,306.0 586.0,96.0 586.0,96.0 516.0,26.0 306.0,26.0"/><polygon class="lo-chk lo-x" data-sites="3 19 39 46 47 48 51 52" points="26.0,236.0 26.0,376.0 236.0,306.0 306.0,306.0 376.0,236.0 236.0,166.0 96.0,26.0 26.0,166.0"/><polygon class="lo-chk lo-x" data-sites="4 22 23 31 40 46 49 52" points="26.0,166.0 166.0,306.0 306.0,96.0 236.0,96.0 236.0,26.0 96.0,26.0 26.0,26.0 26.0,96.0"/><polygon class="lo-chk lo-x" data-sites="0 1 5 6 23 27 41 49" points="96.0,236.0 166.0,306.0 376.0,376.0 376.0,306.0 446.0,306.0 376.0,26.0 236.0,26.0 166.0,96.0"/><polygon class="lo-chk lo-x" data-sites="1 6 11 17 24 28 34 41" points="376.0,306.0 376.0,376.0 446.0,376.0 516.0,376.0 586.0,306.0 586.0,236.0 516.0,96.0 376.0,26.0"/><polygon class="lo-chk lo-x" data-sites="2 7 11 15 24 25 48 51" points="306.0,306.0 586.0,376.0 516.0,306.0 586.0,306.0 586.0,236.0 376.0,236.0 306.0,236.0 236.0,236.0"/><polygon class="lo-chk lo-x" data-sites="3 16 25 32 47 51 52" points="26.0,306.0 96.0,306.0 26.0,376.0 236.0,306.0 236.0,306.0 306.0,306.0 236.0,236.0 26.0,166.0"/><polygon class="lo-chk lo-x" data-sites="4 8 20 23 37 40 49 52" points="26.0,166.0 166.0,306.0 166.0,166.0 236.0,96.0 236.0,26.0 166.0,26.0 26.0,26.0 96.0,96.0"/><polygon class="lo-chk lo-x" data-sites="5 6 9 10 26 29 40 41" points="166.0,376.0 236.0,376.0 376.0,376.0 376.0,306.0 446.0,236.0 376.0,96.0 236.0,96.0 96.0,236.0"/><polygon class="lo-chk lo-x" data-sites="6 10 27 33 34 50" points="376.0,306.0 446.0,306.0 516.0,376.0 516.0,236.0 586.0,96.0 586.0,96.0 446.0,236.0 446.0,236.0"/><polygon class="lo-chk lo-x" data-sites="7 11 28 42 48 50 51" points="376.0,236.0 376.0,236.0 306.0,306.0 586.0,376.0 586.0,306.0 586.0,96.0 516.0,96.0 306.0,166.0"/><polygon class="lo-chk lo-x" data-sites="3 12 13 16 29 46 48 52" points="96.0,306.0 236.0,306.0 376.0,236.0 376.0,96.0 306.0,26.0 96.0,26.0 96.0,166.0 26.0,166.0"/><polygon class="lo-chk lo-x" data-sites="0 4 8 22 46 49" points="26.0,96.0 96.0,96.0 166.0,96.0 166.0,96.0 236.0,26.0 236.0,26.0 96.0,26.0 26.0,26.0"/><polygon class="lo-chk lo-x" data-sites="0 1 5 9 13 29 30 41" points="96.0,236.0 236.0,376.0 376.0,376.0 446.0,96.0 376.0,96.0 376.0,26.0 166.0,96.0 96.0,166.0"/><polygon class="lo-chk lo-x" data-sites="1 2 10 11 14 21 30 50" points="446.0,166.0 446.0,236.0 516.0,306.0 586.0,306.0 586.0,96.0 516.0,26.0 446.0,96.0 376.0,26.0"/><polygon class="lo-chk lo-x" data-sites="2 3 7 11 42 51" points="236.0,306.0 306.0,306.0 306.0,306.0 586.0,376.0 516.0,306.0 516.0,306.0 586.0,306.0 306.0,166.0"/><polygon class="lo-chk lo-x" data-sites="3 4 12 15 31 39 52" points="26.0,166.0 26.0,166.0 26.0,236.0 236.0,306.0 306.0,236.0 306.0,96.0 306.0,26.0 26.0,26.0"/><polygon class="lo-chk lo-x" data-sites="4 5 16 32 40 43 49" points="26.0,306.0 96.0,236.0 96.0,306.0 166.0,236.0 236.0,96.0 236.0,26.0 26.0,26.0 26.0,26.0"/><polygon class="lo-chk lo-x" data-sites="5 6 9 10 13 26 41 44" points="166.0,376.0 236.0,376.0 306.0,376.0 376.0,376.0 376.0,306.0 446.0,236.0 96.0,166.0 96.0,236.0"/><polygon class="lo-chk lo-x" data-sites="6 7 11 14 17 33 45 50" points="376.0,306.0 446.0,376.0 586.0,376.0 586.0,306.0 586.0,166.0 586.0,96.0 516.0,236.0 446.0,166.0"/><polygon class="lo-chk lo-x" data-sites="3 7 18 34 44 48 51" points="306.0,376.0 516.0,376.0 586.0,376.0 586.0,376.0 516.0,166.0 376.0,236.0 306.0,306.0 236.0,306.0"/><polygon class="lo-chk lo-x" data-sites="3 8 15 19 35 36 46 52" points="96.0,376.0 236.0,306.0 306.0,236.0 376.0,166.0 236.0,166.0 96.0,26.0 96.0,96.0 26.0,166.0"/><polygon class="lo-chk lo-x" data-sites="0 8 9 16 36 40 43" points="96.0,306.0 96.0,376.0 236.0,376.0 166.0,236.0 236.0,96.0 166.0,96.0 96.0,96.0 96.0,96.0"/><polygon class="lo-chk lo-x" data-sites="1 9 10 18 20 37" points="236.0,376.0 236.0,376.0 446.0,236.0 446.0,236.0 516.0,166.0 376.0,26.0 166.0,26.0 166.0,166.0"/><polygon class="lo-chk lo-x" data-sites="2 10 11 14 17 38 45 50" points="446.0,236.0 446.0,376.0 516.0,306.0 586.0,306.0 586.0,166.0 586.0,96.0 446.0,26.0 446.0,166.0"/><polygon class="lo-chk lo-x" data-sites="3 11 12 18 21 35 38 48" points="376.0,166.0 236.0,306.0 376.0,236.0 586.0,306.0 516.0,166.0 516.0,26.0 446.0,26.0 306.0,26.0"/><polygon class="lo-chk lo-x" data-sites="4 12 19 46" points="236.0,166.0 236.0,166.0 306.0,26.0 306.0,26.0 96.0,26.0 96.0,26.0 26.0,26.0 26.0,26.0"/><polygon class="lo-chk lo-x" data-sites="0 4 5 8 13 22 31 39" points="26.0,236.0 96.0,166.0 96.0,236.0 306.0,96.0 166.0,96.0 96.0,96.0 26.0,26.0 26.0,96.0"/><polygon class="lo-chk lo-x" data-sites="1 6 13 14 20 23 40" points="96.0,166.0 166.0,306.0 376.0,306.0 446.0,166.0 376.0,26.0 376.0,26.0 166.0,26.0 236.0,96.0"/><polygon class="lo-chk lo-x" data-sites="2 7 14 17 24 27" points="446.0,306.0 446.0,376.0 516.0,306.0 586.0,376.0 586.0,376.0 586.0,236.0 446.0,166.0 446.0,166.0"/><polygon class="lo-chk lo-x" data-sites="3 7 15 21 24 25 28" points="236.0,236.0 306.0,236.0 236.0,306.0 236.0,306.0 586.0,376.0 586.0,236.0 516.0,96.0 516.0,26.0"/><polygon class="lo-chk lo-x" data-sites="4 8 15 16 19 25 47" points="26.0,376.0 96.0,306.0 236.0,236.0 306.0,236.0 306.0,236.0 236.0,166.0 96.0,96.0 26.0,26.0"/><polygon class="lo-chk lo-x" data-sites="5 9 16 20 22 23 32" points="26.0,306.0 96.0,306.0 166.0,306.0 236.0,376.0 236.0,376.0 166.0,26.0 26.0,96.0 96.0,236.0"/><polygon class="lo-chk lo-x" data-sites="6 9 10 17 23 26 37" points="166.0,376.0 236.0,376.0 446.0,376.0 376.0,306.0 376.0,306.0 446.0,236.0 166.0,166.0 166.0,306.0"/><polygon class="lo-chk lo-x" data-sites="7 11 17 18 27 34 41" points="376.0,376.0 446.0,376.0 446.0,376.0 516.0,376.0 586.0,376.0 586.0,306.0 516.0,166.0 446.0,306.0"/><polygon class="lo-chk lo-x" data-sites="3 12 18 19 24 28 33 48" points="236.0,306.0 376.0,236.0 516.0,236.0 586.0,236.0 516.0,166.0 516.0,96.0 306.0,26.0 236.0,166.0"/><polygon class="lo-chk lo-x" data-sites="4 8 16 19 25 29 42" points="96.0,306.0 236.0,236.0 236.0,166.0 306.0,166.0 376.0,96.0 26.0,26.0 96.0,96.0 96.0,96.0"/><polygon class="lo-chk lo-x" data-sites="8 9 13 20 22 49" points="96.0,166.0 96.0,166.0 236.0,376.0 236.0,26.0 166.0,26.0 166.0,26.0 96.0,96.0 26.0,96.0"/><polygon class="lo-chk lo-x" data-sites="0 5 10 14 20 26 29" points="96.0,236.0 166.0,376.0 446.0,236.0 446.0,166.0 446.0,166.0 376.0,96.0 166.0,26.0 166.0,96.0"/><polygon class="lo-chk lo-x" data-sites="7 11 14 21 27 30 50" points="446.0,306.0 586.0,376.0 586.0,306.0 586.0,96.0 516.0,26.0 446.0,96.0 446.0,96.0 446.0,166.0"/><polygon class="lo-chk lo-x" data-sites="2 12 15 19 21 28 51" points="236.0,166.0 306.0,236.0 306.0,306.0 516.0,306.0 516.0,96.0 516.0,26.0 516.0,26.0 306.0,26.0"/><polygon class="lo-chk lo-x" data-sites="4 16 19 22 29 31 42 52" points="26.0,166.0 96.0,306.0 236.0,166.0 306.0,166.0 376.0,96.0 306.0,96.0 26.0,26.0 26.0,96.0"/><polygon class="lo-chk lo-x" data-sites="9 13 22 23 32 39 49" points="26.0,236.0 26.0,306.0 166.0,306.0 236.0,376.0 236.0,26.0 96.0,166.0 26.0,96.0 26.0,96.0"/><polygon class="lo-chk lo-x" data-sites="5 14 17 23 26 41 43" points="166.0,376.0 376.0,376.0 446.0,376.0 446.0,376.0 446.0,166.0 166.0,236.0 96.0,236.0 166.0,306.0"/><polygon class="lo-chk lo-x" data-sites="7 11 17 18 24 30 33 44" points="306.0,376.0 446.0,376.0 586.0,376.0 586.0,306.0 586.0,236.0 516.0,236.0 516.0,166.0 446.0,96.0"/><polygon class="lo-chk lo-x" data-sites="2 15 19 24 25 34 45 51" points="306.0,306.0 516.0,376.0 516.0,306.0 586.0,236.0 586.0,166.0 236.0,166.0 306.0,236.0 236.0,236.0"/><polygon class="lo-chk lo-x" data-sites="8 16 20 25 31 35 44 52" points="96.0,306.0 306.0,376.0 236.0,236.0 376.0,166.0 306.0,96.0 166.0,26.0 96.0,96.0 26.0,166.0"/><polygon class="lo-chk lo-x" data-sites="9 20 26 32 36 40" points="26.0,306.0 96.0,376.0 96.0,376.0 166.0,376.0 236.0,376.0 236.0,96.0 166.0,26.0 166.0,26.0"/><polygon class="lo-chk lo-x" data-sites="10 14 17 26 27 37 43" points="166.0,376.0 166.0,376.0 446.0,376.0 446.0,306.0 446.0,236.0 446.0,166.0 166.0,166.0 166.0,236.0"/><polygon class="lo-chk lo-x" data-sites="18 21 27 28 33 38 50" points="446.0,306.0 516.0,236.0 516.0,166.0 516.0,166.0 586.0,96.0 516.0,96.0 516.0,26.0 446.0,26.0"/><polygon class="lo-chk lo-x" data-sites="19 28 29 34 38 45 48" points="376.0,236.0 516.0,376.0 586.0,166.0 516.0,96.0 446.0,26.0 376.0,96.0 236.0,166.0 236.0,166.0"/><polygon class="lo-chk lo-x" data-sites="8 12 22 29 35 46" points="376.0,166.0 376.0,166.0 376.0,96.0 306.0,26.0 96.0,26.0 96.0,96.0 26.0,96.0 26.0,96.0"/><polygon class="lo-chk lo-x" data-sites="0 5 20 22 23 36 39 46" points="26.0,236.0 96.0,236.0 96.0,376.0 166.0,306.0 166.0,96.0 166.0,26.0 96.0,26.0 26.0,96.0"/><polygon class="lo-chk lo-x" data-sites="1 5 14 17 30 31 37 40" points="166.0,166.0 96.0,236.0 446.0,376.0 446.0,166.0 446.0,96.0 376.0,26.0 306.0,96.0 236.0,96.0"/><polygon class="lo-chk lo-x" data-sites="1 2 21 24 27 30 38" points="446.0,306.0 516.0,306.0 516.0,306.0 586.0,236.0 516.0,26.0 446.0,26.0 446.0,96.0 376.0,26.0"/><polygon class="lo-chk lo-x" data-sites="2 3 19 24 25 28 31 38" points="236.0,236.0 236.0,306.0 516.0,306.0 586.0,236.0 516.0,96.0 446.0,26.0 306.0,96.0 236.0,166.0"/><polygon class="lo-chk lo-x" data-sites="4 12 15 20 22 25 31 32" points="26.0,306.0 236.0,236.0 306.0,236.0 306.0,96.0 306.0,26.0 166.0,26.0 26.0,26.0 26.0,96.0"/><polygon class="lo-chk lo-x" data-sites="5 23 26 32 39 47" points="26.0,376.0 166.0,376.0 166.0,376.0 166.0,306.0 96.0,236.0 26.0,236.0 26.0,306.0 26.0,306.0"/><polygon class="lo-chk lo-x" data-sites="6 17 23 26 27 33 37 40" points="166.0,306.0 166.0,376.0 446.0,376.0 376.0,306.0 446.0,306.0 516.0,236.0 236.0,96.0 166.0,166.0"/><polygon class="lo-chk lo-x" data-sites="6 7 24 27 28 33 34 41" points="376.0,306.0 446.0,306.0 376.0,376.0 516.0,376.0 586.0,376.0 586.0,236.0 516.0,236.0 516.0,96.0"/><polygon class="lo-chk lo-x" data-sites="3 25 28 29 33 34 35" points="236.0,306.0 516.0,376.0 516.0,376.0 516.0,236.0 516.0,96.0 376.0,96.0 376.0,166.0 236.0,236.0"/><polygon class="lo-chk lo-x" data-sites="8 15 20 22 35 36 42 48" points="96.0,376.0 306.0,236.0 376.0,236.0 376.0,166.0 306.0,166.0 166.0,26.0 96.0,96.0 26.0,96.0"/><polygon class="lo-chk lo-x" data-sites="5 9 13 16 26 32 36 37" points="26.0,306.0 96.0,306.0 96.0,376.0 166.0,376.0 236.0,376.0 166.0,166.0 96.0,166.0 96.0,236.0"/><polygon class="lo-chk lo-x" data-sites="0 10 27 30 37 38 49" points="166.0,166.0 166.0,166.0 446.0,306.0 446.0,236.0 446.0,96.0 446.0,26.0 236.0,26.0 166.0,96.0"/><polygon class="lo-chk lo-x" data-sites="2 11 28 29 30 38 41" points="376.0,376.0 516.0,306.0 586.0,306.0 516.0,96.0 446.0,26.0 446.0,26.0 446.0,96.0 376.0,96.0"/><circle class=lo-q2 data-s="0" cx="166.0" cy="96.0" r="9.2"/><circle class=lo-q data-s="0" cx="166.0" cy="96.0" r="6.0"/><circle class=lo-q2 data-s="1" cx="376.0" cy="26.0" r="9.2"/><circle class=lo-q data-s="1" cx="376.0" cy="26.0" r="6.0"/><circle class=lo-q2 data-s="2" cx="516.0" cy="306.0" r="9.2"/><circle class=lo-q data-s="2" cx="516.0" cy="306.0" r="6.0"/><circle class=lo-q2 data-s="3" cx="236.0" cy="306.0" r="9.2"/><circle class=lo-q data-s="3" cx="236.0" cy="306.0" r="6.0"/><circle class=lo-q2 data-s="4" cx="26.0" cy="26.0" r="9.2"/><circle class=lo-q data-s="4" cx="26.0" cy="26.0" r="6.0"/><circle class=lo-q2 data-s="5" cx="96.0" cy="236.0" r="9.2"/><circle class=lo-q data-s="5" cx="96.0" cy="236.0" r="6.0"/><circle class=lo-q2 data-s="6" cx="376.0" cy="306.0" r="9.2"/><circle class=lo-q data-s="6" cx="376.0" cy="306.0" r="6.0"/><circle class=lo-q2 data-s="7" cx="586.0" cy="376.0" r="9.2"/><circle class=lo-q data-s="7" cx="586.0" cy="376.0" r="6.0"/><circle class=lo-q2 data-s="8" cx="96.0" cy="96.0" r="9.2"/><circle class=lo-q data-s="8" cx="96.0" cy="96.0" r="6.0"/><circle class=lo-q2 data-s="9" cx="236.0" cy="376.0" r="9.2"/><circle class=lo-q data-s="9" cx="236.0" cy="376.0" r="6.0"/><circle class=lo-q2 data-s="10" cx="446.0" cy="236.0" r="9.2"/><circle class=lo-q data-s="10" cx="446.0" cy="236.0" r="6.0"/><circle class=lo-q2 data-s="11" cx="586.0" cy="306.0" r="9.2"/><circle class=lo-q data-s="11" cx="586.0" cy="306.0" r="6.0"/><circle class=lo-q2 data-s="12" cx="306.0" cy="26.0" r="9.2"/><circle class=lo-q data-s="12" cx="306.0" cy="26.0" r="6.0"/><circle class=lo-q2 data-s="13" cx="96.0" cy="166.0" r="9.2"/><circle class=lo-q data-s="13" cx="96.0" cy="166.0" r="6.0"/><circle class=lo-q2 data-s="14" cx="446.0" cy="166.0" r="9.2"/><circle class=lo-q data-s="14" cx="446.0" cy="166.0" r="6.0"/><circle class=lo-q2 data-s="15" cx="306.0" cy="236.0" r="9.2"/><circle class=lo-q data-s="15" cx="306.0" cy="236.0" r="6.0"/><circle class=lo-q2 data-s="16" cx="96.0" cy="306.0" r="9.2"/><circle class=lo-q data-s="16" cx="96.0" cy="306.0" r="6.0"/><circle class=lo-q2 data-s="17" cx="446.0" cy="376.0" r="9.2"/><circle class=lo-q data-s="17" cx="446.0" cy="376.0" r="6.0"/><circle class=lo-q2 data-s="18" cx="516.0" cy="166.0" r="9.2"/><circle class=lo-q data-s="18" cx="516.0" cy="166.0" r="6.0"/><circle class=lo-q2 data-s="19" cx="236.0" cy="166.0" r="9.2"/><circle class=lo-q data-s="19" cx="236.0" cy="166.0" r="6.0"/><circle class=lo-q2 data-s="20" cx="166.0" cy="26.0" r="9.2"/><circle class=lo-q data-s="20" cx="166.0" cy="26.0" r="6.0"/><circle class=lo-q2 data-s="21" cx="516.0" cy="26.0" r="9.2"/><circle class=lo-q data-s="21" cx="516.0" cy="26.0" r="6.0"/><circle class=lo-q2 data-s="22" cx="26.0" cy="96.0" r="9.2"/><circle class=lo-q data-s="22" cx="26.0" cy="96.0" r="6.0"/><circle class=lo-q2 data-s="23" cx="166.0" cy="306.0" r="9.2"/><circle class=lo-q data-s="23" cx="166.0" cy="306.0" r="6.0"/><circle class=lo-q2 data-s="24" cx="586.0" cy="236.0" r="9.2"/><circle class=lo-q data-s="24" cx="586.0" cy="236.0" r="6.0"/><circle class=lo-q2 data-s="25" cx="236.0" cy="236.0" r="9.2"/><circle class=lo-q data-s="25" cx="236.0" cy="236.0" r="6.0"/><circle class=lo-q2 data-s="26" cx="166.0" cy="376.0" r="9.2"/><circle class=lo-q data-s="26" cx="166.0" cy="376.0" r="6.0"/><circle class=lo-q2 data-s="27" cx="446.0" cy="306.0" r="9.2"/><circle class=lo-q data-s="27" cx="446.0" cy="306.0" r="6.0"/><circle class=lo-q2 data-s="28" cx="516.0" cy="96.0" r="9.2"/><circle class=lo-q data-s="28" cx="516.0" cy="96.0" r="6.0"/><circle class=lo-q2 data-s="29" cx="376.0" cy="96.0" r="9.2"/><circle class=lo-q data-s="29" cx="376.0" cy="96.0" r="6.0"/><circle class=lo-q2 data-s="30" cx="446.0" cy="96.0" r="9.2"/><circle class=lo-q data-s="30" cx="446.0" cy="96.0" r="6.0"/><circle class=lo-q2 data-s="31" cx="306.0" cy="96.0" r="9.2"/><circle class=lo-q data-s="31" cx="306.0" cy="96.0" r="6.0"/><circle class=lo-q2 data-s="32" cx="26.0" cy="306.0" r="9.2"/><circle class=lo-q data-s="32" cx="26.0" cy="306.0" r="6.0"/><circle class=lo-q2 data-s="33" cx="516.0" cy="236.0" r="9.2"/><circle class=lo-q data-s="33" cx="516.0" cy="236.0" r="6.0"/><circle class=lo-q2 data-s="34" cx="516.0" cy="376.0" r="9.2"/><circle class=lo-q data-s="34" cx="516.0" cy="376.0" r="6.0"/><circle class=lo-q2 data-s="35" cx="376.0" cy="166.0" r="9.2"/><circle class=lo-q data-s="35" cx="376.0" cy="166.0" r="6.0"/><circle class=lo-q2 data-s="36" cx="96.0" cy="376.0" r="9.2"/><circle class=lo-q data-s="36" cx="96.0" cy="376.0" r="6.0"/><circle class=lo-q2 data-s="37" cx="166.0" cy="166.0" r="9.2"/><circle class=lo-q data-s="37" cx="166.0" cy="166.0" r="6.0"/><circle class=lo-q2 data-s="38" cx="446.0" cy="26.0" r="9.2"/><circle class=lo-q data-s="38" cx="446.0" cy="26.0" r="6.0"/><circle class=lo-q2 data-s="39" cx="26.0" cy="236.0" r="9.2"/><circle class=lo-q data-s="39" cx="26.0" cy="236.0" r="6.0"/><circle class=lo-q2 data-s="40" cx="236.0" cy="96.0" r="9.2"/><circle class=lo-q data-s="40" cx="236.0" cy="96.0" r="6.0"/><circle class=lo-q2 data-s="41" cx="376.0" cy="376.0" r="9.2"/><circle class=lo-q data-s="41" cx="376.0" cy="376.0" r="6.0"/><circle class=lo-q2 data-s="42" cx="306.0" cy="166.0" r="9.2"/><circle class=lo-q data-s="42" cx="306.0" cy="166.0" r="6.0"/><circle class=lo-q2 data-s="43" cx="166.0" cy="236.0" r="9.2"/><circle class=lo-q data-s="43" cx="166.0" cy="236.0" r="6.0"/><circle class=lo-q2 data-s="44" cx="306.0" cy="376.0" r="9.2"/><circle class=lo-q data-s="44" cx="306.0" cy="376.0" r="6.0"/><circle class=lo-q2 data-s="45" cx="586.0" cy="166.0" r="9.2"/><circle class=lo-q data-s="45" cx="586.0" cy="166.0" r="6.0"/><circle class=lo-q2 data-s="46" cx="96.0" cy="26.0" r="9.2"/><circle class=lo-q data-s="46" cx="96.0" cy="26.0" r="6.0"/><circle class=lo-q data-s="47" cx="26.0" cy="376.0" r="6.0"/><circle class=lo-q2 data-s="48" cx="376.0" cy="236.0" r="9.2"/><circle class=lo-q data-s="48" cx="376.0" cy="236.0" r="6.0"/><circle class=lo-q2 data-s="49" cx="236.0" cy="26.0" r="9.2"/><circle class=lo-q data-s="49" cx="236.0" cy="26.0" r="6.0"/><circle class=lo-q2 data-s="50" cx="586.0" cy="96.0" r="9.2"/><circle class=lo-q data-s="50" cx="586.0" cy="96.0" r="6.0"/><circle class=lo-q2 data-s="51" cx="306.0" cy="306.0" r="9.2"/><circle class=lo-q data-s="51" cx="306.0" cy="306.0" r="6.0"/><circle class=lo-q2 data-s="52" cx="26.0" cy="166.0" r="9.2"/><circle class=lo-q data-s="52" cx="26.0" cy="166.0" r="6.0"/><line class=lo-r x1="26.0" y1="26.0" x2="306.0" y2="306.0"/><text class=lo-rt x="176.0" y="158.0" text-anchor="start">r = 5.657</text></svg><div class=lolegend><span><span class=sw style="background:#36006c"></span>stabilizer generator (qubit support)</span><span><span class=dt></span>qubit site (53)</span><span><span class=rg></span>2 qubits stacked (2 layers)</span><span>dashed: the pair setting the interaction radius</span><span>hover a check to isolate its qubits; click to pin &mdash; repeated clicks cycle through overlapping checks; click empty space to release</span></div></div>
+<div class=kv><b>routing cost</b> 502 nearest-neighbor SWAPs per round in total, at most 11 for one check <span class=claimed>(heuristic: MST lower bound on the layout, with one lattice step = the minimum qubit spacing 1; not a rank)</span></div>
+</section>
+<section class=blk><h3>Construction &amp; provenance</h3>
+<div class=kv><b>authors</b> <a href="https://github.com/FarLab">@FarLab</a></div>
+<div class=kv><b>provenance</b> submitted through the challenge</div>
+<div class=kv><b>novelty</b> novelty not audited</div>
+<div class=kv><b>construction</b> One-block cyclic stabilizer code: generator X^a Z^b and its 105 cyclic shifts, a(x) = x<sup>38</sup> + x<sup>52</sup> + x<sup>53</sup> + x<sup>67</sup>, b(x) = x<sup>13</sup> + x<sup>43</sup> + x<sup>62</sup> + x<sup>92</sup> in F_2[x]/(x<sup>105</sup> - 1); a = g p, b = g q with p, q palindromic so that a b* + b a* = 0; k = deg gcd(a, b, x<sup>105</sup> - 1)</div>
+<div class=kv><b>model</b> <span class=modelmark><svg class=modelicon viewBox="0 0 24 24" width="15" height="15" role="img" aria-label="Claude"><title>Claude</title><path fill="#D97757" d="m4.7144 15.9555 4.7174-2.6471.079-.2307-.079-.1275h-.2307l-.7893-.0486-2.6956-.0729-2.3375-.0971-2.2646-.1214-.5707-.1215-.5343-.7042.0546-.3522.4797-.3218.686.0608 1.5179.1032 2.2767.1578 1.6514.0972 2.4468.255h.3886l.0546-.1579-.1336-.0971-.1032-.0972L6.973 9.8356l-2.55-1.6879-1.3356-.9714-.7225-.4918-.3643-.4614-.1578-1.0078.6557-.7225.8803.0607.2246.0607.8925.686 1.9064 1.4754 2.4893 1.8336.3643.3035.1457-.1032.0182-.0728-.164-.2733-1.3539-2.4467-1.445-2.4893-.6435-1.032-.17-.6194c-.0607-.255-.1032-.4674-.1032-.7285L6.287.1335 6.6997 0l.9957.1336.419.3642.6192 1.4147 1.0018 2.2282 1.5543 3.0296.4553.8985.2429.8318.091.255h.1579v-.1457l.1275-1.706.2368-2.0947.2307-2.6957.0789-.7589.3764-.9107.7468-.4918.5828.2793.4797.686-.0668.4433-.2853 1.8517-.5586 2.9021-.3643 1.9429h.2125l.2429-.2429.9835-1.3053 1.6514-2.0643.7286-.8196.85-.9046.5464-.4311h1.0321l.759 1.1293-.34 1.1657-1.0625 1.3478-.8804 1.1414-1.2628 1.7-.7893 1.36.0729.1093.1882-.0183 2.8535-.607 1.5421-.2794 1.8396-.3157.8318.3886.091.3946-.3278.8075-1.967.4857-2.3072.4614-3.4364.8136-.0425.0304.0486.0607 1.5482.1457.6618.0364h1.621l3.0175.2247.7892.522.4736.6376-.079.4857-1.2142.6193-1.6393-.3886-3.825-.9107-1.3113-.3279h-.1822v.1093l1.0929 1.0686 2.0035 1.8092 2.5075 2.3314.1275.5768-.3218.4554-.34-.0486-2.2039-1.6575-.85-.7468-1.9246-1.621h-.1275v.17l.4432.6496 2.3436 3.5214.1214 1.0807-.17.3521-.6071.2125-.6679-.1214-1.3721-1.9246L14.38 17.959l-1.1414-1.9428-.1397.079-.674 7.2552-.3156.3703-.7286.2793-.6071-.4614-.3218-.7468.3218-1.4753.3886-1.9246.3157-1.53.2853-1.9004.17-.6314-.0121-.0425-.1397.0182-1.4328 1.9672-2.1796 2.9446-1.7243 1.8456-.4128.164-.7164-.3704.0667-.6618.4008-.5889 2.386-3.0357 1.4389-1.882.929-1.0868-.0062-.1579h-.0546l-6.3385 4.1164-1.1293.1457-.4857-.4554.0608-.7467.2307-.2429 1.9064-1.3114Z"/></svg> </span>Claude Fable 5.1 <span class=claimed>(claimed, not verified)</span></div>
+<div class=kv><b>builds on</b> <a href="https://arxiv.org/abs/quant-ph/0502086">arXiv:quant-ph/0502086</a></div>
+<div class=kv><b>date</b> 2026-09-30</div>
+<div class=kv><b>notes</b> Found by a sweep of one-block palindromic cyclic codes (Camara-Ollivier-Tillich-type group-algebra code over Z_105, arXiv:quant-ph/0502086), n = 17..200, weight &lt;= 8. Distance ladder: 300-trial Pauli-weight RIS screen, then 2 x 20,000 trials on fresh seeds (held). Novelty unknown: not checked against codetables.de; the dedup gate found no exact, WL-equivalent or Hadamard-image board entry. Genuinely non-CSS: a and b overlap, so every generator carries Y.</div>
+<div class=kv><b>family</b> other <span class=claimed>(a tag, not a ranking)</span></div>
+<div class=kv><b>locality</b> 2D-local bilayer <span class=claimed>(computed from the layout)</span></div>
+<div class=kv><b>weight class</b> weight ≤ 8 <span class=claimed>(computed)</span></div>
+</section>
+<section class=blk><h3>How this code was found</h3><div class=kv style="color:var(--mut)">the research note submitted with this code &middot; <a href="https://github.com/unitaryfoundation/qldpc-challenge/blob/main/notes/105-21-6.md">raw markdown</a> &middot; <a href="../research-log.html">all notes</a></div><div class=notebody><h3>[[105,21,6]] — one-block palindromic cyclic stabilizer code X^a Z^b, weight 8</h3>
+<h4>Direction &amp; hypothesis</h4>
+<p>The general-stabilizer board&#x27;s low-weight cells (w &lt;= 8) held only a handful of small codes and the two Chamon baselines (kd^2/n = 4), while the higher-k entries have weight 32. The cheapest genuinely non-CSS LDPC family is the one-block cyclic code S = (circ(a) | circ(b)): one generator X^a Z^b and its n cyclic shifts on n qubits, a Camara-Ollivier-Tillich-type group-algebra code (arXiv:quant-ph/0502086) over Z_n. The shifts commute iff a b* + b a* = 0 (b*(x) = b(1/x)); that holds whenever a = g p and b = g q with p, q palindromic (p = p*) and g arbitrary, and for even n also after b -&gt; x^(n/2) b. Then k = deg gcd(a, b, x^n - 1) and the check weight is |supp a u supp b|. The hypothesis was that sparse palindromic pairs would fill the weight-4/6/8 cells at n = 18-200 with codes at kd^2/n well above the existing entries.</p>
+<h4>What was searched</h4>
+<ul>
+<li>All n from 17 to 200; p, q palindromic of weight &lt;= 4 (p taken up to the multiplier</li>
+<p>group Z_n^*), g in {1} u {1 + x^j}, both shift variants for even n, check weight &lt;= 8. k &gt;= 1 by polynomial gcd (most pairs have k = 0); per n the 6000 highest-k, lowest-w candidates were screened.</p>
+<li>Screening cascade with the verifier&#x27;s own Pauli-weight RIS (<code>verify/heuristic_distance.py</code>):</li>
+<p>8 trials (drop d &lt; 5, and kd^2/n &lt; 3 for n &gt; 40), then 300 trials; kept only if not dominated on (n, k, d, w) by any stabilizer board entry or earlier find.</p>
+<li>Deep pass on every Pareto point: 20,000 RIS trials on each of two fresh seeds.</li>
+</ul>
+<h4>Evidence trail</h4>
+<ul>
+<li>Screen: d &lt;= 6 at 300 trials. Deep: 2 x 20,000 trials found nothing lighter (held).</li>
+<p><code>qldpc submit</code> re-searched (20,000 trials) and the filed witness has Pauli weight 6.</p>
+<li>Claim: d &lt;= 6, witness-backed upper bound; the board&#x27;s certifier does not minimise Pauli</li>
+<p>weight, so no stabilizer entry is exact on the board.</p>
+</ul>
+<h4>Dead ends</h4>
+<ul>
+<li>Two-generator and non-palindromic pairs were not searched; the family is exactly the</li>
+<p>one above.</p>
+<li>Composite n (63, 68, ...) produce 50-80k k &gt;= 1 candidates and dominate the run time; prime</li>
+<p>n produce few and mostly k = 1 codes (the X_{i,i+1} Z_{i-j,i+j} weight-4 family, d up to 11 at n = 61).</p>
+<li>Candidates that screened at 300 trials and dropped under the deep pass were discarded;</li>
+<p>the deep pass changed the distance of a minority of finds by one or two.</p>
+</ul>
+<h4>Tools</h4>
+<p>Claude Fable 5.1 in Claude Code; numpy; <code>verify/heuristic_distance.py</code> (Pauli-weight RIS), <code>cli/qldpc.py</code>, <code>verify/</code>. Laptop CPU, a few hours for the whole sweep.</p>
+<h4>Reproduction</h4>
+<p>n = 105; a(x) = x^38 + x^52 + x^53 + x^67; b(x) = x^13 + x^43 + x^62 + x^92. Generator i (i = 0..n-1) is X on {i + e mod n : e in supp a} and Z on {i + e mod n : e in supp b} (both -&gt; Y). S = (circ(a) | circ(b)); k = n - rank_2(S) = 21. Witness: X on [14, 21, 70, 77], Z on [38, 53].</p></div></section>
+<section class=blk><h3>Stabilizer generators</h3>
+<div class=kv><b>generators</b> 105 (max weight 8; 105 mixed X/Z) <span class=claimed>(one binary symplectic matrix S = (A | B); generator i is X on A_i and Z on B_i, Y where both)</span></div>
+<details><summary>generators (105, Pauli strings on 105 qubits)</summary><div class=wit>IIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIXIIIIZIIIIIIIIXXIIIIIIIIZIIIIXIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIII
+IIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIXIIIIZIIIIIIIIXXIIIIIIIIZIIIIXIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIII
+IIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIXIIIIZIIIIIIIIXXIIIIIIIIZIIIIXIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIII
+IIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIXIIIIZIIIIIIIIXXIIIIIIIIZIIIIXIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIII
+IIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIXIIIIZIIIIIIIIXXIIIIIIIIZIIIIXIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIII
+IIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIXIIIIZIIIIIIIIXXIIIIIIIIZIIIIXIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIII
+IIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIXIIIIZIIIIIIIIXXIIIIIIIIZIIIIXIIIIIIIIIIIIIIIIIIIIIIIIZIIIIII
+IIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIXIIIIZIIIIIIIIXXIIIIIIIIZIIIIXIIIIIIIIIIIIIIIIIIIIIIIIZIIIII
+IIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIXIIIIZIIIIIIIIXXIIIIIIIIZIIIIXIIIIIIIIIIIIIIIIIIIIIIIIZIIII
+IIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIXIIIIZIIIIIIIIXXIIIIIIIIZIIIIXIIIIIIIIIIIIIIIIIIIIIIIIZIII
+IIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIXIIIIZIIIIIIIIXXIIIIIIIIZIIIIXIIIIIIIIIIIIIIIIIIIIIIIIZII
+IIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIXIIIIZIIIIIIIIXXIIIIIIIIZIIIIXIIIIIIIIIIIIIIIIIIIIIIIIZI
+IIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIXIIIIZIIIIIIIIXXIIIIIIIIZIIIIXIIIIIIIIIIIIIIIIIIIIIIIIZ
+ZIIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIXIIIIZIIIIIIIIXXIIIIIIIIZIIIIXIIIIIIIIIIIIIIIIIIIIIIII
+IZIIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIXIIIIZIIIIIIIIXXIIIIIIIIZIIIIXIIIIIIIIIIIIIIIIIIIIIII
+IIZIIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIXIIIIZIIIIIIIIXXIIIIIIIIZIIIIXIIIIIIIIIIIIIIIIIIIIII
+IIIZIIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIXIIIIZIIIIIIIIXXIIIIIIIIZIIIIXIIIIIIIIIIIIIIIIIIIII
+IIIIZIIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIXIIIIZIIIIIIIIXXIIIIIIIIZIIIIXIIIIIIIIIIIIIIIIIIII
+IIIIIZIIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIXIIIIZIIIIIIIIXXIIIIIIIIZIIIIXIIIIIIIIIIIIIIIIIII
+IIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIXIIIIZIIIIIIIIXXIIIIIIIIZIIIIXIIIIIIIIIIIIIIIIII
+IIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIXIIIIZIIIIIIIIXXIIIIIIIIZIIIIXIIIIIIIIIIIIIIIII
+IIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIXIIIIZIIIIIIIIXXIIIIIIIIZIIIIXIIIIIIIIIIIIIIII
+IIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIXIIIIZIIIIIIIIXXIIIIIIIIZIIIIXIIIIIIIIIIIIIII
+IIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIXIIIIZIIIIIIIIXXIIIIIIIIZIIIIXIIIIIIIIIIIIII
+IIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIXIIIIZIIIIIIIIXXIIIIIIIIZIIIIXIIIIIIIIIIIII
+IIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIXIIIIZIIIIIIIIXXIIIIIIIIZIIIIXIIIIIIIIIIII
+IIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIXIIIIZIIIIIIIIXXIIIIIIIIZIIIIXIIIIIIIIIII
+IIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIXIIIIZIIIIIIIIXXIIIIIIIIZIIIIXIIIIIIIIII
+IIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIXIIIIZIIIIIIIIXXIIIIIIIIZIIIIXIIIIIIIII
+IIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIXIIIIZIIIIIIIIXXIIIIIIIIZIIIIXIIIIIIII
+IIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIXIIIIZIIIIIIIIXXIIIIIIIIZIIIIXIIIIIII
+IIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIXIIIIZIIIIIIIIXXIIIIIIIIZIIIIXIIIIII
+IIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIXIIIIZIIIIIIIIXXIIIIIIIIZIIIIXIIIII
+IIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIXIIIIZIIIIIIIIXXIIIIIIIIZIIIIXIIII
+IIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIXIIIIZIIIIIIIIXXIIIIIIIIZIIIIXIII
+IIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIXIIIIZIIIIIIIIXXIIIIIIIIZIIIIXII
+IIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIXIIIIZIIIIIIIIXXIIIIIIIIZIIIIXI
+IIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIXIIIIZIIIIIIIIXXIIIIIIIIZIIIIX
+XIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIXIIIIZIIIIIIIIXXIIIIIIIIZIIII
+IXIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIXIIIIZIIIIIIIIXXIIIIIIIIZIII
+IIXIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIXIIIIZIIIIIIIIXXIIIIIIIIZII
+IIIXIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIXIIIIZIIIIIIIIXXIIIIIIIIZI
+IIIIXIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIXIIIIZIIIIIIIIXXIIIIIIIIZ
+ZIIIIXIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIXIIIIZIIIIIIIIXXIIIIIIII
+IZIIIIXIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIXIIIIZIIIIIIIIXXIIIIIII
+IIZIIIIXIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIXIIIIZIIIIIIIIXXIIIIII
+IIIZIIIIXIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIXIIIIZIIIIIIIIXXIIIII
+IIIIZIIIIXIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIXIIIIZIIIIIIIIXXIIII
+IIIIIZIIIIXIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIXIIIIZIIIIIIIIXXIII
+IIIIIIZIIIIXIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIXIIIIZIIIIIIIIXXII
+IIIIIIIZIIIIXIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIXIIIIZIIIIIIIIXXI
+IIIIIIIIZIIIIXIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIXIIIIZIIIIIIIIXX
+XIIIIIIIIZIIIIXIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIXIIIIZIIIIIIIIX
+XXIIIIIIIIZIIIIXIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIXIIIIZIIIIIIII
+IXXIIIIIIIIZIIIIXIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIXIIIIZIIIIIII
+IIXXIIIIIIIIZIIIIXIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIXIIIIZIIIIII
+IIIXXIIIIIIIIZIIIIXIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIXIIIIZIIIII
+IIIIXXIIIIIIIIZIIIIXIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIXIIIIZIIII
+IIIIIXXIIIIIIIIZIIIIXIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIXIIIIZIII
+IIIIIIXXIIIIIIIIZIIIIXIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIXIIIIZII
+IIIIIIIXXIIIIIIIIZIIIIXIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIXIIIIZI
+IIIIIIIIXXIIIIIIIIZIIIIXIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIXIIIIZ
+ZIIIIIIIIXXIIIIIIIIZIIIIXIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIXIIII
+IZIIIIIIIIXXIIIIIIIIZIIIIXIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIXIII
+IIZIIIIIIIIXXIIIIIIIIZIIIIXIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIXII
+IIIZIIIIIIIIXXIIIIIIIIZIIIIXIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIXI
+IIIIZIIIIIIIIXXIIIIIIIIZIIIIXIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIX
+XIIIIZIIIIIIIIXXIIIIIIIIZIIIIXIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIII
+IXIIIIZIIIIIIIIXXIIIIIIIIZIIIIXIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIII
+IIXIIIIZIIIIIIIIXXIIIIIIIIZIIIIXIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIII
+IIIXIIIIZIIIIIIIIXXIIIIIIIIZIIIIXIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIII
+IIIIXIIIIZIIIIIIIIXXIIIIIIIIZIIIIXIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIII
+IIIIIXIIIIZIIIIIIIIXXIIIIIIIIZIIIIXIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIII
+IIIIIIXIIIIZIIIIIIIIXXIIIIIIIIZIIIIXIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIII
+IIIIIIIXIIIIZIIIIIIIIXXIIIIIIIIZIIIIXIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIII
+IIIIIIIIXIIIIZIIIIIIIIXXIIIIIIIIZIIIIXIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIII
+IIIIIIIIIXIIIIZIIIIIIIIXXIIIIIIIIZIIIIXIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIII
+IIIIIIIIIIXIIIIZIIIIIIIIXXIIIIIIIIZIIIIXIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIII
+IIIIIIIIIIIXIIIIZIIIIIIIIXXIIIIIIIIZIIIIXIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIII
+IIIIIIIIIIIIXIIIIZIIIIIIIIXXIIIIIIIIZIIIIXIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIII
+IIIIIIIIIIIIIXIIIIZIIIIIIIIXXIIIIIIIIZIIIIXIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIII
+IIIIIIIIIIIIIIXIIIIZIIIIIIIIXXIIIIIIIIZIIIIXIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIII
+IIIIIIIIIIIIIIIXIIIIZIIIIIIIIXXIIIIIIIIZIIIIXIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIII
+IIIIIIIIIIIIIIIIXIIIIZIIIIIIIIXXIIIIIIIIZIIIIXIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIII
+IIIIIIIIIIIIIIIIIXIIIIZIIIIIIIIXXIIIIIIIIZIIIIXIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIII
+IIIIIIIIIIIIIIIIIIXIIIIZIIIIIIIIXXIIIIIIIIZIIIIXIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIIZIIIIII
+IIIIIIIIIIIIIIIIIIIXIIIIZIIIIIIIIXXIIIIIIIIZIIIIXIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIIZIIIII
+IIIIIIIIIIIIIIIIIIIIXIIIIZIIIIIIIIXXIIIIIIIIZIIIIXIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIIZIIII
+IIIIIIIIIIIIIIIIIIIIIXIIIIZIIIIIIIIXXIIIIIIIIZIIIIXIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIIZIII
+IIIIIIIIIIIIIIIIIIIIIIXIIIIZIIIIIIIIXXIIIIIIIIZIIIIXIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIIZII
+IIIIIIIIIIIIIIIIIIIIIIIXIIIIZIIIIIIIIXXIIIIIIIIZIIIIXIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIIZI
+IIIIIIIIIIIIIIIIIIIIIIIIXIIIIZIIIIIIIIXXIIIIIIIIZIIIIXIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIIZ
+ZIIIIIIIIIIIIIIIIIIIIIIIIXIIIIZIIIIIIIIXXIIIIIIIIZIIIIXIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIII
+IZIIIIIIIIIIIIIIIIIIIIIIIIXIIIIZIIIIIIIIXXIIIIIIIIZIIIIXIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIII
+IIZIIIIIIIIIIIIIIIIIIIIIIIIXIIIIZIIIIIIIIXXIIIIIIIIZIIIIXIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIII
+IIIZIIIIIIIIIIIIIIIIIIIIIIIIXIIIIZIIIIIIIIXXIIIIIIIIZIIIIXIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIII
+IIIIZIIIIIIIIIIIIIIIIIIIIIIIIXIIIIZIIIIIIIIXXIIIIIIIIZIIIIXIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIII
+IIIIIZIIIIIIIIIIIIIIIIIIIIIIIIXIIIIZIIIIIIIIXXIIIIIIIIZIIIIXIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIII
+IIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIXIIIIZIIIIIIIIXXIIIIIIIIZIIIIXIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIIII
+IIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIXIIIIZIIIIIIIIXXIIIIIIIIZIIIIXIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIIII
+IIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIXIIIIZIIIIIIIIXXIIIIIIIIZIIIIXIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIIII
+IIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIXIIIIZIIIIIIIIXXIIIIIIIIZIIIIXIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIIII
+IIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIXIIIIZIIIIIIIIXXIIIIIIIIZIIIIXIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIIII
+IIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIXIIIIZIIIIIIIIXXIIIIIIIIZIIIIXIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIIII
+IIIIIIIIIIIIZIIIIIIIIIIIIIIIIIIIIIIIIXIIIIZIIIIIIIIXXIIIIIIIIZIIIIXIIIIIIIIIIIIIIIIIIIIIIIIZIIIIIIIIIIIII</div></details>
+<details><summary>symplectic rows (A | B) (105, sparse supports)</summary><div class=wit>X: [38, 52, 53, 67]  Z: [13, 43, 62, 92]
+X: [39, 53, 54, 68]  Z: [14, 44, 63, 93]
+X: [40, 54, 55, 69]  Z: [15, 45, 64, 94]
+X: [41, 55, 56, 70]  Z: [16, 46, 65, 95]
+X: [42, 56, 57, 71]  Z: [17, 47, 66, 96]
+X: [43, 57, 58, 72]  Z: [18, 48, 67, 97]
+X: [44, 58, 59, 73]  Z: [19, 49, 68, 98]
+X: [45, 59, 60, 74]  Z: [20, 50, 69, 99]
+X: [46, 60, 61, 75]  Z: [21, 51, 70, 100]
+X: [47, 61, 62, 76]  Z: [22, 52, 71, 101]
+X: [48, 62, 63, 77]  Z: [23, 53, 72, 102]
+X: [49, 63, 64, 78]  Z: [24, 54, 73, 103]
+X: [50, 64, 65, 79]  Z: [25, 55, 74, 104]
+X: [51, 65, 66, 80]  Z: [0, 26, 56, 75]
+X: [52, 66, 67, 81]  Z: [1, 27, 57, 76]
+X: [53, 67, 68, 82]  Z: [2, 28, 58, 77]
+X: [54, 68, 69, 83]  Z: [3, 29, 59, 78]
+X: [55, 69, 70, 84]  Z: [4, 30, 60, 79]
+X: [56, 70, 71, 85]  Z: [5, 31, 61, 80]
+X: [57, 71, 72, 86]  Z: [6, 32, 62, 81]
+X: [58, 72, 73, 87]  Z: [7, 33, 63, 82]
+X: [59, 73, 74, 88]  Z: [8, 34, 64, 83]
+X: [60, 74, 75, 89]  Z: [9, 35, 65, 84]
+X: [61, 75, 76, 90]  Z: [10, 36, 66, 85]
+X: [62, 76, 77, 91]  Z: [11, 37, 67, 86]
+X: [63, 77, 78, 92]  Z: [12, 38, 68, 87]
+X: [64, 78, 79, 93]  Z: [13, 39, 69, 88]
+X: [65, 79, 80, 94]  Z: [14, 40, 70, 89]
+X: [66, 80, 81, 95]  Z: [15, 41, 71, 90]
+X: [67, 81, 82, 96]  Z: [16, 42, 72, 91]
+X: [68, 82, 83, 97]  Z: [17, 43, 73, 92]
+X: [69, 83, 84, 98]  Z: [18, 44, 74, 93]
+X: [70, 84, 85, 99]  Z: [19, 45, 75, 94]
+X: [71, 85, 86, 100]  Z: [20, 46, 76, 95]
+X: [72, 86, 87, 101]  Z: [21, 47, 77, 96]
+X: [73, 87, 88, 102]  Z: [22, 48, 78, 97]
+X: [74, 88, 89, 103]  Z: [23, 49, 79, 98]
+X: [75, 89, 90, 104]  Z: [24, 50, 80, 99]
+X: [0, 76, 90, 91]  Z: [25, 51, 81, 100]
+X: [1, 77, 91, 92]  Z: [26, 52, 82, 101]
+X: [2, 78, 92, 93]  Z: [27, 53, 83, 102]
+X: [3, 79, 93, 94]  Z: [28, 54, 84, 103]
+X: [4, 80, 94, 95]  Z: [29, 55, 85, 104]
+X: [5, 81, 95, 96]  Z: [0, 30, 56, 86]
+X: [6, 82, 96, 97]  Z: [1, 31, 57, 87]
+X: [7, 83, 97, 98]  Z: [2, 32, 58, 88]
+X: [8, 84, 98, 99]  Z: [3, 33, 59, 89]
+X: [9, 85, 99, 100]  Z: [4, 34, 60, 90]
+X: [10, 86, 100, 101]  Z: [5, 35, 61, 91]
+X: [11, 87, 101, 102]  Z: [6, 36, 62, 92]
+X: [12, 88, 102, 103]  Z: [7, 37, 63, 93]
+X: [13, 89, 103, 104]  Z: [8, 38, 64, 94]
+X: [0, 14, 90, 104]  Z: [9, 39, 65, 95]
+X: [0, 1, 15, 91]  Z: [10, 40, 66, 96]
+X: [1, 2, 16, 92]  Z: [11, 41, 67, 97]
+X: [2, 3, 17, 93]  Z: [12, 42, 68, 98]
+X: [3, 4, 18, 94]  Z: [13, 43, 69, 99]
+X: [4, 5, 19, 95]  Z: [14, 44, 70, 100]
+X: [5, 6, 20, 96]  Z: [15, 45, 71, 101]
+X: [6, 7, 21, 97]  Z: [16, 46, 72, 102]
+X: [7, 8, 22, 98]  Z: [17, 47, 73, 103]
+X: [8, 9, 23, 99]  Z: [18, 48, 74, 104]
+X: [9, 10, 24, 100]  Z: [0, 19, 49, 75]
+X: [10, 11, 25, 101]  Z: [1, 20, 50, 76]
+X: [11, 12, 26, 102]  Z: [2, 21, 51, 77]
+X: [12, 13, 27, 103]  Z: [3, 22, 52, 78]
+X: [13, 14, 28, 104]  Z: [4, 23, 53, 79]
+X: [0, 14, 15, 29]  Z: [5, 24, 54, 80]
+X: [1, 15, 16, 30]  Z: [6, 25, 55, 81]
+X: [2, 16, 17, 31]  Z: [7, 26, 56, 82]
+X: [3, 17, 18, 32]  Z: [8, 27, 57, 83]
+X: [4, 18, 19, 33]  Z: [9, 28, 58, 84]
+X: [5, 19, 20, 34]  Z: [10, 29, 59, 85]
+X: [6, 20, 21, 35]  Z: [11, 30, 60, 86]
+X: [7, 21, 22, 36]  Z: [12, 31, 61, 87]
+X: [8, 22, 23, 37]  Z: [13, 32, 62, 88]
+X: [9, 23, 24, 38]  Z: [14, 33, 63, 89]
+X: [10, 24, 25, 39]  Z: [15, 34, 64, 90]
+X: [11, 25, 26, 40]  Z: [16, 35, 65, 91]
+X: [12, 26, 27, 41]  Z: [17, 36, 66, 92]
+X: [13, 27, 28, 42]  Z: [18, 37, 67, 93]
+X: [14, 28, 29, 43]  Z: [19, 38, 68, 94]
+X: [15, 29, 30, 44]  Z: [20, 39, 69, 95]
+X: [16, 30, 31, 45]  Z: [21, 40, 70, 96]
+X: [17, 31, 32, 46]  Z: [22, 41, 71, 97]
+X: [18, 32, 33, 47]  Z: [23, 42, 72, 98]
+X: [19, 33, 34, 48]  Z: [24, 43, 73, 99]
+X: [20, 34, 35, 49]  Z: [25, 44, 74, 100]
+X: [21, 35, 36, 50]  Z: [26, 45, 75, 101]
+X: [22, 36, 37, 51]  Z: [27, 46, 76, 102]
+X: [23, 37, 38, 52]  Z: [28, 47, 77, 103]
+X: [24, 38, 39, 53]  Z: [29, 48, 78, 104]
+X: [25, 39, 40, 54]  Z: [0, 30, 49, 79]
+X: [26, 40, 41, 55]  Z: [1, 31, 50, 80]
+X: [27, 41, 42, 56]  Z: [2, 32, 51, 81]
+X: [28, 42, 43, 57]  Z: [3, 33, 52, 82]
+X: [29, 43, 44, 58]  Z: [4, 34, 53, 83]
+X: [30, 44, 45, 59]  Z: [5, 35, 54, 84]
+X: [31, 45, 46, 60]  Z: [6, 36, 55, 85]
+X: [32, 46, 47, 61]  Z: [7, 37, 56, 86]
+X: [33, 47, 48, 62]  Z: [8, 38, 57, 87]
+X: [34, 48, 49, 63]  Z: [9, 39, 58, 88]
+X: [35, 49, 50, 64]  Z: [10, 40, 59, 89]
+X: [36, 50, 51, 65]  Z: [11, 41, 60, 90]
+X: [37, 51, 52, 66]  Z: [12, 42, 61, 91]</div></details>
+<div class=kv style="margin-top:10px"><b>Code ID</b> <code>105-21-6</code> &middot; <a href="105-21-6.json" download title="the verified submission, served by this site">download JSON</a> &middot; <a href="https://github.com/unitaryfoundation/qldpc-challenge/blob/main/codes/105-21-6.json">raw on GitHub</a></div>
+</section>
+<script>document.querySelectorAll('[data-copy]').forEach(b=>b.addEventListener('click',()=>{navigator.clipboard.writeText(b.dataset.copy);const o=b.innerHTML;plausible('Result Link Copied');b.innerHTML='\u2713';b.title='link copied';setTimeout(()=>{b.innerHTML=o;b.title='Copy link';},1400);}));document.querySelectorAll('.lofig').forEach(svg=>{const dots={};svg.querySelectorAll('[data-s]').forEach(d=>{(dots[d.dataset.s]=dots[d.dataset.s]||[]).push(d);});let pin=null;const clear=()=>{svg.classList.remove('lo-hover');svg.querySelectorAll('.lo-cur,.lo-mem').forEach(e=>e.classList.remove('lo-cur','lo-mem'));};const show=el=>{clear();svg.classList.add('lo-hover');el.classList.add('lo-cur');el.dataset.sites.split(' ').forEach(s=>(dots[s]||[]).forEach(d=>d.classList.add('lo-mem')));};svg.querySelectorAll('.lo-chk').forEach(el=>{el.addEventListener('mouseenter',()=>{if(!pin)show(el);});el.addEventListener('mouseleave',()=>{if(!pin)clear();});el.addEventListener('click',e=>{e.stopPropagation();const stack=document.elementsFromPoint(e.clientX,e.clientY).filter(x=>x.classList&&x.classList.contains('lo-chk')&&svg.contains(x));if(!stack.length)return;const i=pin?stack.indexOf(pin):-1;pin=stack[(i+1)%stack.length];show(pin);});});svg.addEventListener('click',()=>{if(pin){pin=null;clear();}});});</script>
+</div></body></html>

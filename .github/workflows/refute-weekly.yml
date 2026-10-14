@@ -5,20 +5,80 @@ name: refute-weekly
 # the seed on purpose, so over time it accumulates search coverage and can catch
 # an over-claim that any single fixed-seed run missed. Runs on a schedule and
 # on-demand.
+#
+# The board outgrew one job (issue #2896). At 1,956 entries and 10 to 17 s each
+# the sweep is six to eight hours against a 6 h runner cap, and every scheduled
+# run from 2026-09-21 to 2026-10-12 was cancelled after covering only the
+# alphabetical prefix up to n ~ 300. Two changes: the scheduled sweep covers
+# the board's cell records (refute_board.py --scope records, the 1,195 entries
+# whose distance decides a record; a dominated entry's over-claim moves none),
+# and it runs as SHARDS parallel jobs: refute_board.py orders the entries
+# largest n first and shard I takes entries I, I+K, I+2K, ..., so each shard
+# carries an equal share of the large entries. Each shard stops opening
+# entries at its --max-minutes budget and reports what it did not reach; the
+# summary job fails unless every shard completed clean. When a shard report
+# shows "stopped by budget", add a shard here (the matrix list and SHARDS must
+# agree). A manual run can pass scope=all for the full back catalogue.
+
+permissions:
+  contents: read
 
 on:
   schedule:
     - cron: "0 6 * * 1"      # every Monday 06:00 UTC
-  workflow_dispatch: {}        # allow manual runs
+  workflow_dispatch:
+    inputs:
+      scope:
+        description: "records (the board's cell records) or all (every entry)"
+        required: false
+        default: "records"
+        type: choice
+        options: [records, all]
+
+env:
+  SHARDS: 6
 
 jobs:
   refute-board:
     runs-on: ubuntu-latest
-    timeout-minutes: 120
+    timeout-minutes: 350
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [0, 1, 2, 3, 4, 5]
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v5
-      - name: refute every board entry (random seed)
-        run: uv run --frozen python verify/refute_board.py
+      - name: refute this shard of the board's records (random seed, stops cleanly at 300 min)
+        run: >
+          uv run --frozen python verify/refute_board.py
+          --scope ${{ github.event.inputs.scope || 'records' }}
+          --shard ${{ matrix.shard }}/${{ env.SHARDS }} --max-minutes 300
+          --report refute-shard-${{ matrix.shard }}.json
+      - name: upload the shard report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: refute-shard-${{ matrix.shard }}
+          path: refute-shard-${{ matrix.shard }}.json
+          if-no-files-found: warn
+
+  summary:
+    needs: refute-board
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: refute-shard-*
+          merge-multiple: true
+          path: reports
+      - name: coverage across shards (fails unless every shard completed clean)
+        run: >
+          uv run --frozen python verify/refute_board.py
+          --summarize "reports/refute-shard-*.json" --expect ${{ env.SHARDS }}
       - name: frontier consistency audit (the three record implementations)
         run: uv run --frozen python verify/board_frontier_audit.py

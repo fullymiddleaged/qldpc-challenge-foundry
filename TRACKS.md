@@ -46,8 +46,21 @@ tracks a logical error rate is less settled for non-CSS codes.
 A stabilizer code's check weight is the number of qubits each generator acts
 on (a `Y` counts once) and its locality class comes from the generator
 supports, so the (locality, weight) grid is the same on both boards. A code
-that is CSS up to a Hadamard on some qubits belongs on the CSS board; the
-verifier detects these and the dedup gate marks them as duplicates.
+that is CSS up to single-qubit Cliffords on some qubits (a Hadamard, an S,
+any of the six) belongs on the CSS board: the verifier finds the Cliffords
+and rejects the entry with its CSS image spelled out, so the stabilizer board
+holds only codes that are non-CSS under every local Clifford.
+
+A Clifford acting on blocks of two or more qubits is outside that test, and
+its image of a board entry is a stabilizer code with the same `n`, `k`, and
+code space whose distance was bought with check weight (issue #2802: an
+m = 4 image of `[[500,100,16]]` reads `w` 26, `d <= 37`, `kd^2/n` 274
+against the parent's 51). Block Clifford equivalence is not tested, so such
+an entry declares it: `provenance.clifford_relabel_of` names the parent,
+the verifier checks the parent exists with the same `n` and `k`, the entry
+cannot also claim `new_parameters`, and the board marks it so its `kd^2/n`
+is read as a relabeling and not as a construction result. An undeclared
+one that is found is a provenance defect, corrected like any other.
 
 A record whose only strict axis is `d` — the candidate ties an existing entry on
 n, k and w and raises nothing but the distance — is a different kind of claim
@@ -64,7 +77,8 @@ the candidate also beat some other entry on `k`, or `w`, or `n`.
 The matched-depth pair audit (`research/audits/leader_audit.py pair`) then
 re-measures the candidate and that entry on the same trials, seeds and pair
 depth, and its `redirect` verdict — the board's number, not the candidate's, was
-the soft one — is a distance revision, which is itself a valid submission. The
+the soft one — is a distance revision, which is a correction to that entry
+rather than a new submission (`research/audits/README.md`). The
 board still ranks claims exactly as claimed; the flag says which claim to
 re-measure first.
 
@@ -168,25 +182,72 @@ dimensions. Nothing else reads it: the locality class is computed from the
 coordinates as before, g is unchanged, and the primary-tracks grid gains no
 axis. Gate scheduling and routing cost across modules are out of scope.
 
-## Modular layouts
+## Circuit tier
 
-A layout may also assign every qubit to a hardware module
-(`locality.modules`, one integer per qubit): a chip in a multi-chip
-assembly, a flip-chip module joined to others by interconnects, a
-photonically linked or shuttling zone. The locality tracks cover monolithic
-2D and flip-chip bilayers; a modular machine falls to `unrestricted`, where
-the board cannot tell a code whose checks rarely cross a module boundary
-from an expander. Module membership is the same kind of cheap, checkable
-structure as the coordinates, so the verifier reads it the same way: an
-assignment must cover every qubit, and from it the verifier reports the
-checks spanning more than one module (count and which), the ports each
-module needs (the distinct other modules it shares a check with), and the
-qubits per module. A code with such an assignment earns the Layer-3 flag
-`modular`, and the site shows the diagnostics on its page. The module field
-is independent of the coordinates, so it does not tie the layout to two
-dimensions. Nothing else reads it: the locality class is computed from the
-coordinates as before, g is unchanged, and the primary-tracks grid gains no
-axis. Gate scheduling and routing cost across modules are out of scope.
+An entry may ship the syndrome-extraction memory circuits it would run on,
+`memory_x.stim` and `memory_z.stim` under `circuits/<slug>/`, with the
+detector error models the pinned stim derives from them committed beside
+them. The tier records `d_circ` per basis: the size of an exhibited set of
+error mechanisms in that basis's detector error model that no detector sees
+and that flips a logical observable, the circuit-level counterpart of the
+low-weight logical the code tier stores. The verifier re-derives the detector
+error model, checks the witness against it, and rejects a circuit that is not
+a memory experiment of this code under the canonical noise recipe. The
+schedule is the submitter's degree of freedom, the noise placement is not.
+Like the code tier, `d_circ` is a witness-backed upper bound.
+
+The tier is penalty-only: `d_circ` is clamped to `<= d`, so a circuit can
+lower what the board shows for an entry and never raise it. The memory
+experiment runs `rounds >= d` noisy extraction rounds, so a schedule cannot
+earn a higher circuit distance by measuring fewer rounds than the code
+distance. Nothing else changes: the entry stays in the same cells and keeps
+its place on the (n, k, d, w) frontier, the site marks it with a gear chip
+carrying the lower of its two `d_circ` values, and the circuit tab lists the
+entries that have one.
+
+The tier has caps: n at most 200, a cap on the error mechanisms per memory
+detector error model at `rounds = d`, and a cap on the size of each committed
+file. The numbers and the reasoning live with the constants `MAX_CIRCUIT_N`,
+`MAX_DEM_MECHANISMS`, and `MAX_CIRCUIT_FILE_BYTES` in
+`verify/circuit_verify.py`, decided on #2797 and #2811: the tier is for
+instances that can be built and understood now, the mechanism cap is what the
+refutation search covers in the gate's budget per basis, and the files stay
+plain text so a witness is auditable in a diff. The caps are raise-only, with
+a decision on the issue tracker. The fields are in `schema/SCHEMA.md` under
+`circuit`.
+
+## Measured-rate tier
+
+On the same committed circuits an entry may also carry a measured logical
+error rate, `circuit.ler`: per basis, a list of points, one per physical
+error rate on a fixed grid (`P_GRID` in `verify/ler_verify.py`), each
+recording the shots, the failures, the seed, the pinned decoder, the
+per-round rate, and its confidence interval. `d_circ` is a floor. This is
+the rate a simulation sees, prefactors included, and it is what separates two
+schedules with the same `d_circ`. The grid is fixed so that entries are
+compared only at equal p. The site never compares rates measured at
+different physical rates, and the measured-rate frontier (over n, k, and the
+rate, with d and w not entering) is computed per p over verified points only.
+
+A point whose per-shot failure fraction exceeds one half is saturated, since
+the per-round conversion reads it as one half whatever the circuit does, and
+is rejected. Which rates are informative depends on the code, which is what
+the grid is for. There is no clamp like `d_circ <= d`, because a rate has no
+code-level bound to clamp to. The gaming direction is claiming a rate lower
+than the circuit earns, and that is what replication tests.
+
+Verification is by re-measurement with an independent seed, sized to
+discriminate rather than to a fixed shot count. At PR time the gate tries the
+points from the highest rate down inside a wall budget per basis and must
+verify at least one. A point the budget cannot check to the admissibility
+bound is deferred, with every lower point, to the weekly post-merge run
+(`verify/ler_replicate.py`), which re-measures every point with a long budget
+and several seeds and writes a receipt per entry under `receipts/ler/`. The
+site shows each point as verified, failed, unverifiable, or pending, and a
+failed or unverifiable point does not count toward the frontier. The budgets
+and thresholds are the constants in `verify/ler_verify.py`, the fields and
+verification rules are in `schema/SCHEMA.md` under `circuit.ler`, and the
+decisions are #1278 and #2812.
 
 ## Two efficiency scores
 

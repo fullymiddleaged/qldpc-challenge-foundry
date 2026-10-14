@@ -85,7 +85,7 @@
 <li>Independent exhaustive enumeration: zero weight-1 logicals and zero</li>
 <p>weight-2 logicals on either side (a weight-2 X-logical {a,b} exists iff H_Z columns a,b are identical and K_X columns a,b differ; checked completely). The same exhaustive check passes on the merged board reference code (control).</p>
 </ul>
-<p>Certificate artifact: <code>research/candidates/700-85-3-cert.json</code>.</p>
+<p>Certificate artifact: <code>certs/700-85-3.json</code>.</p>
 <h4>Why this beats the g&lt;1 ceiling</h4>
 <p>The 1/9 bound is specific to <b>uniform period-3 sublattices</b>; the d=3 rule is local, so irregular exact max independent sets on finite patches exceed it (84/484 ≈ 0.174 interior density on 25×28 vs 1/9 ≈ 0.111). Heuristic packers undercount badly (a greedy finds ~66 holes on 25×28 vs the exact 84), so prior &quot;g &lt; 1 for this family&quot; reasoning was an artifact of search strength, not a property of the family.</p>
 <h4>Caveats</h4>
@@ -100,13 +100,12 @@
 <h4>Tools</h4>
 <p>Author: @mathysrennela. Model: DeepSeek V4 Flash 0731. Repo kit (<code>css.py</code>, <code>submit.py</code>, <code>surrogate.py</code>), <code>verify/certify.py</code> for the exact tier, <code>verify/validate_candidate.py</code> as the gate, scipy MILP for the exact max independent set. Reference codes fetched from the board.</p>
 <h4>Reproduction</h4>
+<p>The constructor was a local script, not committed here; the exact hole set and boundary bits it produced are carried by the entry itself, and the construction string in <code>codes/700-85-3.json</code> is what reproduces it. The MILP scan that found the hole count and its checkpoint were working output from the same script and were not committed either.</p>
 <pre>
-uv run python research/candidates/_build_700_85_3.py
-# -&gt; research/candidates/700-85-3-holey.json (witnesses at 2000 trials)
-uv run python verify/certify.py research/candidates/700-85-3-holey.json --tlim 120
-uv run python verify/validate_candidate.py research/candidates/700-85-3-holey.json
+uv run python verify/certify.py codes/700-85-3.json --tlim 120
+uv run python verify/validate_candidate.py &lt;staged candidate&gt;.json
 </pre>
-<p>The exact hole set, boundary bits, and constructor are in <code>research/candidates/_build_700_85_3.py</code>; the MILP scan script and its checkpoint are <code>research/candidates/_hmax_exact_scan.py</code> + <code>research/candidates/_hmax_milp.json</code>.</p></div></section>
+<p><code>certify.py</code> runs against the committed entry. <code>validate_candidate.py</code> was run on the staged document before filing; against the committed entry it exits 1 on self-dedup.</p></div></section>
 <section class=blk><h3>Parity checks</h3>
 <div class=kv><b>X-checks</b> 306 (max weight 4) &middot; <b style="min-width:auto">Z-checks</b> 309 (max weight 4)</div>
 <details><summary>H_X (306 checks, sparse supports)</summary><div class=wit>[0, 1, 28, 29]

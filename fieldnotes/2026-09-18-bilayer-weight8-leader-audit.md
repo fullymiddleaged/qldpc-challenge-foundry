@@ -321,7 +321,8 @@ so the same caveat applies before believing a hold here.
 
 ### Two board-metadata defects, filed rather than submitted
 
-`codes/640-16-104.json` carries `distance.d = 88` in a file still named for 104,
+The 640-16 entry carried `distance.d = 88` in a file still named for 104,
+now `codes/640-16-40.json`,
 and `codes/390-82-38.json` says `[[380,82,38]]` while its own `n` is 390. Both
 are metadata only and neither touches a witness. A `git mv` with byte-identical
 content is rejected for anyone but the entry's authors by the authorship gate,

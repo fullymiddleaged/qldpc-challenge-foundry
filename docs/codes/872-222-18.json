@@ -1,5 +1,5 @@
 {
- "schema_version": "0.1",
+ "schema_version": "0.2",
  "name": "[[872,222,18]]",
  "code_type": "CSS",
  "n": 872,
@@ -6577,30 +6577,39 @@
    ]
   },
   "Z": {
-   "value": 20,
+   "value": 18,
    "confidence": "upper_bound",
    "witness": [
-    14,
-    184,
-    219,
-    334,
-    372,
-    382,
-    451,
-    481,
-    512,
-    519,
-    552,
-    560,
-    567,
-    590,
-    628,
-    655,
-    662,
-    663,
-    731,
-    803
-   ]
+    11,
+    57,
+    110,
+    149,
+    157,
+    180,
+    309,
+    346,
+    347,
+    380,
+    386,
+    479,
+    493,
+    564,
+    602,
+    660,
+    745,
+    794
+   ],
+   "witness_provenance": {
+    "found_by": [
+     "@vprusso"
+    ],
+    "date": "2026-10-09",
+    "found_at_samples": 300000000,
+    "tool": "ris_gpu 300M trials/side, pair depth 8, Perlmutter A100",
+    "seeds": [
+     2
+    ]
+   }
   }
  },
  "provenance": {
@@ -6610,7 +6619,8 @@
   "construction": "contributed via qldpc submit",
   "origin": "submission",
   "date": "2026-09-28",
-  "model": "MiMo-V2.6-Flash"
+  "model": "MiMo-V2.6-Flash",
+  "notes": " Distance revision 2026-10-09 (Perlmutter refutation campaign, witnesses by @vprusso): Z side 20 -> 18 (GPU randomized information-set search (verify/ris_gpu.py, pair depth 8), 300,000,000 trials per side on an NVIDIA A100, seed 2)."
  },
  "family": "other"
 }

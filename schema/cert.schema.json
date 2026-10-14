@@ -1,0 +1,123 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://unitaryfoundation.github.io/qldpc-challenge/schema/cert.schema.json",
+  "title": "qLDPC challenge exact-distance certificate",
+  "description": "A certs/<slug>.json with d_exact true is what upgrades a board entry from a witnessed upper bound to an exact distance. The upper bound always ships an explicit logical operator anyone can re-verify in seconds; the lower bound is the harder direction and, until this schema, shipped only a solver's verdict and a sentence. `verification` makes the strength of that verdict explicit and lets a stronger one be attached without changing anything else (issue #2511).",
+  "type": "object",
+  "required": ["d", "d_exact", "solver", "sides", "verification"],
+  "properties": {
+    "name": { "type": "string" },
+    "d": { "type": "integer", "minimum": 1,
+           "description": "the distance this certificate is about" },
+    "d_exact": { "type": "boolean",
+                 "description": "true only when every side closed; a timeout proves nothing and leaves the entry at its upper bound" },
+    "solver": { "type": "string", "minLength": 1,
+                "description": "the solver and its version, stamped from what was loaded rather than hardcoded (#2349)" },
+    "encoding": { "type": "string" },
+    "symmetry": { "type": "boolean" },
+    "tlim_per_solve": { "type": "number", "exclusiveMinimum": 0 },
+    "logical_classes": { "type": "integer", "minimum": 0,
+                         "description": "how many logical classes the pairing set spanned. Recorded because a set that spans fewer than k makes UNSAT meaningless, which is how 255 certificates came to prove nothing (#2273)" },
+    "sides": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "value": { "type": "integer", "minimum": 1 },
+          "exact": { "type": "boolean" },
+          "status": { "type": "string" },
+          "secs": { "type": "number", "minimum": 0 },
+          "note": { "type": "string" },
+          "witness": { "type": "array", "items": { "type": "integer", "minimum": 0 } }
+        }
+      }
+    },
+    "verification": {
+      "type": "object",
+      "description": "How strong this certificate is, kept separate from how it was produced. `solver` and `tlim_per_solve` say what ran; this says what the result is worth to someone who does not trust us.",
+      "required": ["level"],
+      "additionalProperties": false,
+      "properties": {
+        "level": {
+          "type": "string",
+          "enum": ["solver", "proof_log", "formal"],
+          "description": "solver: a solver reported UNSAT or optimal, with no artifact a third party can check without re-running our encoding. This is the weakest level and the one every certificate held before #2511. proof_log: a machine-checkable refutation artifact accompanies the run, so the CNF handed to the solver is independently confirmed unsatisfiable. NOTE that this does NOT confirm the CNF encodes the distance question: the #2273 failure produced a satisfiable-checkable CNF that asked the wrong thing. formal: a machine-checked proof of the distance statement itself, in which the reduction from the code to the decision problem is also verified, so an encoding bug is unrepresentable rather than merely unlikely."
+        },
+        "artifact": {
+          "type": "string",
+          "description": "repo-relative path to the proof object, when a proof_log or formal certificate attaches a file rather than a replay recipe"
+        },
+        "checker": {
+          "type": "string",
+          "description": "the tool and version that checked the artifact, e.g. 'drat-trim 2024-05' or 'Lean 4.x + mathlib'"
+        },
+        "replay": {
+          "type": "object",
+          "description": "How a third party re-derives this check without trusting us, when there is no file worth attaching. For proof_log it is the command that regenerates the formula from this entry and the command that re-checks the refutation: the trimmed cores run to hundreds of megabytes, and a committed blob nobody opens is not better evidence than a command anyone can run; CI re-derives and re-checks on a schedule, so the claim is audited rather than asserted. For formal it is the development, commit, and theorem that a third party builds to reach the same statement, since a formal certificate is a theorem in a proof development rather than a file. The shape each level requires is stated under allOf.",
+          "properties": {
+            "emit": { "type": "string", "description": "proof_log: the command that regenerates the formula from codes/<slug>.json" },
+            "check": { "type": "string", "description": "proof_log: the command that re-checks the refutation" },
+            "emitter": { "type": "string", "description": "proof_log: which encoder produced it, including the parameters that change the formula" },
+            "repo": { "type": "string", "description": "formal: the formal development, e.g. github.com/VerifiedQC/Lean-QEC" },
+            "commit": { "type": "string", "description": "formal: the exact commit the theorem was checked at" },
+            "theorem": { "type": "string", "description": "formal: the theorem name, e.g. BB72_dist_6" },
+            "build": { "type": "string", "description": "formal: the command that reproduces the check, e.g. 'lake exe cache get && lake build'" },
+            "toolchain": { "type": "string", "description": "formal: the toolchain, e.g. leanprover/lean4:v4.30.0-rc2" },
+            "mathlib": { "type": "string", "description": "formal: the mathlib revision the development pins" }
+          }
+        },
+        "cnf_sha256": {
+          "type": "string",
+          "description": "for proof_log: sha256 of the formula the artifact refutes, one per side joined as 'X=<hash>;Z=<hash>'. A refutation is of a specific instance, and without the instance's hash a reader cannot tell which formula the proof belongs to, so a re-emission that changed the encoding would be indistinguishable from the one that was checked. The formula itself is reproducible from the code JSON and is not stored."
+        },
+        "reference": {
+          "type": "string",
+          "description": "for formal: the formalization the proof was produced against, e.g. 'arXiv:2605.16523'"
+        },
+        "checks_sha256": {
+          "type": "string",
+          "description": "for formal: sha256 of this entry's canonical (H_X, H_Z), binding the theorem to this code rather than to one that resembles it. A formal proof is about a code defined inside the development, and a perfect proof about a different matrix pair certifies nothing here. The only maintainable way to hold the binding is to generate the formal definition from codes/<slug>.json rather than transcribe it."
+        },
+        "note": { "type": "string", "maxLength": 500 }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "level": { "enum": ["proof_log", "formal"] } } },
+          "then": {
+            "required": ["level", "checker"],
+            "anyOf": [
+              { "required": ["artifact"] },
+              { "required": ["replay"] }
+            ],
+            "description": "A stronger level needs evidence a third party can act on: a file in the tree, or the recipe that re-derives the check. For proof_log the recipe is the better artifact, since the trimmed refutations run to hundreds of megabytes and a committed blob nobody opens is not evidence. For formal there is no file to attach at all, because the proof is a theorem in a development."
+          }
+        },
+        {
+          "if": { "required": ["level"], "properties": { "level": { "const": "proof_log" } } },
+          "then": {
+            "properties": {
+              "replay": {
+                "required": ["emit", "check"],
+                "additionalProperties": false,
+                "properties": { "emit": {}, "check": {}, "emitter": {} }
+              }
+            }
+          }
+        },
+        {
+          "if": { "required": ["level"], "properties": { "level": { "const": "formal" } } },
+          "then": {
+            "required": ["replay", "checks_sha256"],
+            "properties": {
+              "replay": {
+                "required": ["repo", "commit", "theorem"],
+                "additionalProperties": false,
+                "properties": { "repo": {}, "commit": {}, "theorem": {}, "build": {}, "toolchain": {}, "mathlib": {} }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

@@ -12,6 +12,11 @@ on:
       # PR merges with only ruff and prose on its rollup (PR #2321).
       - "cli/**"
       - "codes/**"
+      # check_certs.py runs inside this workflow, so a certificate-only PR
+      # (a level change, a new replay recipe) has to trigger it: without this
+      # entry such a PR got prose and proof-replay and never the certificate
+      # checker (PR #2806).
+      - "certs/**"
       - "verify/**"
       - "decode/**"
       - "schema/**"
@@ -30,12 +35,24 @@ on:
       - "!**/*.md"
   push:
     branches: [main]
+  # The board-wide LER replica (issue #2614): a push to main now re-measures
+  # only what the merge changed, so the full re-measure of every claim moves
+  # to a weekly run, after refute-weekly.yml's Monday 06:00 sweep.
+  schedule:
+    - cron: "0 8 * * 1"
+  workflow_dispatch: {}
 
-# Only the latest head of a PR matters: cancel superseded runs so repeated
-# pushes cannot multiply CI cost. Push-to-main runs are never cancelled.
+# Superseded runs queue rather than cancel (issue #2615). Cancelling threw
+# away a gate that was about to come back clean whenever a push touched only
+# a note or the PR body, and the replacement run paid the whole search again
+# from a fresh seed, which the search cache cannot help with because a clean
+# result is never stored. Actions cannot key a concurrency group on the diff,
+# so the queued run instead exits early below when nothing the gate reads has
+# changed since a run that already passed on these bytes. GitHub keeps one
+# pending run per group, so a burst of pushes still costs one extra run.
 concurrency:
   group: verify-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+  cancel-in-progress: false
 
 jobs:
   # Compile-only coverage for the optional CUDA accelerator.  This deliberately
@@ -86,6 +103,44 @@ jobs:
       # run unchanged without it, so a failed build only costs the extra depth.
       # For code PRs the gate runs from the trusted tree, so the extension is
       # compiled from BASE-BRANCH source -- a PR cannot alter the C++ it is gated by.
+      # The early exit (issue #2615). The gate and verify_all read the
+      # submitted tree's codes/, circuits/, schema/ and decode/ and the trusted
+      # tree's verifier stack; a digest over exactly those tree objects names
+      # what a verdict was about. A run that passes saves its receipts under
+      # that digest, and a later run on this PR whose digest matches skips the
+      # expensive steps and re-uploads the saved receipts as its own, so a
+      # notes-only push costs minutes rather than the hour the gate takes. This
+      # comment-only edit is the live test of that path (issue #2615).
+      # Three things keep this honest. Only a passing run saves, so a failure
+      # is always re-run and a refutation can never be skipped past. The
+      # digest covers the trusted tree too, so a base-branch verifier change
+      # invalidates it. And the cache is scoped to this PR's own ref by
+      # GitHub, so no other PR's verdict can be served here.
+      - name: digest of what the gate reads
+        if: github.event_name == 'pull_request'
+        id: digest
+        run: |
+          set -euo pipefail
+          tree() { git -C "$1" rev-parse --verify --quiet "HEAD:$2" 2>/dev/null || echo "absent"; }
+          digest=$( {
+            for p in codes circuits schema decode; do echo "submitted/$p $(tree submitted "$p")"; done
+            for p in verify schema decode pyproject.toml uv.lock Makefile; do echo "trusted/$p $(tree trusted "$p")"; done
+          } | sha256sum | cut -c1-32 )
+          echo "digest=$digest" >> "$GITHUB_OUTPUT"
+          echo "gated-tree digest $digest"
+      - name: look for a passing verdict on these bytes
+        if: github.event_name == 'pull_request'
+        id: verdict
+        uses: actions/cache/restore@v4
+        with:
+          path: passed-verdict
+          key: verify-passed-${{ github.event.pull_request.number }}-${{ steps.digest.outputs.digest }}
+      - name: say what is being skipped
+        if: github.event_name == 'pull_request' && steps.verdict.outputs.cache-hit == 'true'
+        run: |
+          echo "nothing the gate reads changed since a run that passed on these bytes; skipping verify_all and the gate (issue #2615)" | tee -a "$GITHUB_STEP_SUMMARY"
+          cat passed-verdict/marker.json | tee -a "$GITHUB_STEP_SUMMARY"
+          mkdir -p receipts && cp -r passed-verdict/receipts/. receipts/ 2>/dev/null || true
       - name: build optional refutation accelerator (trusted tree)
         if: github.event_name == 'pull_request'
         working-directory: trusted
@@ -104,23 +159,105 @@ jobs:
           # circuits/<slug>/ is part of an entry's claim surface (PR #1012): the
           # authorship check and the gate map it back to codes/<slug>.json, so a
           # circuits-only PR must take the same trusted path as a codes PR.
-          if git diff --quiet --diff-filter=AM "$base"...HEAD -- codes circuits; then
+          #
+          # D is in the filter (issue #2638). Removing an entry is a change to
+          # the board, and leaving deletions out meant a PR that tightened a
+          # rule in verify/ and deleted the entries the new rule would reject
+          # read as a non-code PR: the scope check below never ran, and
+          # verify_all ran from the PR's own tree rather than the trusted one.
+          if git diff --quiet --diff-filter=AMD "$base"...HEAD -- codes circuits; then
             codes_changed=false
           else
             codes_changed=true
           fi
-          # A PR whose every changed file lives under codes/ or circuits/ cannot
-          # have touched the stack the self-tests exercise (the scope check
-          # forbids combining code data with verify/, workflows, schema, or
-          # run_tests.py), so the self-tests are skipped for it. Anything else
-          # changed -> they run.
-          if [ "$codes_changed" = true ] && git diff --quiet "$base"...HEAD -- ':(exclude)codes' ':(exclude)circuits'; then
+          # A PR whose every changed file lives under codes/, circuits/, notes/ or
+          # fieldnotes/ cannot have touched the stack the self-tests exercise: the
+          # scope check forbids combining code data with verify/, workflows, schema
+          # or run_tests.py, and no self-test reads the committed prose (notes/ and
+          # fieldnotes/ are checked by the prose workflow). So the self-tests are
+          # skipped for it -- except the tests that name an entry it changed,
+          # which are computed below (issue #2940). Anything else changed -> they
+          # all run.
+          if [ "$codes_changed" = true ] && git diff --quiet "$base"...HEAD -- ':(exclude)codes' ':(exclude)circuits' ':(exclude)notes' ':(exclude)fieldnotes'; then
             only_codes=true
           else
             only_codes=false
           fi
+          # Skipping the suite for such a PR is right about the stack, but a
+          # self-test can name an entry by slug, and issue #2940 is what that
+          # cost: #2901 tightened codes/646-162-26.json while
+          # research/test_annihilator.py still asserted the old side value,
+          # and because every changed file was under codes/ the step that
+          # would have caught it never ran -- the breakage landed on main and
+          # surfaced only with the next PR that touched a test. The slug is
+          # right there in the test source, so ask the suite which files
+          # mention an entry this PR changed and run exactly those: a grep
+          # over four directories, no board load, and it would have caught
+          # #2901 on #2901 itself. Only the slugs come from the PR's diff;
+          # the files it can name are this tree's own tests, filtered to
+          # that shape below before anything reaches pytest.
+          slug_tests=""
+          if [ "$codes_changed" = true ]; then
+            slugs=$(git diff --name-status --diff-filter=AMDRT "$base"...HEAD -- codes circuits \
+                      | cut -f2- | tr '\t' '\n' \
+                      | sed -n -e 's|^codes/\(.*\)\.json$|\1|p' \
+                               -e 's|^circuits/\([^/]*\)/.*|\1|p' | sort -u)
+            for slug in $slugs; do
+              # Both spellings of one entry: the slug the file is named for,
+              # and the [[n,k,d]] form a test may cite instead. -F keeps a
+              # slug that looks like a pattern (and one that starts with a
+              # dash) from meaning anything to grep.
+              slug_tests="$slug_tests $(grep -rlF --include='test_*.py' \
+                            -e "$slug" -e "${slug//-/,}" \
+                            research verify site cli || true)"
+            done
+          fi
+          slug_tests=$(printf '%s\n' $slug_tests \
+                         | grep -E '^(research|verify|site|cli)/test_[A-Za-z0-9_.]+\.py$' \
+                         | sort -u | tr '\n' ' ' | sed 's/ *$//' || true)
+          if [ -n "$slug_tests" ]; then
+            echo "self-tests naming an entry this PR changed: $slug_tests" | tee -a "$GITHUB_STEP_SUMMARY"
+          fi
+          # A circuit.ler claim nothing in the PR touched can only go stale
+          # through the stack that measures it: the verifier sources, the
+          # decoder, the pinned dependencies (a stim bump in uv.lock) or the
+          # accelerator build. A PR that leaves all of those alone gets the
+          # --ler-base run; a PR that touches any of them re-measures every
+          # claim. The integrity manifest is a hash listing and cannot change a
+          # measurement, so re-pinning it does not count. A diff that cannot be
+          # computed exits non-zero and so counts as changed (fail closed).
+          if git diff --quiet "$base"...HEAD -- verify decode pyproject.toml uv.lock Makefile ':(exclude)verify/validator_manifest.json'; then
+            ler_stack_changed=false
+          else
+            ler_stack_changed=true
+          fi
           echo "codes_changed=$codes_changed" >> "$GITHUB_OUTPUT"
           echo "only_codes=$only_codes" >> "$GITHUB_OUTPUT"
+          echo "slug_tests=$slug_tests" >> "$GITHUB_OUTPUT"
+          echo "ler_stack_changed=$ler_stack_changed" >> "$GITHUB_OUTPUT"
+      - name: detect what the merge changed (push to main)
+        if: github.event_name == 'push'
+        id: merge
+        working-directory: submitted
+        # Issue #2614. A push to main used to re-measure every circuit.ler
+        # claim on the board, about 21 CPU-hours per merge, to reconfirm
+        # numbers the PR that introduced them had measured hours earlier. The
+        # merge's own diff is what can have changed a claim: the entries it
+        # touched (verify_all --ler-base handles those) and the stack that
+        # measures them (the same list the PR path uses above). A diff that
+        # cannot be computed, including the all-zero `before` of a new branch
+        # or a force push, counts as a stack change, so the fallback is the
+        # full re-measure, never a skip.
+        run: |
+          before="${{ github.event.before }}"
+          if [ -z "$before" ] || [ "$before" = "0000000000000000000000000000000000000000" ]; then
+            ler_stack_changed=true
+          elif git diff --quiet "$before"...HEAD -- verify decode pyproject.toml uv.lock Makefile ':(exclude)verify/validator_manifest.json'; then
+            ler_stack_changed=false
+          else
+            ler_stack_changed=true
+          fi
+          echo "ler_stack_changed=$ler_stack_changed" >> "$GITHUB_OUTPUT"
       - name: submission scope check (code data cannot change its own verifier)
         if: github.event_name == 'pull_request' && steps.changes.outputs.codes_changed == 'true'
         working-directory: trusted
@@ -128,19 +265,74 @@ jobs:
       - name: trusted validation stack integrity (the autoresearch gate can't be silently weakened)
         working-directory: submitted
         run: uv run --frozen python verify/check_validator_integrity.py
+      - name: certificate levels (no cert may claim evidence it lacks)
+        working-directory: submitted
+        run: uv run --frozen python verify/check_certs.py
+      - name: tree consistency (an artifact may not outlive its entry)
+        working-directory: trusted
+        # check_certs validates a certificate without asking whether its entry
+        # still exists, and check_prose reads only files the PR changes, so a
+        # note or cert left behind by a removal elsewhere was never seen by
+        # anything. This is the sweep that closes that gap.
+        #
+        # The base branch's copy of the checker, run against the submitted
+        # tree: a PR that edits this file and re-pins the manifest must not be
+        # judged by its own weakened copy. That is the rule prose.yml and the
+        # scope check above already follow; check_certs.py still runs the
+        # submitted copy, which this deliberately does not repeat.
+        #
+        # PRs that touch only prose do not reach this workflow at all (the
+        # paths filter in `on:` skips *.md), so prose.yml runs the same sweep
+        # from its own trusted checkout; this one covers push and schedule.
+        run: |
+          if [ -f verify/check_tree_consistency.py ]; then
+            uv run --frozen python verify/check_tree_consistency.py --root ../submitted
+          else
+            echo "base branch has no verify/check_tree_consistency.py yet; skipping"
+          fi
       - name: self-tests (every verify/ and research/ test_*.py; skipped for codes-only PRs)
         if: github.event_name != 'pull_request' || steps.changes.outputs.only_codes != 'true'
         working-directory: submitted
-        run: uv run --frozen --extra research python run_tests.py
+        # --durations: the job's biggest fixed cost, which used to report one total
+        run: uv run --frozen --extra research python run_tests.py --durations=20
+      - name: "self-tests that name an entry this PR changed (issue #2940)"
+        if: github.event_name == 'pull_request' && steps.changes.outputs.only_codes == 'true' && steps.changes.outputs.slug_tests != ''
+        working-directory: submitted
+        # The complement of the step above: the suite is skipped for a
+        # codes-only PR, and this runs the tests whose source names a slug the
+        # PR changed, so editing an entry can no longer break a test that pins
+        # it and have CI shrug (#2901 -> #2940). A grep-list of this tree's own
+        # test files, not paths the PR invented; it arrives through the
+        # environment rather than ${{ }} in the script, because an environment
+        # variable is never re-parsed as shell.
+        env:
+          SLUG_TESTS: ${{ steps.changes.outputs.slug_tests }}
+        run: uv run --frozen --extra research pytest -q $SLUG_TESTS
       - name: verify all submissions (trusted verifier for code changes)
-        if: github.event_name == 'pull_request' && steps.changes.outputs.codes_changed == 'true'
+        if: github.event_name == 'pull_request' && steps.changes.outputs.codes_changed == 'true' && steps.verdict.outputs.cache-hit != 'true'
         working-directory: trusted
         # --ler-base: the sampled LER replica (~4 min/entry on the runner) runs only
-        # for entries this PR changed; unchanged claims are re-measured on every
-        # push to main (the step below, without the flag).
+        # for entries this PR changed; unchanged claims are re-measured by any run
+        # that touches the LER stack and by the weekly scheduled run (the steps
+        # below).
         run: uv run --frozen --extra research python verify/verify_all.py --root ../submitted --ler-base origin/${{ github.base_ref }}
-      - name: verify all submissions
-        if: github.event_name != 'pull_request' || steps.changes.outputs.codes_changed != 'true'
+      - name: verify all submissions (LER stack unchanged)
+        if: github.event_name == 'pull_request' && steps.changes.outputs.codes_changed != 'true' && steps.changes.outputs.ler_stack_changed != 'true' && steps.verdict.outputs.cache-hit != 'true'
+        working-directory: submitted
+        # A non-code PR that leaves verify/, decode/ and the pinned dependencies
+        # alone cannot have changed what any existing ler claim measures, so it
+        # re-measures nothing (the diff vs base is empty under codes/ and circuits/).
+        run: uv run --frozen --extra research python verify/verify_all.py --ler-base origin/${{ github.base_ref }}
+      - name: verify all submissions (push to main, LER scoped to the merge)
+        if: github.event_name == 'push' && steps.merge.outputs.ler_stack_changed != 'true'
+        working-directory: submitted
+        # The merge's diff against the previous head of main. An entry the
+        # merge did not touch keeps the rate the PR that introduced it
+        # measured; a base that cannot be diffed makes verify_all re-measure
+        # everything (its own fail-open rule), so a skip is never silent.
+        run: uv run --frozen --extra research python verify/verify_all.py --ler-base ${{ github.event.before }}
+      - name: verify all submissions (full LER re-measure)
+        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && steps.merge.outputs.ler_stack_changed == 'true') || (github.event_name == 'pull_request' && steps.changes.outputs.codes_changed != 'true' && steps.changes.outputs.ler_stack_changed == 'true' && steps.verdict.outputs.cache-hit != 'true')
         working-directory: submitted
         run: uv run --frozen --extra research python verify/verify_all.py
       # Cheap metadata checks run BEFORE the (up to ~95-minute) refutation gate: a PR that
@@ -150,10 +342,46 @@ jobs:
         if: github.event_name == 'pull_request' && steps.changes.outputs.codes_changed == 'true'
         working-directory: trusted
         run: uv run --frozen python verify/check_authorship.py --root ../submitted --author "${{ github.event.pull_request.user.login }}" --base origin/${{ github.base_ref }}
+      # A completed refutation, carried between runs of the same PR (issue
+      # #2633). gate_changed.py diffs against the base branch, so a PR that
+      # adds a code has a non-empty diff on every push, and a push that only
+      # fixed prose re-paid the whole search.
+      #
+      # This cache is NOT trusted. A run executes the PR's own copy of this
+      # workflow, and the submitted tree's accelerator build runs before any
+      # gate, so a contributor can write whatever they like here. Only a
+      # refutation is ever served back, and the gate re-validates its witness
+      # against the candidate before believing it, so a planted record either
+      # proves the claimed distance wrong or is discarded. A clean result is
+      # never stored, because there would be nothing to re-check.
+      #
+      # restore-keys is a PR-scoped prefix because the primary key is per run
+      # and attempt, so the prefix is what makes a later run see an earlier
+      # one's record at all. GitHub scopes caches to the PR's own ref, so the
+      # prefix cannot reach another PR's entries.
+      - name: restore completed searches
+        if: github.event_name == 'pull_request' && steps.changes.outputs.codes_changed == 'true' && steps.verdict.outputs.cache-hit != 'true'
+        uses: actions/cache/restore@v4
+        with:
+          path: search-cache
+          key: gate-search-${{ github.event.pull_request.number }}-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: |
+            gate-search-${{ github.event.pull_request.number }}-
       - name: distance refutation gate (trusted verifier for code changes)
-        if: github.event_name == 'pull_request' && steps.changes.outputs.codes_changed == 'true'
+        if: github.event_name == 'pull_request' && steps.changes.outputs.codes_changed == 'true' && steps.verdict.outputs.cache-hit != 'true'
         working-directory: trusted
-        run: uv run --frozen python verify/gate_changed.py --code-root ../submitted origin/${{ github.base_ref || 'main' }} --receipt-dir ../receipts --pr-number "${{ github.event.pull_request.number }}" --pr-author "${{ github.event.pull_request.user.login }}" --base-sha "${{ github.event.pull_request.base.sha }}" --head-sha "${{ github.event.pull_request.head.sha }}"
+        run: uv run --frozen python verify/gate_changed.py --code-root ../submitted origin/${{ github.base_ref || 'main' }} --receipt-dir ../receipts --search-cache ../search-cache --pr-number "${{ github.event.pull_request.number }}" --pr-author "${{ github.event.pull_request.user.login }}" --base-sha "${{ github.event.pull_request.base.sha }}" --head-sha "${{ github.event.pull_request.head.sha }}"
+      # Saved on failure as well as success, which is the case this exists
+      # for: five of the six measured re-gatings were failure -> success, so a
+      # save that only ran on a green job would never produce a hit. Split
+      # restore/save rather than actions/cache for exactly that reason, and
+      # keyed per run and attempt because cache entries are immutable.
+      - name: save completed searches
+        if: always() && github.event_name == 'pull_request' && steps.changes.outputs.codes_changed == 'true' && steps.verdict.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: search-cache
+          key: gate-search-${{ github.event.pull_request.number }}-${{ github.run_id }}-${{ github.run_attempt }}
       - name: distance refutation gate (changed submissions only)
         if: github.event_name != 'pull_request'
         working-directory: submitted
@@ -165,3 +393,19 @@ jobs:
           name: verification-receipts-${{ github.event.pull_request.number }}
           path: receipts/
           if-no-files-found: warn
+      # Only a run in which every step above succeeded records a verdict, and
+      # the record carries the receipts so a skipping run can re-upload them.
+      - name: record the passing verdict on these bytes
+        if: success() && github.event_name == 'pull_request' && steps.verdict.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p passed-verdict
+          [ -d receipts ] && cp -r receipts passed-verdict/receipts || true
+          printf '{"digest": "%s", "run_id": "%s", "run_attempt": "%s", "head_sha": "%s", "passed_at": "%s"}\n' \
+            "${{ steps.digest.outputs.digest }}" "${{ github.run_id }}" "${{ github.run_attempt }}" \
+            "${{ github.event.pull_request.head.sha }}" "$(date -u +%Y-%m-%dT%H:%M:%SZ)" > passed-verdict/marker.json
+      - name: save the passing verdict
+        if: success() && github.event_name == 'pull_request' && steps.verdict.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: passed-verdict
+          key: verify-passed-${{ github.event.pull_request.number }}-${{ steps.digest.outputs.digest }}

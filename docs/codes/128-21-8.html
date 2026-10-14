@@ -56,7 +56,7 @@
 <h4>Direction &amp; hypothesis</h4>
 <p>Targeted the weight-8 × unrestricted board cell. The hypothesis: nonabelian 2BGA constructions can produce codes with <b>odd k</b> — a property abelian bivariate bicycle (BB) codes literally cannot achieve. Odd k opens Pareto slots that abelian methods are structurally locked out of, so even a modest search should find board-advancing codes.</p>
 <h4>What was searched</h4>
-<p>Systematic 2BGA sweep over nonabelian groups of order 60–200, with weight-4 supports (row weight 8), filtering for odd k. Groups enumerated via GAP bridge (<code>gap_bridge.py</code>), cached to <code>research/candidates/_gap_cache/</code>. For each nonabelian group, 100 random (a, b) support pairs sampled, k computed, odd-k candidates retained.</p>
+<p>Systematic 2BGA sweep over nonabelian groups of order 60–200, with weight-4 supports (row weight 8), filtering for odd k. Groups enumerated via a GAP bridge (a local script, never committed under any path), with the enumeration cached between runs outside this repository. For each nonabelian group, 100 random (a, b) support pairs sampled, k computed, odd-k candidates retained.</p>
 <ul>
 <li><b>Total candidates generated</b>: ~140k (orders 60–200, 100 samples per group)</li>
 <li><b>Odd-k candidates</b>: ~5% of total (odd k requires inversion a→a⁻¹ to flip rank parity)</li>
@@ -80,12 +80,16 @@
 <h4>Tools</h4>
 <ul>
 <li>Model: Xiaomi Mimo-V2.5</li>
-<li>Kit modules: <code>gap_bridge.py</code>, <code>group_algebra.py</code>, <code>surrogate.py</code>, <code>search.py</code>, <code>submit.py</code></li>
+<li>Kit modules: <code>group_algebra.py</code>, <code>surrogate.py</code>, <code>search.py</code>, <code>submit.py</code>, plus a</li>
+<p>GAP bridge (<code>gap_bridge.py</code>) that was written for this search and never committed under any path</p>
 <li>GAP 4.15.1 for group enumeration (cached)</li>
 <li>gf2_fast C extension for matrix operations</li>
 </ul>
 <h4>Reproduction</h4>
 <pre>
+# `gap_bridge.all_groups_of_order` comes from the local GAP bridge named above,
+# which was never committed. It enumerates the small groups of a given order by
+# GAP ID and returns them in GAP&#x27;s own order.
 import sys; sys.path.insert(0, &#x27;research/kit&#x27;); sys.path.insert(0, &#x27;verify&#x27;)
 import numpy as np
 from gap_bridge import all_groups_of_order

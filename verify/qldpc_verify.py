@@ -32,11 +32,12 @@ What "verified" means per field:
               with the instruction to type it CSS, so the 500-plus CSS entries
               keep their per-side semantics. The fingerprint is rref(S) and
               the WL signature carries X/Z/Y edge labels. A stabilizer code
-              that is CSS up to a Hadamard on some qubit subset has that
-              subset found (is_css_up_to_local_hadamard) and the CSS code it
-              maps to fingerprinted, so the dedup gate can mark a relabeled
-              board entry as a duplicate. CSS and stabilizer codes rank on
-              separate leaderboards; nothing here compares across the two.
+              that is CSS up to single-qubit Cliffords on some qubits
+              (is_css_up_to_local_clifford) is rejected with the fix spelled
+              out, like the all-pure case: it carries nothing its CSS image
+              does not, and that image belongs on the CSS board. CSS and
+              stabilizer codes rank on separate leaderboards; nothing here
+              compares across the two.
   locality    for a 2d-local-* track: a layout (coordinates for all n qubits
               plus the number of physical `layers`) is required; at most
               `layers` qubits per site and distinct sites
@@ -56,8 +57,9 @@ What "verified" means per field:
               track or score reads it.
   diagnostics computed, never ranked (issue #1844): per side, the Tanner-graph
               girth, row and column weight profiles, and bounded trapping-set
-              counts, all read off H; for a laid-out code, the Euclidean
-              support diameter of each stored distance witness. Reported under
+              counts and, for CSS codes, the row-space intersection dimension,
+              all read off H; for a laid-out code, the Euclidean support
+              diameter of each stored distance witness. Reported under
               computed.diagnostics as evidence; no verdict depends on them.
 """
 
@@ -94,7 +96,8 @@ _REQUIRED = ["schema_version", "name", "code_type", "n", "k", "checks",
 # is unavailable and the minimal structure check runs instead.
 _FAMILIES = {"bivariate-bicycle", "generalized-bicycle", "2bga-coset",
              "hypergraph-product", "lifted-product", "balanced-product",
-             "quantum-tanner", "tile", "topological", "other"}
+             "quantum-tanner", "tile", "pair-partition-cpm", "topological",
+             "other"}
 _NOVELTY = {"unknown", "known_parameters", "new_parameters"}
 
 # Public CI resource limits. Finite by design so malformed or hostile JSON
@@ -271,6 +274,143 @@ def is_css_up_to_local_hadamard(A, B):
     return sorted(q for q in range(n) if find(q)[1])
 
 
+def is_css_up_to_local_clifford(A, B):
+    """Find single-qubit Cliffords that make every generator pure X or pure Z.
+
+    Returns None when no such local Clifford exists, else (types, ops):
+    types[i] is "X" or "Z", the letter generator i becomes, and ops maps each
+    qubit whose Clifford is not the identity to the images of (X, Y, Z) under
+    it, e.g. "ZYX" for a Hadamard, "YXZ" for S, "XZY" for sqrt(X).
+
+    A single-qubit Clifford permutes the letters X, Y, Z on its qubit, so a
+    local Clifford sends generator i to a pure operator iff every letter it
+    carries lands on one target t_i in {X, Z}. The permutation on qubit q is
+    injective, so two generators sharing q must get the same target when they
+    carry the same letter there and different targets when they carry
+    different letters; a qubit carrying all three letters rules the map out.
+    That is a system of parity constraints on the t_i, solved exactly by
+    union-find with parities, as is_css_up_to_local_hadamard solves the
+    Hadamard case on the qubits. The solution is again unique up to
+    complementing a connected component (the X/Z swap of its generators);
+    per component this returns the side with fewer non-identity Cliffords,
+    so the report names the smaller qubit set (a tie keeps the root typed X).
+
+    Subsumes the Hadamard solver: a Hadamard is the local Clifford that fixes
+    Y, so whatever that finds, this finds too.
+    """
+    A = _as_int8(A)
+    B = _as_int8(B)
+    m, n = A.shape
+    # letter of generator i on qubit q: 1 = X, 2 = Z, 3 = Y
+    letter = A.astype(np.int8) + 2 * B.astype(np.int8)
+    parent = list(range(m))
+    parity = [0] * m           # t_i xor t_parent[i]
+
+    def find(i):
+        path = []
+        while parent[i] != i:
+            path.append(i)
+            i = parent[i]
+        root, acc = i, 0
+        for v in reversed(path):
+            acc ^= parity[v]
+            parity[v] = acc
+            parent[v] = root
+        return root, (parity[path[0]] if path else 0)
+
+    def unite(i, j, want):
+        """Impose t_i xor t_j = want; False on a contradiction."""
+        ri, pi = find(i)
+        rj, pj = find(j)
+        if ri == rj:
+            return pi ^ pj == want
+        parent[rj] = ri
+        parity[rj] = pi ^ pj ^ want
+        return True
+
+    present = {}               # qubit -> {letter: first generator carrying it}
+    for q in range(n):
+        gens = np.nonzero(letter[:, q])[0]
+        if len(gens) == 0:
+            continue
+        first = {}
+        for ii in gens:
+            i = int(ii)
+            L = int(letter[i, q])
+            if L in first:
+                if not unite(first[L], i, 0):
+                    return None
+            else:
+                first[L] = i
+        if len(first) > 2:
+            return None
+        if len(first) == 2:
+            i, j = first.values()
+            if not unite(i, j, 1):
+                return None
+        present[q] = first
+    roots = [find(i) for i in range(m)]
+    types = ["Z" if p else "X" for _, p in roots]
+    name = {1: "X", 2: "Z", 3: "Y"}
+    swap = {"X": "Z", "Z": "X"}
+
+    def perm_on(first, flip):
+        """Images of (X, Y, Z) on a qubit carrying the letters in `first`.
+
+        With this component's types as found or (flip) swapped. The letters
+        q carries go to their generators' targets; whatever is left goes to
+        Y (two letters present) or stays put where it can.
+        """
+        img = {name[L]: (swap[types[i]] if flip else types[i])
+               for L, i in first.items()}
+        if len(img) == 1:
+            (L, t), = img.items()
+            if L != t:
+                other = ({"X", "Y", "Z"} - {L, t}).pop()
+                img[t] = L          # swap the two, fix the third
+                img[other] = other
+        else:
+            rest = ({"X", "Y", "Z"} - set(img)).pop()
+            img[rest] = "Y"
+        return "".join(img.get(L, L) for L in "XYZ")
+
+    # every generator on a qubit sits in one component, so the choice of
+    # side is per component: take the one with fewer non-identity Cliffords
+    by_comp = {}
+    for q, first in present.items():
+        r = roots[next(iter(first.values()))][0]
+        by_comp.setdefault(r, []).append((q, perm_on(first, False), perm_on(first, True)))
+    ops = {}
+    for r, rows in by_comp.items():
+        flip = (sum(p1 != "XYZ" for _, _, p1 in rows)
+                < sum(p0 != "XYZ" for _, p0, _ in rows))
+        if flip:
+            for i in range(m):
+                if roots[i][0] == r:
+                    types[i] = swap[types[i]]
+        for q, p0, p1 in rows:
+            perm = p1 if flip else p0
+            if perm != "XYZ":
+                ops[q] = perm
+    return types, ops
+
+
+def clifford_css_images(doc, types):
+    """Return the CSS documents a stabilizer code maps to under local Cliffords.
+
+    `types` comes from is_css_up_to_local_clifford: generator i becomes a pure
+    operator of that letter on its full support (a Y counts as one qubit).
+    The result is the mapped code and its X/Z swap, as hadamard_css_images
+    returns, each shaped so signature() and the fingerprint apply.
+    """
+    X, Z = [], []
+    for g, t in zip(doc["checks"]["S"], types):
+        (X if t == "X" else Z).append(sorted(set(g["X"]) | set(g["Z"])))
+    base = {"n": doc["n"], "k": doc["k"], "distance": {"d": doc["distance"]["d"]}}
+    return [dict(base, code_type="CSS", checks={"X": X, "Z": Z}),
+            dict(base, code_type="CSS", checks={"X": Z, "Z": X})]
+
+
 def hadamard_css_images(doc, hadamard_qubits):
     """Return the CSS documents a stabilizer code maps to under local Hadamards.
 
@@ -365,6 +505,21 @@ def css_fingerprint(HX, HZ):
     return hashlib.sha256(fp).hexdigest()[:16]
 
 
+def css_row_space_intersection_dimension(HX, HZ, rank_HX=None, rank_HZ=None):
+    """Return dim(row(HX) intersection row(HZ)) over GF(2).
+
+    This is invariant under generator-basis changes, qubit permutations, and
+    exchanging X and Z. Different values therefore rule out equivalence under
+    those transformations; equal values do not establish equivalence.
+
+    Precomputed ranks may be supplied by verifier callers that already have
+    them; standalone callers get the same result with ranks computed here.
+    """
+    rx = gf2.rank(HX) if rank_HX is None else rank_HX
+    rz = gf2.rank(HZ) if rank_HZ is None else rank_HZ
+    return int(rx + rz - gf2.rank(np.vstack((HX, HZ))))
+
+
 def _as_int8(M):
     return (np.asarray(M, dtype=np.int8) % 2).astype(np.int8)
 
@@ -422,6 +577,18 @@ def resource_errors(doc):
         errs.append(f"locality.modules has {len(modules)} entries, limit is "
                     f"{MAX_COORDINATES}")
     return errs
+
+
+
+def _board_code(slug):
+    """Return codes/<slug>.json from this checkout, or None if absent."""
+    root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    path = os.path.join(root, "codes", f"{slug}.json")
+    try:
+        with open(path, encoding="utf-8") as f:
+            return json.load(f)
+    except (OSError, ValueError):
+        return None
 
 
 def structure_errors(doc):
@@ -1116,6 +1283,10 @@ def _verify_semantic(doc, report, record, refute=False, seed=None):
     diag = {"tanner_girth": {}, "weight_profile": {},
             "trapping_sets": {"max_size": TS_MAX_SIZE,
                               "candidate_cap": TS_MAX_CANDIDATES}}
+    if not stab:
+        diag["row_space_intersection_dimension"] = (
+            css_row_space_intersection_dimension(HX, HZ, rx, rz)
+        )
     diag_sides = (("S", supports),) if stab else (
         ("X", doc["checks"]["X"]), ("Z", doc["checks"]["Z"]))
     for side, rows in diag_sides:
@@ -1164,6 +1335,39 @@ def _verify_semantic(doc, report, record, refute=False, seed=None):
                novelty if novelty in _NOVELTY
                else f"'{novelty}' is not a known novelty status; use one of "
                f"{sorted(_NOVELTY)}")
+
+    # A declared Clifford relabeling (issue #2802). A Clifford on blocks of
+    # qubits maps a board entry to a code with the same n, k and code space
+    # whose d was bought with check weight; the single-qubit case is detected
+    # (is_css_up_to_local_clifford), the block case is not tractable, so it is
+    # declared. What is checked is what can be: the parent is on the board,
+    # it has the same n and k, it is not this entry, and the entry does not
+    # also claim new parameters it shares with its parent.
+    parent = (doc.get("provenance") or {}).get("clifford_relabel_of")
+    if parent is not None:
+        pdoc = _board_code(parent)
+        record("clifford_relabel_parent_on_board", pdoc is not None,
+               f"codes/{parent}.json" if pdoc is not None else
+               f"clifford_relabel_of names codes/{parent}.json, which is not "
+               "on the board; a relabeling of an entry that does not exist "
+               "declares nothing")
+        if pdoc is not None:
+            same = (pdoc.get("n") == doc.get("n") and pdoc.get("k") == doc.get("k"))
+            record("clifford_relabel_same_n_k", same,
+                   f"parent [[{pdoc.get('n')},{pdoc.get('k')}]], this "
+                   f"[[{doc.get('n')},{doc.get('k')}]]" + ("" if same else
+                   "; a Clifford image has its parent's n and k, so this is "
+                   "not a relabeling of that entry"))
+            self_ref = (pdoc.get("checks") == doc.get("checks"))
+            record("clifford_relabel_is_not_itself", not self_ref,
+                   "parent differs" if not self_ref else
+                   "the named parent has identical checks; a code is not a "
+                   "relabeling of itself")
+        record("clifford_relabel_not_new_parameters",
+               novelty != "new_parameters",
+               "novelty is not new_parameters" if novelty != "new_parameters"
+               else "a Clifford image shares its parent's [[n,k,d]] up to the "
+               "relabeling, so it cannot also claim new_parameters")
 
     # 6. distance witnesses (self-certifying upper bounds)
     dist = doc["distance"]
@@ -1238,34 +1442,64 @@ def _verify_semantic(doc, report, record, refute=False, seed=None):
                "a valid P witness is required to earn a distance" if stab else
                "valid X and Z witnesses are required to earn a global distance")
 
-    # 7a. local-Hadamard equivalence. A CSS board code with a
-    #     Hadamard on some qubits is a stabilizer code with the same
-    #     [[n, k, d]] and weight, and neither rref(S) nor the labeled WL
-    #     signature matches the original. When a Hadamard subset exists that
-    #     makes every generator pure, the CSS code it maps to (and its X/Z
-    #     swap, the complement subset) is fingerprinted and WL-signed here,
-    #     and the dedup gate (validate_candidate, verify_all) compares those
-    #     against the board and marks a hit as a duplicate of that entry, not
-    #     a rejection. Informational: the check never fails an entry.
+    # 7a. local-Clifford equivalence. A CSS code with a single-qubit
+    #     Clifford on some qubits (a Hadamard, an S, any of the six) is a
+    #     stabilizer code with the same [[n, k, d]] and weight, and neither
+    #     rref(S) nor the labeled WL signature matches the original. It
+    #     carries nothing its CSS image does not, so it is rejected with the
+    #     fix spelled out, exactly as the all-pure case is in step 3: typed
+    #     CSS, the image ranks on the CSS board under the per-side semantics,
+    #     and the board's own dedup then sees it. Before this the check was
+    #     informational and searched Hadamards only, so a rotated copy of a
+    #     CSS code that was not on the board was admitted as "non-CSS". The
+    #     CSS image's fingerprint and signature are still reported, so a
+    #     reader can match it against the board by hand.
     if stab:
-        h = is_css_up_to_local_hadamard(A, B)
-        if h is not None:
-            images = hadamard_css_images(doc, h)
+        found = is_css_up_to_local_clifford(A, B)
+        if found is not None and not found[1]:
+            # No Clifford needed: every generator is already pure, which is
+            # the CSS code step 3 rejects with its own instruction. A second
+            # rejection naming zero qubits would only confuse the submitter.
+            record("stabilizer_code_is_not_locally_css", True,
+                   "every generator is already pure, see "
+                   "stabilizer_code_is_not_css")
+        elif found is not None:
+            types, ops = found
+            images = clifford_css_images(doc, types)
+            qubits = sorted(ops)
+            kinds = sorted({v for v in ops.values()})
             report["css_equivalent"] = {
-                "hadamard_qubits": h,
+                "clifford_qubits": qubits,
+                "clifford_ops": {str(q): ops[q] for q in qubits},
+                "x_type_generators": [i for i, t in enumerate(types) if t == "X"],
                 "fingerprints": [css_fingerprint(_matrix(im["checks"]["X"], n),
                                                  _matrix(im["checks"]["Z"], n))
                                  for im in images],
                 "signatures": [signature(im)["hash"] for im in images],
             }
-            record("local_hadamard_css_equivalent", True,
-                   f"a Hadamard on {len(h)} qubit(s) makes every generator "
-                   f"pure: this code is locally Clifford equivalent to a CSS "
-                   f"code, whose fingerprint the dedup gate compares against "
-                   f"the CSS board")
+            if kinds == ["ZYX"]:
+                report["css_equivalent"]["hadamard_qubits"] = qubits
+                what = f"a Hadamard on {len(qubits)} qubit(s)"
+            else:
+                what = (f"single-qubit Cliffords on {len(qubits)} qubit(s) "
+                        f"(X,Y,Z -> {', '.join(kinds)})")
+            shown = ", ".join(map(str, qubits[:12])) + (", ..." if len(qubits) > 12 else "")
+            nx = sum(1 for t in types if t == "X")
+            record("stabilizer_code_is_not_locally_css", False,
+                   f"{what} [{shown}] makes every generator pure, so this is "
+                   f"a CSS code up to a local Clifford: set code_type to "
+                   f"\"CSS\" and submit that image, generator supports as "
+                   f"checks.X ({nx} generators) and checks.Z "
+                   f"({len(types) - nx}) with distance.X and distance.Z "
+                   f"witnesses (css_equivalent in this report names the "
+                   f"X-type generators and the Clifford per qubit)")
+        else:
+            record("stabilizer_code_is_not_locally_css", True,
+                   "no single-qubit Cliffords make every generator pure X or "
+                   "pure Z: the code is non-CSS under any local Clifford")
     else:
         # A CSS entry is filed under its own local-Hadamard images too, so the
-        # two families are deduped up to the same relation (#2327). Without
+        # two families are deduped up to the same relation. Without
         # this the verdict depended on the submitter's code_type: a Hadamard
         # relabelling of a board entry was caught when typed `stabilizer` and
         # missed when typed `CSS`. Informational, like the branch above: it
@@ -1565,14 +1799,164 @@ def _board_entry(path, data):
 # 619-entry snapshot measured ~62 MB; see issue #966).
 _BOARD_CACHE = {}
 
+# Where the per-entry disk memo lives, a sibling of the verdict cache under
+# the already-gitignored research/candidates/ (issue #2582). Overridable so a
+# caller can point it at a scratch directory; empty or CI disables it.
+BOARD_CACHE_ENV = "QLDPC_BOARD_CACHE"
+BOARD_CACHE_DIRNAME = os.path.join("research", "candidates", ".boardcache")
+_CLOSURE_DIGEST = {}
+
+
+def validator_closure_digest(manifest_path=None):
+    """Digest the pinned validation closure, as one hex string.
+
+    The per-process memo could key on the board alone because a running
+    process cannot change its own code underneath itself. A memo that
+    outlives the process loses exactly that: codes/ can be byte-identical
+    while verify/qldpc_verify.py is not, through a branch switch, a re-pin or
+    an unmerged local edit, and a board-only key would then answer with
+    reports produced by a verifier that is no longer the one being asked.
+    That would let unmerged logic inside the hash-pinned gate decide dedup
+    and novelty, which is the one thing the pin exists to prevent.
+
+    verify/validator_manifest.json is already the reviewed list of every file
+    the gate's behavior depends on: this module, gf2.py, the GF(2)
+    accelerator, schema/code.schema.json, pyproject.toml and uv.lock. Keying
+    on a digest of that mapping covers all of them at once and moves
+    automatically whenever the closure is re-pinned, so nothing has to
+    remember to extend this list.
+
+    Returns "no-manifest" when the file is missing or unreadable, which is a
+    distinct key rather than an error: a checkout without a manifest gets its
+    own cache namespace instead of sharing a pinned one.
+    """
+    path = os.path.abspath(manifest_path or os.path.join(
+        os.path.dirname(os.path.abspath(__file__)), "validator_manifest.json"))
+    import hashlib
+    if path in _CLOSURE_DIGEST:
+        return _CLOSURE_DIGEST[path]
+    try:
+        with open(path, "rb") as f:
+            files = json.loads(f.read()).get("files") or {}
+    except (OSError, ValueError, AttributeError):
+        _CLOSURE_DIGEST[path] = "no-manifest"
+        return _CLOSURE_DIGEST[path]
+    h = hashlib.sha256()
+    for name in sorted(files):
+        h.update(name.encode("utf-8"))
+        h.update(b"\0" + str(files[name]).encode("utf-8") + b"\0")
+    _CLOSURE_DIGEST[path] = h.hexdigest()
+    return _CLOSURE_DIGEST[path]
+
+
+def board_cache_dir():
+    """Return the disk-memo directory, or None when it is turned off.
+
+    Off in CI, deliberately. The argument that this memo is safe is that a
+    local one's trust level equals the local checkout's, which is already
+    total: anyone who can write it can edit verify/validate_candidate.py
+    directly. That argument does not extend to a runner, and a fresh runner's
+    cache is cold anyway, so CI gains nothing and would only acquire a way to
+    be answered by something other than the board in front of it.
+    """
+    if os.environ.get("CI"):
+        return None
+    override = os.environ.get(BOARD_CACHE_ENV)
+    if override is not None:
+        return override or None
+    root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    return os.path.join(root, BOARD_CACHE_DIRNAME)
+
+
+def _memo_path(cache_dir, data):
+    """Where the cached report for these exact entry bytes lives.
+
+    Per entry, not per board. The whole-board digest is why the in-process
+    memo cannot amortise across a campaign: one merged submission changes one
+    byte and re-arms all 1,782 entries. Keyed per entry, that merge
+    re-verifies one.
+    """
+    import hashlib
+    h = hashlib.sha256()
+    h.update(validator_closure_digest().encode("utf-8"))
+    h.update(b"\0")
+    h.update(data)
+    key = h.hexdigest()
+    return os.path.join(cache_dir, key[:2], key[2:] + ".json")
+
+
+def _memo_read(cache_dir, path, data):
+    """Return a board entry rebuilt from the memo, or None.
+
+    None on anything unexpected, since a miss costs a re-verification and a
+    wrong hit costs correctness. doc is parsed here rather than stored: it is
+    json.loads of bytes already in hand, which is microseconds against the
+    verification the memo is actually saving.
+    """
+    try:
+        with open(_memo_path(cache_dir, data), encoding="utf-8") as f:
+            memo = json.load(f)
+    except (OSError, ValueError):
+        return None
+    if memo.get("memo_version") != _BOARD_MEMO_VERSION:
+        return None
+    report, load_error = memo.get("report"), memo.get("load_error")
+    if report is None and load_error is None:
+        return None
+    entry = {"path": path, "slug": os.path.splitext(os.path.basename(path))[0],
+             "doc": None, "report": report,
+             "size_error": None, "load_error": load_error}
+    if load_error is None:
+        try:
+            entry["doc"] = json.loads(data)
+        except ValueError:
+            return None
+    return entry
+
+
+def _memo_write(cache_dir, data, entry):
+    """Store one entry's report. A cache that cannot be written is not an error."""
+    memo = {"memo_version": _BOARD_MEMO_VERSION,
+            "closure": validator_closure_digest(),
+            "report": entry["report"], "load_error": entry["load_error"]}
+    path = _memo_path(cache_dir, data)
+    try:
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        tmp = f"{path}.{os.getpid()}.tmp"
+        with open(tmp, "w", encoding="utf-8") as f:
+            json.dump(memo, f)
+        os.replace(tmp, path)
+    except OSError:
+        pass
+
+
+_BOARD_MEMO_VERSION = 1
+
 
 def board_reports(code_dir):
     """Verify every <code_dir>/*.json structurally, memoized on the bytes read.
 
     One process pays for the pass once, whoever asks: the site builder, the
     candidate validator and several tests each used to rescan and re-verify
-    the whole board (~15-20 s per pass locally, two to three passes per pytest
-    session, all producing identical reports).
+    the whole board, all producing identical reports.
+
+    The pass costs what the board costs, so the figure here goes stale as the
+    board grows: it was "~15-20 s locally" when written, and measured 141 s
+    over 1,560 entries on 2026-10-01 (issue #2328). Treat it as minutes, not
+    seconds, when sizing anything that starts a fresh process.
+
+    There is a second memo on disk, so a new process does not pay the pass
+    again (issue #2582). It is keyed per entry rather than per board, which
+    is what lets it amortise across a campaign: the in-process key is a
+    digest of every board byte, so one merged correction re-arms all 1,778
+    entries, while a per-entry key re-verifies the one that changed. Measured
+    over 1,778 entries: 116.9 s with the memo off, 115.9 s cold, 0.70 s warm,
+    and 0.72 s after one entry's bytes changed. Each key also covers the
+    pinned validation closure (validator_closure_digest), because codes/ can
+    be byte-identical while this file is not. It lives under the gitignored
+    research/candidates/.boardcache and is off in CI, where it would gain
+    nothing and could only answer with something other than the board in
+    front of the runner.
 
     The memo key is a digest of the file names and the exact bytes the pass
     verifies, so a changed file re-verifies the board however it was written
@@ -1602,7 +1986,20 @@ def board_reports(code_dir):
     key = h.hexdigest()
     if _BOARD_CACHE.get("dir") == code_dir and _BOARD_CACHE.get("key") == key:
         return _BOARD_CACHE["reports"]
-    reports = tuple(_board_entry(p, data) for p, data in raw)
+    cache_dir = board_cache_dir()
+    entries = []
+    for p, data in raw:
+        hit = None
+        if cache_dir and data is not None:
+            hit = _memo_read(cache_dir, p, data)
+        if hit is not None:
+            entries.append(hit)
+            continue
+        entry = _board_entry(p, data)
+        if cache_dir and data is not None and entry["size_error"] is None:
+            _memo_write(cache_dir, data, entry)
+        entries.append(entry)
+    reports = tuple(entries)
     _BOARD_CACHE.clear()
     _BOARD_CACHE.update(dir=code_dir, key=key, reports=reports)
     return reports

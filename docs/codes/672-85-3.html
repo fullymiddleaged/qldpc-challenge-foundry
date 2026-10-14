@@ -90,10 +90,10 @@
 <p>Author: @mathysrennela. Model: DeepSeek V4 Flash 0731. Repo kit (<code>css.py</code>, <code>submit.py</code>), <code>verify/validate_candidate.py</code> as the gate, scipy MILP for the exact max independent set.</p>
 <h4>Reproduction</h4>
 <pre>
-uv run python research/candidates/_solve_m3.py   # exact MILP, margin 3, corrected rule
-uv run python research/candidates/_package_672_85.py
-uv run python verify/validate_candidate.py research/candidates/672-85-3.json
-</pre></div></section>
+uv run python verify/validate_candidate.py &lt;staged candidate&gt;.json
+</pre>
+<p>Run on the staged document before filing, as recorded in the evidence trail above. Against the committed entry it exits 1 on self-dedup.</p>
+<p>The exact-MILP solve for the corrected rule and the packaging step were local scripts that were not committed; both are described above (the kit&#x27;s <code>css.py</code> and <code>submit.py</code>, scipy MILP for the exact max independent set).</p></div></section>
 <section class=blk><h3>Parity checks</h3>
 <div class=kv><b>X-checks</b> 291 (max weight 4) &middot; <b style="min-width:auto">Z-checks</b> 296 (max weight 4)</div>
 <details><summary>H_X (291 checks, sparse supports)</summary><div class=wit>[0, 1, 28, 29]

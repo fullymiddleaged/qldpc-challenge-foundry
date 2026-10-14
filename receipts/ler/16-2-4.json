@@ -1,0 +1,230 @@
+{
+ "claim_digest": "056c30ca3b5066dd517656c86425a45d6eb8fb28135539681393419c2d149847",
+ "head_sha": "e0c02e754297b9adc699df3f8377ece1d240dc08",
+ "measured_at": "2026-10-12T10:50:41+00:00",
+ "ok": true,
+ "points": {
+  "X": {
+   "0.001": {
+    "claimed_p_shot": 0.006883333333333333,
+    "detectable_factor": 1.38,
+    "p": 0.001,
+    "replica_failures": 137,
+    "replica_p_shot": 0.006286710719530103,
+    "replica_shots": 21792,
+    "runs": [
+     {
+      "failures": 49,
+      "seed": 1592598037,
+      "shots": 7264
+     },
+     {
+      "failures": 36,
+      "seed": 1088055204,
+      "shots": 7264
+     },
+     {
+      "failures": 52,
+      "seed": 1652813175,
+      "shots": 7264
+     }
+    ],
+    "sigma": 0.0006539292737790818,
+    "status": "verified"
+   },
+   "0.002": {
+    "claimed_p_shot": 0.0277,
+    "detectable_factor": 1.335,
+    "p": 0.002,
+    "replica_failures": 310,
+    "replica_p_shot": 0.031003100310031003,
+    "replica_shots": 9999,
+    "runs": [
+     {
+      "failures": 103,
+      "seed": 1608005276,
+      "shots": 3333
+     },
+     {
+      "failures": 104,
+      "seed": 1106202413,
+      "shots": 3333
+     },
+     {
+      "failures": 103,
+      "seed": 1672922622,
+      "shots": 3333
+     }
+    ],
+    "sigma": 0.0023209505281318265,
+    "status": "verified"
+   },
+   "0.005": {
+    "claimed_p_shot": 0.1658,
+    "detectable_factor": 1.127,
+    "p": 0.005,
+    "replica_failures": 1655,
+    "replica_p_shot": 0.16551655165516552,
+    "replica_shots": 9999,
+    "runs": [
+     {
+      "failures": 551,
+      "seed": 1608005276,
+      "shots": 3333
+     },
+     {
+      "failures": 560,
+      "seed": 1106202413,
+      "shots": 3333
+     },
+     {
+      "failures": 544,
+      "seed": 1672922622,
+      "shots": 3333
+     }
+    ],
+    "sigma": 0.0052596059968332415,
+    "status": "verified"
+   },
+   "0.01": {
+    "claimed_p_shot": 0.4731,
+    "detectable_factor": 1.06,
+    "p": 0.01,
+    "replica_failures": 4648,
+    "replica_p_shot": 0.46484648464846484,
+    "replica_shots": 9999,
+    "runs": [
+     {
+      "failures": 1577,
+      "seed": 1608005276,
+      "shots": 3333
+     },
+     {
+      "failures": 1520,
+      "seed": 1106202413,
+      "shots": 3333
+     },
+     {
+      "failures": 1551,
+      "seed": 1672922622,
+      "shots": 3333
+     }
+    ],
+    "sigma": 0.007061003541508906,
+    "status": "verified"
+   }
+  },
+  "Z": {
+   "0.001": {
+    "claimed_p_shot": 0.0068,
+    "detectable_factor": 1.381,
+    "p": 0.001,
+    "replica_failures": 147,
+    "replica_p_shot": 0.0066639466884264925,
+    "replica_shots": 22059,
+    "runs": [
+     {
+      "failures": 54,
+      "seed": 1592598037,
+      "shots": 7353
+     },
+     {
+      "failures": 48,
+      "seed": 1088055204,
+      "shots": 7353
+     },
+     {
+      "failures": 45,
+      "seed": 1652813175,
+      "shots": 7353
+     }
+    ],
+    "sigma": 0.0006470940199507086,
+    "status": "verified"
+   },
+   "0.002": {
+    "claimed_p_shot": 0.0286,
+    "detectable_factor": 1.33,
+    "p": 0.002,
+    "replica_failures": 292,
+    "replica_p_shot": 0.029202920292029203,
+    "replica_shots": 9999,
+    "runs": [
+     {
+      "failures": 95,
+      "seed": 1608005276,
+      "shots": 3333
+     },
+     {
+      "failures": 90,
+      "seed": 1106202413,
+      "shots": 3333
+     },
+     {
+      "failures": 107,
+      "seed": 1672922622,
+      "shots": 3333
+     }
+    ],
+    "sigma": 0.0023572623630357353,
+    "status": "verified"
+   },
+   "0.005": {
+    "claimed_p_shot": 0.166,
+    "detectable_factor": 1.127,
+    "p": 0.005,
+    "replica_failures": 1689,
+    "replica_p_shot": 0.16891689168916893,
+    "replica_shots": 9999,
+    "runs": [
+     {
+      "failures": 595,
+      "seed": 1608005276,
+      "shots": 3333
+     },
+     {
+      "failures": 550,
+      "seed": 1106202413,
+      "shots": 3333
+     },
+     {
+      "failures": 544,
+      "seed": 1672922622,
+      "shots": 3333
+     }
+    ],
+    "sigma": 0.005262146385122506,
+    "status": "verified"
+   },
+   "0.01": {
+    "claimed_p_shot": 0.4688,
+    "detectable_factor": 1.06,
+    "p": 0.01,
+    "replica_failures": 4699,
+    "replica_p_shot": 0.46994699469946993,
+    "replica_shots": 9999,
+    "runs": [
+     {
+      "failures": 1530,
+      "seed": 1608005276,
+      "shots": 3333
+     },
+     {
+      "failures": 1544,
+      "seed": 1106202413,
+      "shots": 3333
+     },
+     {
+      "failures": 1625,
+      "seed": 1672922622,
+      "shots": 3333
+     }
+    ],
+    "sigma": 0.007057464311964423,
+    "status": "verified"
+   }
+  }
+ },
+ "receipt_version": "1",
+ "slug": "16-2-4"
+}

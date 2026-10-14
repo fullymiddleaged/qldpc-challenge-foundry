@@ -57,7 +57,24 @@
 <div class=kv><b>locality</b> unrestricted <span class=claimed>(computed from the layout)</span></div>
 <div class=kv><b>weight class</b> weight &gt; 8 <span class=claimed>(computed)</span></div>
 </section>
-<section class=blk><h3>How this code was found</h3><div class=kv style="color:var(--mut)">no research note was staged with this submission &mdash; notes are requested for new submissions (<a href="https://github.com/unitaryfoundation/qldpc-challenge/blob/main/notes">notes/README.md</a>)</div></section>
+<section class=blk><h3>How this code was found</h3><div class=kv style="color:var(--mut)">the research note submitted with this code &middot; <a href="https://github.com/unitaryfoundation/qldpc-challenge/blob/main/notes/674-128-80.md">raw markdown</a> &middot; <a href="../research-log.html">all notes</a></div><div class=notebody><h3>[[674,128,80]] designed-divisor generalized-bicycle CSS code</h3>
+<p>This lift-337 generalized-bicycle CSS code has check-matrix ranks 273 per side, encodes 128 logical qubits, and has maximum check weight 30. Its circulant supports are</p>
+<pre>
+a(x) = 1 + x + x^12 + x^24 + x^27 + x^69 + x^93 + x^113
+       + x^128 + x^143 + x^149 + x^162 + x^262 + x^269
+       + x^294 + x^309
+b(x) = x^17 + x^36 + x^38 + x^50 + x^64 + x^79 + x^81
+       + x^82 + x^83 + x^144 + x^145 + x^247 + x^291
+       + x^325
+</pre>
+<h4>What was searched</h4>
+<p>The designed-divisor search fixed the encoded dimension and screened candidate support pairs with progressively larger information-set searches. The 100,000-, 500,000-, and 2,000,000-trial stages produced global upper bounds 88, 90, and 88. A fresh 8,000,000-trial depth-8 RIS-fast run per CSS direction, using 18 threads and seed 1470671, found independently validated weight-88 X and weight-87 Z logical operators.</p>
+<h4>Distance revision</h4>
+<p>The entry was filed as <code>[[674,128,87]]</code> and was refuted at that reading: a deeper campaign found lighter operators on both sides, and the committed witnesses now have weight 80 on X and weight 82 on Z (PR #605, &quot;witnesses at weight 80 and 82&quot;).</p>
+<p>The included witnesses therefore support only the upper-bound claim <code>d&lt;=80</code>; no distance lower bound or exact-distance claim is made. The resulting reported score is</p>
+<pre>
+k d^2 / n = 128 * 80^2 / 674 = 1215.4302670623144.
+</pre></div></section>
 <section class=blk><h3>Parity checks</h3>
 <div class=kv><b>X-checks</b> 337 (max weight 30) &middot; <b style="min-width:auto">Z-checks</b> 337 (max weight 30)</div>
 <details><summary>H_X (337 checks, sparse supports)</summary><div class=wit>[0, 28, 43, 68, 75, 175, 188, 194, 209, 224, 244, 268, 310, 313, 325, 336, 349, 383, 427, 529, 530, 591, 592, 593, 595, 610, 624, 636, 638, 657]

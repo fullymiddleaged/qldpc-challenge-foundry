@@ -1,0 +1,120 @@
+<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><title>[[12,3,3]] · QEC Challenge</title><link rel=icon type="image/svg+xml" href="../favicon.svg"><link rel=preconnect href="https://fonts.googleapis.com"><link rel=preconnect href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&family=Space+Grotesk:wght@500;700&family=Space+Mono:wght@400;700&display=swap" rel=stylesheet><link rel=stylesheet href="../style.css"><!-- Privacy-friendly analytics by Plausible --><script async src="https://plausible.io/js/pa-BZqEmTRv5VBwv3HYwVpoB.js"></script><script>window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};plausible.init({"customProperties":{"code_family":"other","code_origin":"submission","code_tier":"ub","locality_class":"unrestricted","page_type":"code_detail","weight_class":"weight-4"},"fileDownloads":true,"outboundLinks":true})</script></head><body>
+<div class=wrap>
+<a class=back href="../stabilizer.html">&larr; back to the stabilizer board</a>
+<div class=codehead><span class="mono big">[[12,3,3]]</span> <span class="b ub" title="verified upper bound: an explicit logical of this weight, and independent refutation searches found nothing lighter">d &le;</span><span class="tchip stab" title="general (non-CSS) stabilizer code: one Pauli-weight distance, ranked on the stabilizer board">stabilizer</span></div>
+<div class=params>
+<div class=cell title="physical qubits"><div class=l>n</div><div class=v>12</div></div>
+<div class=cell title="logical qubits"><div class=l>k</div><div class=v>3</div></div>
+<div class=cell title="distance (smallest undetectable error)"><div class=l>d</div><div class=v>3</div></div>
+<div class=cell title="operational efficiency (BPT ratio), compared within a track at comparable n"><div class=l>kd&sup2;/n</div><div class=v>2.25</div></div>
+<div class=cell title="max check weight |supp X_i ∪ supp Z_i| (a Y factor counts one qubit)"><div class=l>w</div><div class=v>4</div></div>
+</div>
+<section class=blk><h3>Share this result</h3><div class=share><button class=sharebtn type=button data-copy="https://unitaryfoundation.github.io/qldpc-challenge/codes/12-3-3-s.html" aria-label="Copy link" title="Copy link"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"/></svg></button><a class=sharebtn href="https://twitter.com/intent/tweet?text=%5B%5B12%2C3%2C3%5D%5D%20quantum%20LDPC%20code%20on%20the%20QEC%20Challenge&amp;url=https%3A//unitaryfoundation.github.io/qldpc-challenge/codes/12-3-3-s.html" target=_blank rel=noopener aria-label="Post on X" title="Post on X"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a><a class=sharebtn href="https://bsky.app/intent/compose?text=%5B%5B12%2C3%2C3%5D%5D%20quantum%20LDPC%20code%20on%20the%20QEC%20Challenge%20https%3A//unitaryfoundation.github.io/qldpc-challenge/codes/12-3-3-s.html" target=_blank rel=noopener aria-label="Share on Bluesky" title="Bluesky"><svg viewBox="0 0 568 501" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M123.121 33.664C188.241 82.553 258.281 181.68 284 234.873c25.719-53.193 95.759-152.32 160.879-201.21C491.866-1.611 568-28.906 568 57.947c0 17.346-9.945 145.713-15.778 166.555-20.275 72.453-94.155 90.933-159.875 79.748C507.222 323.8 536.444 388.56 473.333 453.32c-119.86 122.992-172.272-30.859-185.702-70.281-2.462-7.227-3.614-10.608-3.631-7.733-.017-2.875-1.169.506-3.631 7.733-13.43 39.422-65.842 193.273-185.702 70.281-63.111-64.76-33.889-129.52 80.986-149.071-65.72 11.185-139.6-7.295-159.875-79.748C9.945 203.66 0 75.293 0 57.947 0-28.906 76.135-1.611 123.121 33.664Z"/></svg></a><a class=sharebtn href="https://www.linkedin.com/sharing/share-offsite/?url=https%3A//unitaryfoundation.github.io/qldpc-challenge/codes/12-3-3-s.html" target=_blank rel=noopener aria-label="Share on LinkedIn" title="LinkedIn"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.225 0z"/></svg></a></div></section>
+<section class=blk><h3>Distance</h3>
+<div class=kv style="color:var(--mut)">a general stabilizer code has no X and Z sides: d is the minimum Pauli weight of a nontrivial logical operator (a Y factor counts one qubit), and the witness is one Pauli operator that commutes with every generator and is not a product of them</div>
+<div class=kv><b>d</b> 3 &middot; witness Pauli weight 3 (1 Y factor; Hamming weight over 2n bits 4) (claimed upper_bound)</div>
+<details><summary>witness operator (Pauli string, 3 qubits)</summary><div class=wit>YXZIIIIIIIII
+X: [0, 1]
+Z: [0, 2]</div></details>
+<div class=kv><b>certificate</b> <span class=cert-no>none yet &middot; distance stands as a self-certified upper bound (d &le;); the Pauli-weight certifier is not built yet, so stabilizer entries cannot earn d= for now</span></div>
+</section>
+<section class=blk><h3>Diagnostics</h3>
+<div class=kv style="color:var(--mut)">computed by the verifier from the parity checks, the layout, and the stored witnesses; shown as evidence, not used for ranking</div>
+<div class=kv title="Tanner-graph girth: the shortest cycle in the generator/qubit graph a decoder runs on (one graph, over the generator supports). Longer is friendlier to belief propagation. A diagnostic computed by the verifier from S, never a ranking axis."><b>girth</b> S 4 <span class=claimed>(shortest cycle of the generator Tanner graph; longer is friendlier to belief propagation)</span></div>
+<div class=kv title="row weights of each side, min to max with the mean"><b>check weights</b> S 4</div>
+<div class=kv title="column weights of each side: how many checks of that type touch a qubit, min to max with the mean"><b>qubit degrees</b> S 2&ndash;4 (mean 3.0)</div>
+<div class=kv title="(a,b) trapping sets: connected sets of a qubits whose error pattern has syndrome weight b; small b at small a is what stalls iterative decoders. Shown: the smallest b at each size and how many sets reach it, sizes up to 3 within the verifier&#x27;s cost cap."><b>trapping sets S</b> (1,2)×2 (2,2)×9 (3,1)×2 <span class=claimed>(smallest syndrome weight at each size, connected sets of up to 3 qubits)</span></div>
+<details><summary>full (size, syndrome weight): count census for S</summary><div class=wit>(1,2): 2
+(1,3): 8
+(1,4): 2
+(2,2): 9
+(2,3): 14
+(2,4): 9
+(2,5): 6
+(2,6): 1
+(3,1): 2
+(3,2): 10
+(3,3): 26
+(3,4): 60
+(3,5): 24
+(3,6): 8
+(3,7): 2</div></details>
+</section>
+<section class=blk><h3>Construction &amp; provenance</h3>
+<div class=kv><b>authors</b> <a href="https://github.com/MicheldeMessieres">@MicheldeMessieres</a></div>
+<div class=kv><b>provenance</b> submitted through the challenge</div>
+<div class=kv><b>novelty</b> novelty not audited</div>
+<div class=kv><b>construction</b> Non-CSS stabilizer code with 9 independent generators of weight &lt;= 4 on 12 qubits, found by a SAT search (kissat) over all such generator sets in which every pair of generators commutes and the 36 single-qubit Paulis have distinct nonzero syndromes (so every Pauli of weight 1 or 2 is detected and d &gt;= 3). Generators: YZXIXIIIIIII, YIIIIIIIXYIX, IXIIZIZXIIII, XYIIIIIYIIIY, IIZYZIIIIYII, IIIIIZXYIIZI, IIIZXXYIIIII, IIIIIXIIZIYY, IIIXIZIIYXII. k = 12 - 9 = 3. Not CSS under any single-qubit Clifford.</div>
+<div class=kv><b>model</b> <span class=modelmark><svg class=modelicon viewBox="0 0 24 24" width="15" height="15" role="img" aria-label="Claude"><title>Claude</title><path fill="#D97757" d="m4.7144 15.9555 4.7174-2.6471.079-.2307-.079-.1275h-.2307l-.7893-.0486-2.6956-.0729-2.3375-.0971-2.2646-.1214-.5707-.1215-.5343-.7042.0546-.3522.4797-.3218.686.0608 1.5179.1032 2.2767.1578 1.6514.0972 2.4468.255h.3886l.0546-.1579-.1336-.0971-.1032-.0972L6.973 9.8356l-2.55-1.6879-1.3356-.9714-.7225-.4918-.3643-.4614-.1578-1.0078.6557-.7225.8803.0607.2246.0607.8925.686 1.9064 1.4754 2.4893 1.8336.3643.3035.1457-.1032.0182-.0728-.164-.2733-1.3539-2.4467-1.445-2.4893-.6435-1.032-.17-.6194c-.0607-.255-.1032-.4674-.1032-.7285L6.287.1335 6.6997 0l.9957.1336.419.3642.6192 1.4147 1.0018 2.2282 1.5543 3.0296.4553.8985.2429.8318.091.255h.1579v-.1457l.1275-1.706.2368-2.0947.2307-2.6957.0789-.7589.3764-.9107.7468-.4918.5828.2793.4797.686-.0668.4433-.2853 1.8517-.5586 2.9021-.3643 1.9429h.2125l.2429-.2429.9835-1.3053 1.6514-2.0643.7286-.8196.85-.9046.5464-.4311h1.0321l.759 1.1293-.34 1.1657-1.0625 1.3478-.8804 1.1414-1.2628 1.7-.7893 1.36.0729.1093.1882-.0183 2.8535-.607 1.5421-.2794 1.8396-.3157.8318.3886.091.3946-.3278.8075-1.967.4857-2.3072.4614-3.4364.8136-.0425.0304.0486.0607 1.5482.1457.6618.0364h1.621l3.0175.2247.7892.522.4736.6376-.079.4857-1.2142.6193-1.6393-.3886-3.825-.9107-1.3113-.3279h-.1822v.1093l1.0929 1.0686 2.0035 1.8092 2.5075 2.3314.1275.5768-.3218.4554-.34-.0486-2.2039-1.6575-.85-.7468-1.9246-1.621h-.1275v.17l.4432.6496 2.3436 3.5214.1214 1.0807-.17.3521-.6071.2125-.6679-.1214-1.3721-1.9246L14.38 17.959l-1.1414-1.9428-.1397.079-.674 7.2552-.3156.3703-.7286.2793-.6071-.4614-.3218-.7468.3218-1.4753.3886-1.9246.3157-1.53.2853-1.9004.17-.6314-.0121-.0425-.1397.0182-1.4328 1.9672-2.1796 2.9446-1.7243 1.8456-.4128.164-.7164-.3704.0667-.6618.4008-.5889 2.386-3.0357 1.4389-1.882.929-1.0868-.0062-.1579h-.0546l-6.3385 4.1164-1.1293.1457-.4857-.4554.0608-.7467.2307-.2429 1.9064-1.3114Z"/></svg> </span>Claude Opus 5.5 (Claude Code) <span class=claimed>(claimed, not verified)</span></div>
+<div class=kv><b>builds on</b> <a href="https://arxiv.org/abs/2601.19848">arXiv:2601.19848</a>, <a href="https://arxiv.org/abs/2501.17447">arXiv:2501.17447</a>, arXiv:2601.15446 (literature check; see the note)</div>
+<div class=kv><b>date</b> 2026-10-13</div>
+<div class=kv><b>notes</b> Distance: an exhaustive enumeration of every Pauli operator of weight 1 and 2 finds no nontrivial logical and no stabilizer element, and weight-3 logicals exist (36 of them, among them the stored witness), so d = 3 exactly for these generators; filed as an upper bound because the board&#x27;s Pauli-weight certifier is not available yet. Not CSS under any single-qubit Clifford: checked by the verifier on the generators and, by two separate tests, on the whole stabilizer group. Same kd^2/n (2.25) as the published weight-4 [[8,2,3]] code of Cross and Vandeth (arXiv:2501.17447; on the board as the literature baseline codes/8-2-3.json), with one more logical qubit. Wei, Han, He, Li and Liu (arXiv:2601.19848, Table 2) list the lowest generator weight of a [[12,3,3]] stabilizer code as 4-5; these generators have weight 4. Literature novelty is not claimed.</div>
+<div class=kv><b>family</b> other <span class=claimed>(a tag, not a ranking)</span></div>
+<div class=kv><b>locality</b> unrestricted <span class=claimed>(computed from the layout)</span></div>
+<div class=kv><b>weight class</b> weight ≤ 4 <span class=claimed>(computed)</span></div>
+</section>
+<section class=blk><h3>How this code was found</h3><div class=kv style="color:var(--mut)">the research note submitted with this code &middot; <a href="https://github.com/unitaryfoundation/qldpc-challenge/blob/main/notes/12-3-3-s.md">raw markdown</a> &middot; <a href="../research-log.html">all notes</a></div><div class=notebody><h3>[[12,3,3]] — weight-4 non-CSS stabilizer code</h3>
+<h4>Direction &amp; hypothesis</h4>
+<p>Among the general-stabilizer board&#x27;s submissions with generator weight &lt;= 4, the best kd^2/n was 1.999 when this entry was prepared (codes/761-1-39.json, @mrvee-qC-bee); the literature baseline codes/8-2-3.json (Cross and Vandeth) reaches 2.25. Weight &lt;= 4 is the leaderboard&#x27;s weight slider, not a separate track. Wei, Han, He, Li and Liu (arXiv:2601.19848) tabulate the lowest possible generator weight of small stabilizer codes; their Table 1 lists a weight-4 [[8,2,3]] code of Cross and Vandeth (arXiv:2501.17447), at kd^2/n = 2.25, and their Table 2 lists the lowest weight for [[12,3,3]] as 4-5. The hypothesis: a direct SAT search over weight-4 generator sets on 12 qubits decides whether weight 4 is enough for [[12,3,3]], which would give kd^2/n = 2.25 with k = 3.</p>
+<p><b>Also builds on:</b> the small-code weight tables of Wei, Han, He, Li and Liu (arXiv:2601.19848) and the weight-4 [[8,2,3]] code of Cross and Vandeth (arXiv:2501.17447).</p>
+<p><b>Board precedents:</b> the Cross and Vandeth [[8,2,3]] is on the board as a literature baseline (codes/8-2-3.json), with the same kd^2/n = 2.25; this entry has one more logical qubit and is not dominated by it. Weight-4 non-CSS stabilizer codes are already on the board from @mrvee-qC-bee (codes/761-1-39.json), @FarLab (codes/25-1-7.json) and @MathysRennela (codes/14-3-3.json, codes/13-1-5.json). SAT-based discovery of small codes is already on the board from @MathysRennela. The board&#x27;s codes/12-3-3.json (@vprusso) is a different, CSS code with generators of weight up to 6; this one is non-CSS, hence the -s slug, as in @FarLab&#x27;s codes/18-2-5-s.json.</p>
+<p><b>Our contribution:</b> the SAT search that found these generators, and the exact distance and non-CSS checks below.</p>
+<p><b>Frontier:</b> Dominates codes/14-3-3.json ([[14,3,3]], weight 4, @MathysRennela) on n; not dominated by any entry in the weight-4 cell. It does not lead the board&#x27;s higher-weight stabilizer cells.</p>
+<h4>What was searched</h4>
+<ul>
+<li>Unknowns: the Pauli letters of 9 generators on 12 qubits, each of weight &lt;= 4. Every pair of generators commutes (exact XOR constraints), and the 36 single-qubit Paulis have distinct nonzero syndromes, so every Pauli of weight 1 or 2 is detected (d &gt;= 3, no stabilizer element of weight &lt;= 2). One symmetry-breaking clause: generator 0 contains qubit 0. Solved with kissat in 1.9 s on one thread.</li>
+<li>The same probe at other sizes: [[13,3,3]] (10 generators) was found too (kd^2/n 2.08, lower); [[10,3,3]] (7 generators) was undecided after 600 s; a later complete encoding with a local-Clifford normal form found no weight-4 [[10,3,3]] without a weight-2 stabilizer element.</li>
+<li>Group-invariant searches (qubits in orbits of a small abelian group, distance imposed lazily) found weight-4 codes at the same ratio, [[16,4,3]], [[24,6,3]] and [[32,8,3]]; at rate 1/3 and d = 3 ([[12,4,3]] under Z4 and Z2 x Z2, [[15,5,3]] under Z5, [[18,6,3]] under Z6) they found no code of that shape.</li>
+</ul>
+<h4>Evidence trail</h4>
+<p>Exact distance for these generators: an exhaustive enumeration of every Pauli of weight 1 and 2 (630 operators) finds no nontrivial logical and no stabilizer element; at weight 3 there are 36 nontrivial logicals, among them the stored witness (X on 0, 1 and Z on 0, 2: Y0 X1 Z2). A second, separate exhaustive program gives the same d = 3.</p>
+<p>| effort (CPU-hours) | lightest logical found | |---|---| | 0.01 (exhaustive over all Paulis of weight &lt;= 2, then weight 3) | 3 (no logical of weight 1 or 2) |</p>
+<p>Claim: d = 3, filed as a witness-backed upper bound because the board&#x27;s Pauli-weight certifier is not available yet; the exhaustive enumeration shows it is exact. No trial counts: the distance check is exhaustive, not random.</p>
+<p>Non-CSS: the verifier finds no single-qubit Clifford frame that makes the generators CSS, and two separate tests (a search over the group elements and a linear-algebra test) find none for the whole stabilizer group. k = 3 from the rank of the 9 independent generators.</p>
+<p>Literature: Grassl&#x27;s codetables.de gives d = 4 as the optimum for [[12,3]] without a weight limit, so this code is not distance-optimal; its point is the generator weight. Wei, Han, He, Li and Liu (arXiv:2601.19848, Table 2) list the lowest weight for [[12,3,3]] as 4-5, with a construction of weight 5. We did not find a weight-4 [[12,3,3]] stabilizer code there, in arXiv:2601.15446 (Wang, Liu, Li, Kubica and Gu) or in the EC Zoo (errorcorrectionzoo.org); literature novelty is not claimed.</p>
+<h4>Dead ends</h4>
+<ul>
+<li>Rate 1/3 at d = 3 under small groups (see above): no code of these shapes.</li>
+<li>d = 4 at weight 4 above kd^2/n = 2: rate 1/3 under Z4, Z5, Z6 and Z2 x Z2 gave no code of that shape; [[11,2,4]] and [[12,2,4]] without symmetry were undecided after 15 min each.</li>
+<li>The same ratio-2.25 shape at rate 1/4 and d = 4 (every qubit in exactly 3 weight-4 generators, under Z4 to Z8): undecided; no such code was returned.</li>
+</ul>
+<h4>Tools</h4>
+<p>Claude Opus 5.5 (Claude Code) working for @MicheldeMessieres. Python with PySAT for the encoding, kissat as the solver, numpy and plain Python enumeration for the distance and non-CSS checks. Scripts are local (not in this tree); the method is described above. Checked with verify/qldpc_verify.py and verify/validate_candidate.py. Compute: under 0.01 CPU-hours for the find and the distance check; about 6 CPU-hours for the whole weight-4 exploration including the dead ends.</p>
+<h4>Reproduction</h4>
+<p>Qubits 0-11, one generator per line (letters for qubits 0 to 11):</p>
+<ul>
+<li>YZXIXIIIIIII</li>
+<li>YIIIIIIIXYIX</li>
+<li>IXIIZIZXIIII</li>
+<li>XYIIIIIYIIIY</li>
+<li>IIZYZIIIIYII</li>
+<li>IIIIIZXYIIZI</li>
+<li>IIIZXXYIIIII</li>
+<li>IIIIIXIIZIYY</li>
+<li>IIIXIZIIYXII</li>
+</ul>
+<p>These are exactly the entry&#x27;s <code>checks.S</code> rows 0-8.</p></div></section>
+<section class=blk><h3>Stabilizer generators</h3>
+<div class=kv><b>generators</b> 9 (max weight 4; 9 mixed X/Z) <span class=claimed>(one binary symplectic matrix S = (A | B); generator i is X on A_i and Z on B_i, Y where both)</span></div>
+<details><summary>generators (9, Pauli strings on 12 qubits)</summary><div class=wit>YZXIXIIIIIII
+YIIIIIIIXYIX
+IXIIZIZXIIII
+XYIIIIIYIIIY
+IIZYZIIIIYII
+IIIIIZXYIIZI
+IIIZXXYIIIII
+IIIIIXIIZIYY
+IIIXIZIIYXII</div></details>
+<details><summary>symplectic rows (A | B) (9, sparse supports)</summary><div class=wit>X: [0, 2, 4]  Z: [0, 1]
+X: [0, 8, 9, 11]  Z: [0, 9]
+X: [1, 7]  Z: [4, 6]
+X: [0, 1, 7, 11]  Z: [1, 7, 11]
+X: [3, 9]  Z: [2, 3, 4, 9]
+X: [6, 7]  Z: [5, 7, 10]
+X: [4, 5, 6]  Z: [3, 6]
+X: [5, 10, 11]  Z: [8, 10, 11]
+X: [3, 8, 9]  Z: [5, 8]</div></details>
+<div class=kv style="margin-top:10px"><b>Code ID</b> <code>12-3-3-s</code> &middot; <a href="12-3-3-s.json" download title="the verified submission, served by this site">download JSON</a> &middot; <a href="https://github.com/unitaryfoundation/qldpc-challenge/blob/main/codes/12-3-3-s.json">raw on GitHub</a></div>
+</section>
+<script>document.querySelectorAll('[data-copy]').forEach(b=>b.addEventListener('click',()=>{navigator.clipboard.writeText(b.dataset.copy);const o=b.innerHTML;plausible('Result Link Copied');b.innerHTML='\u2713';b.title='link copied';setTimeout(()=>{b.innerHTML=o;b.title='Copy link';},1400);}));document.querySelectorAll('.lofig').forEach(svg=>{const dots={};svg.querySelectorAll('[data-s]').forEach(d=>{(dots[d.dataset.s]=dots[d.dataset.s]||[]).push(d);});let pin=null;const clear=()=>{svg.classList.remove('lo-hover');svg.querySelectorAll('.lo-cur,.lo-mem').forEach(e=>e.classList.remove('lo-cur','lo-mem'));};const show=el=>{clear();svg.classList.add('lo-hover');el.classList.add('lo-cur');el.dataset.sites.split(' ').forEach(s=>(dots[s]||[]).forEach(d=>d.classList.add('lo-mem')));};svg.querySelectorAll('.lo-chk').forEach(el=>{el.addEventListener('mouseenter',()=>{if(!pin)show(el);});el.addEventListener('mouseleave',()=>{if(!pin)clear();});el.addEventListener('click',e=>{e.stopPropagation();const stack=document.elementsFromPoint(e.clientX,e.clientY).filter(x=>x.classList&&x.classList.contains('lo-chk')&&svg.contains(x));if(!stack.length)return;const i=pin?stack.indexOf(pin):-1;pin=stack[(i+1)%stack.length];show(pin);});});svg.addEventListener('click',()=>{if(pin){pin=null;clear();}});});</script>
+</div></body></html>

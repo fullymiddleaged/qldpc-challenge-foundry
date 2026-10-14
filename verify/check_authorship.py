@@ -33,6 +33,25 @@ must be byte-identical apart from an append to notes -- in particular
 rights over the code: they are still not a listed author on the next PR, and
 any later change must itself pass a binding.
 
+A fourth binding covers the one field that carries no claim: a change that
+ONLY corrects `family` binds for anyone. The schema says that tag is "used
+only as a filterable tag, never for ranking", and the verifier accepts any
+well-formed value, so a wrong one changes nothing about what an entry
+asserts. What it does is hide the entry from every query by family, including
+the queries that set campaign targets, which costs everyone who searches and
+costs its author nothing. That is the one case where reserving the fix to the
+author protects the wrong party. It is the narrowest form that can work: the
+tag and nothing else, not the name, not provenance, not a note.
+
+A binding for measured-rate points (schema 0.5, issue #1278): a change that
+ONLY adds points to `circuit.ler`, keeping every point the entry already
+carried byte-identical (the pre-0.5 single object counts as one point), binds
+for anyone. A point is a claim about the committed circuit at a physical
+rate, and the gate re-measures every point it can afford and the weekly run
+the rest, so a planted point is caught the way a planted distance is;
+removing or altering an existing point, or touching anything else in the
+entry, stays with the listed authors. This is what lets a maintainer carry
+the board's entries through a schema change in the tier without owning them.
 Replacing an existing artifact stays with the code's listed authors either
 way, which matters more for circuits than for layouts: the circuit tier is
 penalty-only (d_circ is clamped to <= d), so a donated schedule can lower an
@@ -339,10 +358,145 @@ def circuit_binding(author, base_doc, new_doc):
 # The bindings a PR author who is not a listed author may still pass, with the
 # phrase each prints on success. Declaration order is report order, except for
 # the one `evident_binding` says the change was aiming for.
+def family_binding(author, base_doc, new_doc):
+    """Does new_doc differ from base_doc by exactly a corrected family tag?
+
+    The other three bindings all describe adding or correcting a claim, and
+    every one of them is reserved narrowly because a claim is what the board
+    ranks. `family` is the one field the schema says is "used only as a
+    filterable tag, never for ranking", and the verifier accepts any
+    well-formed value, so a wrong one changes nothing about what an entry
+    asserts. What it does is hide the entry: every query by family misses it.
+
+    That asymmetry is the argument for this binding. A mis-tag costs everyone
+    who searches by family and costs its author nothing, so leaving the fix
+    to the author alone is the one case where the authorship rule protects
+    the wrong party. `904-230-22` sat mis-tagged as the unrestricted x
+    weight-8 leader while a campaign was scoped to hunt a target strictly
+    worse than the board already held, because the leader was invisible to
+    the query that set the target (#2366, #2633).
+
+    Deliberately the narrowest possible form: the tag and nothing else. Not
+    the name, not provenance, not a note explaining the change. A re-tag that
+    wants to say anything is a re-tag the author should make.
+    """
+    keys = set(base_doc) | set(new_doc)
+    for key in keys - {"family"}:
+        if base_doc.get(key) != new_doc.get(key):
+            return False, (f"field '{key}' changed (a family re-tag may change "
+                           "the family tag and nothing else)")
+    old, new = base_doc.get("family"), new_doc.get("family")
+    if old == new:
+        return False, "the family tag is unchanged"
+    if not new:
+        return False, "a family re-tag must set a tag, not remove one"
+    return True, None
+
+
+def novelty_binding(author, base_doc, new_doc):
+    """Does new_doc differ from base_doc by exactly a literature match recorded?
+
+    The isomorphism index (research/provenance/) decides that an entry is a
+    published code, or that its parameter set is published, by mapping row
+    spaces under a recovered qubit permutation. Recording that result is not
+    a claim about the code; it withdraws one. `novelty: known_parameters` is
+    the schema's own word for "the [[n,k,d]] parameter set exists in the
+    literature even if this entry improves weight, layout, or construction
+    details", and the reference goes where references already live,
+    `provenance.references` (issue #1204).
+
+    The narrowest form: novelty may move to `known_parameters` and
+    `provenance.references` may grow, and nothing else may change. Not the
+    name, not notes, not the other provenance fields, and never the other
+    direction: a `new_parameters` claim is the submitter's to make.
+    """
+    keys = set(base_doc) | set(new_doc)
+    for key in keys - {"provenance"}:
+        if base_doc.get(key) != new_doc.get(key):
+            return False, (f"field '{key}' changed (a literature match may set "
+                           "novelty and add references, nothing else)")
+    bp, np_ = base_doc.get("provenance") or {}, new_doc.get("provenance") or {}
+    for key in (set(bp) | set(np_)) - {"novelty", "references"}:
+        if bp.get(key) != np_.get(key):
+            return False, f"provenance.{key} changed (a literature match may not touch it)"
+    old_refs, new_refs = list(bp.get("references") or []), list(np_.get("references") or [])
+    if new_refs[:len(old_refs)] != old_refs:
+        return False, "provenance.references may only be appended to"
+    old_nov, new_nov = bp.get("novelty"), np_.get("novelty")
+    if new_nov not in (old_nov, "known_parameters"):
+        return False, ("a literature match may set novelty to known_parameters "
+                       "only; any other novelty value is the submitter's claim")
+    if new_nov == old_nov and new_refs == old_refs:
+        return False, "nothing changed"
+    if new_nov == "known_parameters" and not new_refs:
+        return False, "known_parameters needs a reference in provenance.references"
+    return True, None
+
+
+def _rate_points(claim):
+    """A basis's measured-rate claim as a list of points: the pre-0.5 single
+    object is one point, a 0.5 list is itself, anything else is None."""
+    if isinstance(claim, dict):
+        return [claim]
+    if isinstance(claim, list):
+        return claim
+    return None
+
+
+def rate_binding(author, base_doc, new_doc):
+    """Does new_doc differ from base_doc by exactly the addition of measured-
+    rate points to an existing circuit.ler? Returns (ok, reason-if-not).
+
+    Allowed: points appended to circuit.ler.<basis> (and the pre-0.5 single
+    object rewritten as a list that still contains it byte-identical), plus
+    a `schema_version` change. Everything else, including every other field
+    of the circuit block, the distance, provenance, and the existing points
+    themselves, must be byte-identical; no basis may be dropped. A point is a
+    measurement of the committed circuit at one physical rate, re-measured by
+    ler_verify at PR time where the budget allows and weekly after merge, so
+    the binding adds claims the board checks and can take nothing away.
+    """
+    keys = set(base_doc) | set(new_doc)
+    for key in keys - {"circuit", "schema_version"}:
+        if base_doc.get(key) != new_doc.get(key):
+            return False, (f"field '{key}' changed (adding rate points may "
+                           "change circuit.ler and nothing else)")
+    bc, nc = base_doc.get("circuit"), new_doc.get("circuit")
+    if not isinstance(bc, dict) or not isinstance(nc, dict):
+        return False, "the entry has no circuit tier to carry a measured rate"
+    for key in (set(bc) | set(nc)) - {"ler"}:
+        if bc.get(key) != nc.get(key):
+            return False, (f"circuit.{key} changed (adding rate points may "
+                           "change circuit.ler and nothing else)")
+    bl, nl = bc.get("ler") or {}, nc.get("ler") or {}
+    if not isinstance(bl, dict) or not isinstance(nl, dict) or not nl:
+        return False, "circuit.ler is missing or not an object"
+    if set(bl) - set(nl):
+        return False, "a basis was removed from circuit.ler"
+    added = 0
+    for side, claim in nl.items():
+        new_pts = _rate_points(claim)
+        old_pts = _rate_points(bl.get(side)) or []
+        if new_pts is None:
+            return False, f"circuit.ler.{side} is neither a point nor a list"
+        for q in old_pts:
+            if q not in new_pts:
+                return False, (f"circuit.ler.{side}: an existing point "
+                               f"(p={q.get('p')}) was changed or removed; "
+                               "that stays with the listed authors")
+        added += len(new_pts) - len(old_pts)
+    if added <= 0:
+        return False, "no measured-rate point was added"
+    return True, ""
+
+
 BINDINGS = (
     ("refutation", refutation_binding, "witness_provenance credit, refuting"),
     ("layout", layout_binding, "adding a first locality block to"),
     ("circuit", circuit_binding, "adding a first circuit block to"),
+    ("family", family_binding, "correcting the family tag of"),
+    ("novelty", novelty_binding, "recording a literature match on"),
+    ("rate", rate_binding, "adding measured-rate points to"),
 )
 
 
@@ -351,8 +505,21 @@ def evident_binding(base_doc, new_doc):
     leads with one relevant rejection instead of three."""
     if "circuit" in new_doc and "circuit" not in base_doc:
         return "circuit"
+    if (isinstance(base_doc.get("circuit"), dict)
+            and isinstance(new_doc.get("circuit"), dict)
+            and base_doc["circuit"].get("ler") != new_doc["circuit"].get("ler")
+            and base_doc.get("distance") == new_doc.get("distance")):
+        return "rate"
     if "locality" in new_doc and "locality" not in base_doc:
         return "layout"
+    if (base_doc.get("family") != new_doc.get("family")
+            and base_doc.get("distance") == new_doc.get("distance")):
+        return "family"
+    bp, np_ = base_doc.get("provenance") or {}, new_doc.get("provenance") or {}
+    if (base_doc.get("distance") == new_doc.get("distance")
+            and (bp.get("novelty") != np_.get("novelty")
+                 or bp.get("references") != np_.get("references"))):
+        return "novelty"
     return "refutation"
 
 
@@ -478,6 +645,17 @@ def main(argv):
                 continue
             attempts = []
             for label, bind, phrase in BINDINGS:
+                # Renaming an entry is reserved to its listed authors, and the
+                # other three bindings enforce that only as a side effect of
+                # refusing the claim changes a rename usually comes with. A
+                # family-only diff has no claim change to refuse, so without
+                # this a non-author could move an entry to an unrelated slug
+                # by re-tagging it in the same commit.
+                if label == "family" and base_path != f:
+                    attempts.append((f"{label} binding failed: the file was "
+                                     f"renamed from {base_path}; a family "
+                                     "re-tag may not move an entry", True))
+                    continue
                 ok, why = bind(author, base_doc, doc)
                 if ok:
                     print(f"ok    {f}: @{author} binds by {phrase} {base_path}")

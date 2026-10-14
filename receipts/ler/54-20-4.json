@@ -1,0 +1,122 @@
+{
+ "claim_digest": "b2afad825a4b39d7f25c9610fedaaf9efe0833677d0441783b31e48dedd07bb3",
+ "head_sha": "e0c02e754297b9adc699df3f8377ece1d240dc08",
+ "measured_at": "2026-10-12T11:50:07+00:00",
+ "ok": true,
+ "points": {
+  "X": {
+   "0.001": {
+    "claimed_p_shot": 0.0972,
+    "detectable_factor": 1.172,
+    "p": 0.001,
+    "replica_failures": 994,
+    "replica_p_shot": 0.09940994099409942,
+    "replica_shots": 9999,
+    "runs": [
+     {
+      "failures": 358,
+      "seed": 1592598037,
+      "shots": 3333
+     },
+     {
+      "failures": 326,
+      "seed": 1088055204,
+      "shots": 3333
+     },
+     {
+      "failures": 310,
+      "seed": 1652813175,
+      "shots": 3333
+     }
+    ],
+    "sigma": 0.004189428315338614,
+    "status": "verified"
+   },
+   "0.002": {
+    "claimed_p_shot": 0.4031,
+    "detectable_factor": 1.069,
+    "p": 0.002,
+    "replica_failures": 4068,
+    "replica_p_shot": 0.40684068406840684,
+    "replica_shots": 9999,
+    "runs": [
+     {
+      "failures": 1366,
+      "seed": 1608005276,
+      "shots": 3333
+     },
+     {
+      "failures": 1333,
+      "seed": 1106202413,
+      "shots": 3333
+     },
+     {
+      "failures": 1369,
+      "seed": 1672922622,
+      "shots": 3333
+     }
+    ],
+    "sigma": 0.006937181296790106,
+    "status": "verified"
+   }
+  },
+  "Z": {
+   "0.001": {
+    "claimed_p_shot": 0.0988,
+    "detectable_factor": 1.171,
+    "p": 0.001,
+    "replica_failures": 961,
+    "replica_p_shot": 0.0961096109610961,
+    "replica_shots": 9999,
+    "runs": [
+     {
+      "failures": 319,
+      "seed": 1592598037,
+      "shots": 3333
+     },
+     {
+      "failures": 354,
+      "seed": 1088055204,
+      "shots": 3333
+     },
+     {
+      "failures": 288,
+      "seed": 1652813175,
+      "shots": 3333
+     }
+    ],
+    "sigma": 0.0042200239898189515,
+    "status": "verified"
+   },
+   "0.002": {
+    "claimed_p_shot": 0.3962,
+    "detectable_factor": 1.07,
+    "p": 0.002,
+    "replica_failures": 4012,
+    "replica_p_shot": 0.4012401240124012,
+    "replica_shots": 9999,
+    "runs": [
+     {
+      "failures": 1361,
+      "seed": 1608005276,
+      "shots": 3333
+     },
+     {
+      "failures": 1334,
+      "seed": 1106202413,
+      "shots": 3333
+     },
+     {
+      "failures": 1317,
+      "seed": 1672922622,
+      "shots": 3333
+     }
+    ],
+    "sigma": 0.006917189060221608,
+    "status": "verified"
+   }
+  }
+ },
+ "receipt_version": "1",
+ "slug": "54-20-4"
+}

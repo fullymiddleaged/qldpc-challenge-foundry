@@ -22,6 +22,8 @@ import urllib.parse
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(ROOT, "verify"))
 from qldpc_verify import board_reports, generator_supports, is_stabilizer
+from ler_verify import gate_point, points_of  # noqa: E402
+import ler_receipts as lr  # noqa: E402
 
 DOCS = os.path.join(ROOT, "docs")
 CERTS = os.path.join(ROOT, "certs")
@@ -474,9 +476,26 @@ font-family:'Space Mono',ui-monospace,monospace}}
 .census span{{font-size:12px;color:var(--mut)}}
 .lb{{margin:18px 0 8px;border:1px solid var(--ln);border-radius:14px;
 background:#fff;overflow:hidden}}
-.lbhead{{display:flex;justify-content:space-between;align-items:center;gap:16px;
-flex-wrap:wrap;
+/* A grid, not a wrapping flex row (issue #2723). The hero card's width is
+   data: it is as wide as "[[n,k,d]] . d . w . @handle" for whichever code is
+   best at the selected weight cap, and flex line-breaking decides on each
+   item's max-content size, so moving the weight slider flipped the header
+   between one line and two and parked the card under the title. Fixed
+   columns for the slider, the toggle, and the card; the title column takes
+   the slack and wraps its own text, so the row structure never depends on
+   the data. */
+.lbhead{{display:grid;grid-template-columns:minmax(0,1fr) auto auto 230px;
+grid-template-areas:"title slider toggle hero";align-items:center;
+column-gap:16px;row-gap:10px;
 padding:16px 20px;background:var(--soft);border-bottom:1px solid var(--ln)}}
+.lbhead>.lbwf{{grid-area:slider;justify-self:start}}
+.lbhead>.rcgroup{{grid-area:toggle;justify-self:start}}
+.lbheroes>.lbscore{{grid-area:hero;justify-self:end;margin-right:0}}
+/* below this the four columns leave the title no readable width: two
+   deliberate rows instead, title and card, then slider and toggle */
+@media(max-width:940px){{
+.lbhead{{grid-template-columns:minmax(0,1fr) auto auto;
+grid-template-areas:"title title hero" "slider toggle toggle"}}}}
 .lbh{{font-size:16px;margin:0;font-family:'Space Mono',ui-monospace,monospace;
 text-transform:uppercase;letter-spacing:.03em}}
 .lbsub{{margin:4px 0 0;font-size:13px;color:var(--mut);
@@ -487,9 +506,9 @@ text-transform:uppercase;letter-spacing:.03em}}
    which is exactly the bug. 38ch + the .lbscore cap clear the row at 1024px;
    below 38ch of viewport the block just fills the container. */
 max-width:38ch}}
-/* the title wrapper is the actual flex item; without min-width:0 its
-   min-content locks the row even when .lbsub wraps */
-.lbhead>div{{min-width:0}}
+/* the title wrapper is the grid item; min-width:0 lets the 1fr column
+   shrink below the subtitle's min-content and wrap it */
+.lbhead>div{{grid-area:title;min-width:0}}
 .lbcta{{flex:0 0 auto;font-size:13px;font-weight:700;color:#fff;
 font-family:'Space Mono',ui-monospace,monospace;
 background:var(--ac);border:none;border-radius:8px;padding:8px 14px;
@@ -538,8 +557,8 @@ a.lbm[href]:hover b{{text-decoration:underline;color:var(--ac)}}
 /* a metric with no target (e.g. no eligible g at the active weight cap) is an
    anchor without an href, so it must not read as a link */
 a.lbm:not([href]){{cursor:default}}
-/* the heroes wrapper exists only so the weight slider can swap both cards at
-   once; it must not become a flex item of its own inside .lbhead */
+/* the heroes wrapper exists only so the weight slider can swap all cards at
+   once; it must not become a grid item of its own inside .lbhead */
 .lbheroes{{display:contents}}
 /* One stop per integer weight. 120px is the widest track that still leaves the
    header on one row in BOTH metric modes (the "best g" card is the wider of
@@ -680,6 +699,11 @@ border-radius:10px;font-size:13px;color:var(--mut)}}
 .rcwrap{{margin:26px 0 4px}}
 .rcwrap .plot{{padding:10px 12px 6px}}
 .rcsub{{font-size:13px;color:var(--mut);margin:2px 0 10px;max-width:760px}}
+/* frontier map (issue #3346): stacked under the race without JS, swapped in
+   by the Frontier mode button with it; points are SVG links */
+.rcwrap .frplot{{margin-top:8px}}
+.rcwrap .frplot a{{text-decoration:none}}
+.rcwrap .frplot circle.hit{{cursor:pointer}}
 /* phones: scroll the wide chart instead of scaling its text away */
 @media(max-width:680px){{.rcwrap .plot{{overflow-x:auto;
 -webkit-overflow-scrolling:touch}}
@@ -722,6 +746,19 @@ font-variant-numeric:tabular-nums}}
 padding:3px 6px;border-radius:5px;background:#ecfdf5;color:#065f46;
 border:1px solid #a7f3d0;vertical-align:2px;white-space:nowrap}}
 .lerv{{font-variant-numeric:tabular-nums;font-weight:600;min-width:5.5em}}
+.lercurve{{display:block;max-width:100%;height:auto;margin:6px 0 2px}}
+.lercurve .grid{{stroke:var(--line,#ddd);stroke-width:1}}
+.lercurve .tick{{font-size:10px;fill:var(--mut)}}
+.lercurve polyline{{fill:none;stroke-width:1.5}}
+.lercurve .lx{{stroke:#1f77b4}} .lercurve .lz{{stroke:#d62728}}
+.lercurve circle.lx{{fill:#1f77b4}} .lercurve circle.lz{{fill:#d62728}}
+.lercurve circle.st-pending,.lercurve circle.st-unverifiable{{fill:#fff}}
+.lercurve circle.st-failed{{fill:#000}}
+table.lerpts{{border-collapse:collapse;font-size:12px;margin:4px 0 8px}}
+table.lerpts th,table.lerpts td{{padding:2px 8px;border-bottom:1px solid var(--line,#ddd);text-align:left}}
+table.lerpts td.num{{font-variant-numeric:tabular-nums}}
+table.lerpts tr.st-pending td,table.lerpts tr.st-unverifiable td{{color:var(--mut)}}
+table.lerpts tr.st-failed td{{color:#b00}}
 .novelty{{display:inline-block;margin-left:7px;font-size:10px;line-height:1;
 padding:3px 6px;border-radius:5px;background:#fef3c7;color:#92400e;
 border:1px solid #fde68a;vertical-align:2px;white-space:nowrap}}
@@ -738,6 +775,7 @@ margin:2px 4px 2px 0;border-radius:999px;background:var(--soft);color:var(--mut)
 border:1px solid var(--ln);white-space:normal}}
 .tchip.loc{{background:#eef2ff;color:#3730a3;border-color:#c7d2fe}}
 .tchip.mod{{background:#ecfdf5;color:#065f46;border-color:#a7f3d0}}
+.tchip.relabel{{background:#fff7ed;color:#9a3412;border-color:#fdba74}}
 .tchip.stab{{background:#fdf4ff;color:#86198f;border-color:#f0abfc;
 vertical-align:middle;font-family:'Manrope',sans-serif}}
 .xboard{{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;
@@ -1739,6 +1777,10 @@ def load_entries():
             "weight_class": rep["computed"].get("weight_class", "weight-9plus"),
             "origin": doc["provenance"].get("origin", "submission"),
             "novelty": doc["provenance"].get("novelty", "unknown"),
+            # a declared block-Clifford image of another entry (issue #2802):
+            # same n, k and code space as the parent, d bought with w
+            "relabel_of": doc["provenance"].get("clifford_relabel_of"),
+            "relabel_m": doc["provenance"].get("clifford_block_size"),
             "authors": ", ".join(doc["provenance"]["authors"]),
             "authors_list": doc["provenance"]["authors"],
             # layout credit (issue #648): who retrofitted the layout, when the
@@ -1762,6 +1804,11 @@ def load_entries():
             # the frontier only ever compares like with like.
             "ler": ler_worst(doc),
             "ler_key": ler_setting(doc),
+            # every measured point with its verification status (issue
+            # #1278): the highest-rate point verified at PR time, the rest
+            # by the weekly post-merge receipt under receipts/ler/
+            "ler_points": ler_points(doc, slug),
+            "ler_by_p": ler_by_p(doc, slug),
             # transversal gates (issue #1850): the verifier's per-gate results,
             # listed on the code page and never ranked.
             "gates": rep["computed"].get("transversal_gates") or [],
@@ -1850,25 +1897,135 @@ def pareto(te):
     return front
 
 
-def ler_worst(doc):
-    """The entry's measured per-round logical error rate as one number: the
-    larger of the X and Z rates (a memory fails when either side does).
-    None without a measured tier."""
+def _gate_points(doc):
+    """{side: gate point} -- the highest-rate point of each basis, which is
+    the one the PR-time gate verified (ler_verify tries rates from the top
+    down, so a merged entry's top point is always gate-verified)."""
     ler = (doc.get("circuit") or {}).get("ler")
     if not ler:
-        return None
-    return max(ler[s]["ler_per_round"] for s in ("X", "Z") if s in ler)
+        return {}
+    out = {}
+    for s in ("X", "Z"):
+        g = gate_point(points_of(ler.get(s)) or [])
+        if g is not None:
+            out[s] = g
+    return out
+
+
+def ler_worst(doc):
+    """The entry's measured per-round logical error rate as one number: the
+    larger of the X and Z rates (a memory fails when either side does) at the
+    gate point, the highest rate claimed. None without a measured tier."""
+    g = _gate_points(doc)
+    return max(q["ler_per_round"] for q in g.values()) if g else None
 
 
 def ler_setting(doc):
-    """(p, decoder) the rate was measured at, so rates are only ever compared
-    within one setting. The schema pins both today; this keeps the frontier
-    honest if either is ever widened."""
+    """(p, decoder) of the gate point, so rates are only ever compared within
+    one setting."""
+    g = _gate_points(doc)
+    if not g:
+        return None
+    q = next(iter(g.values()))
+    return (q["p"], q["decoder"])
+
+
+def ler_points(doc, slug):
+    """{side: [point + status]} for the entry page. Status is "gate" for the
+    highest-rate point (verified at PR time), else the weekly receipt's
+    verdict for the point ("verified", "failed", "unverifiable") or
+    "pending" when no current receipt covers it."""
     ler = (doc.get("circuit") or {}).get("ler")
     if not ler:
-        return None
-    side = ler.get("X") or ler.get("Z")
-    return (side["p"], side["decoder"])
+        return {}
+    cdir = os.path.join(ROOT, "circuits", slug)
+    receipt = lr.load_receipt(ROOT, slug)
+    digest = lr.claim_digest(doc, cdir) if receipt else None
+    out = {}
+    for s in ("X", "Z"):
+        pts = points_of(ler.get(s)) or []
+        g = gate_point(pts)
+        rows = []
+        for q in sorted(pts, key=lambda q: -q["p"]):
+            if q is g:
+                status = "gate"
+            else:
+                status = lr.point_status(receipt, digest, s, q["p"])
+            rec = ((receipt or {}).get("points") or {}).get(s, {}).get(str(q["p"])) \
+                if status not in ("gate", "pending") else None
+            rows.append(dict(q, status=status, receipt=rec,
+                             measured_at=(receipt or {}).get("measured_at")))
+        out[s] = rows
+    return out
+
+
+def ler_by_p(doc, slug):
+    """{p: worse-side per-round rate} over the rates at which BOTH bases have
+    a verified point (gate-verified or receipt-verified); the frontier is
+    computed per p from this."""
+    pts = ler_points(doc, slug)
+    if not pts:
+        return {}
+    out = {}
+    for p in sorted({q["p"] for rows in pts.values() for q in rows}, reverse=True):
+        vals = []
+        for s in ("X", "Z"):
+            q = next((q for q in pts.get(s, []) if q["p"] == p), None)
+            if q and q["status"] in ("gate", "verified"):
+                vals.append(q["ler_per_round"])
+        if len(vals) == 2:
+            out[p] = max(vals)
+    return out
+
+
+def ler_curve_svg(points):
+    """An inline SVG of per-round rate against physical rate, both axes
+    logarithmic, one polyline per basis, each point marked by status."""
+    rows = [(s, q) for s in ("X", "Z") for q in points.get(s, [])]
+    if not rows:
+        return ""
+    W, H, L, B = 360, 170, 46, 28
+    ps = sorted({q["p"] for _, q in rows})
+    rates = [q["ler_per_round"] for _, q in rows if q["ler_per_round"] > 0]
+    if not rates:
+        return ""
+    x0, x1 = math.log10(min(ps)), math.log10(max(ps))
+    if x1 == x0:
+        x0, x1 = x0 - 0.5, x1 + 0.5
+    y0 = math.floor(math.log10(min(rates)))
+    y1 = math.ceil(math.log10(max(rates)))
+    if y1 == y0:
+        y1 = y0 + 1
+
+    def X(p):
+        return L + (math.log10(p) - x0) / (x1 - x0) * (W - L - 12)
+
+    def Y(r):
+        return (H - B) - (math.log10(max(r, 10 ** y0)) - y0) / (y1 - y0) * (H - B - 10)
+    out = [f'<svg class=lercurve viewBox="0 0 {W} {H}" width={W} height={H} '
+           'role=img aria-label="measured logical error rate against physical rate">']
+    for e in range(y0, y1 + 1):
+        y = Y(10 ** e)
+        out.append(f'<line x1={L} y1={y:.1f} x2={W - 12} y2={y:.1f} class=grid/>'
+                   f'<text x={L - 4} y={y + 3:.1f} class=tick text-anchor=end>1e{e}</text>')
+    for p in ps:
+        out.append(f'<text x={X(p):.1f} y={H - B + 14} class=tick text-anchor=middle>'
+                   f'{p:g}</text>')
+    out.append(f'<text x={(L + W - 12) / 2:.0f} y={H - 2} class=tick text-anchor=middle>'
+               'physical rate p</text>')
+    for s, cls in (("X", "lx"), ("Z", "lz")):
+        pts = sorted((q for q in points.get(s, []) if q["ler_per_round"] > 0),
+                     key=lambda q: q["p"])
+        if len(pts) > 1:
+            out.append(f'<polyline class="{cls}" points="' + " ".join(
+                f'{X(q["p"]):.1f},{Y(q["ler_per_round"]):.1f}' for q in pts) + '"/>')
+        for q in pts:
+            out.append(f'<circle class="{cls} st-{q["status"]}" cx={X(q["p"]):.1f} '
+                       f'cy={Y(q["ler_per_round"]):.1f} r=4>'
+                       f'<title>{s} p={q["p"]:g}: {q["ler_per_round"]:.3g}/round, '
+                       f'{q["status"]}</title></circle>')
+    out.append("</svg>")
+    return "".join(out)
 
 
 def ler_frontier(entries):
@@ -1877,19 +2034,23 @@ def ler_frontier(entries):
     better, at least one strict. Decoupled from the (n, k, d, w)
     frontier that awards the record star: d and w do not enter, so a code can
     be an LER record without being a distance record and vice versa.
-    Computed per (p, decoder) setting."""
-    by_setting = {}
+    Computed per physical rate p over the entries with a verified point at
+    that p (issue #1278): an entry is a record if it is Pareto-best at any p
+    it has been verified at, and rates at different p are never compared."""
+    by_p = {}
     for i, e in enumerate(entries):
-        if e["ler"] is not None:
-            by_setting.setdefault(e["ler_key"], []).append(i)
-    def beats(b, a):
-        return (b["n"] <= a["n"] and b["k"] >= a["k"] and b["ler"] <= a["ler"]
-                and (b["n"] < a["n"] or b["k"] > a["k"] or b["ler"] < a["ler"]))
+        for p in e.get("ler_by_p") or {}:
+            by_p.setdefault((p, e["ler_key"][1] if e["ler_key"] else None), []).append(i)
+
+    def beats(b, a, p):
+        rb, ra = b["ler_by_p"][p], a["ler_by_p"][p]
+        return (b["n"] <= a["n"] and b["k"] >= a["k"] and rb <= ra
+                and (b["n"] < a["n"] or b["k"] > a["k"] or rb < ra))
 
     front = set()
-    for idxs in by_setting.values():
+    for (p, _), idxs in by_p.items():
         for i in idxs:
-            if not any(j != i and beats(entries[j], entries[i]) for j in idxs):
+            if not any(j != i and beats(entries[j], entries[i], p) for j in idxs):
                 front.add(i)
     return front
 
@@ -2497,7 +2658,20 @@ def detail_page(e):
              + ('<span class="tchip stab" title="general (non-CSS) stabilizer '
                 'code: one Pauli-weight distance, ranked on the stabilizer '
                 'board">stabilizer</span>' if stab else '')
+             + (f'<span class="tchip relabel" title="declared Clifford relabeling '
+                f'of {html.escape(e["relabel_of"])}">relabel</span>'
+                if e.get("relabel_of") else '')
              + '</div>')
+    if e.get("relabel_of"):
+        par = html.escape(e["relabel_of"])
+        blocks = (f' on blocks of {int(e["relabel_m"])} qubits'
+                  if e.get("relabel_m") else '')
+        P.append(f'<div class=kv style="color:var(--mut)">declared Clifford '
+                 f'relabeling of <a href="{par}.html">{par}</a>{blocks}: the '
+                 'same n, k and code space as that entry under a Clifford that '
+                 'is not weight preserving, so the distance here was bought with '
+                 'check weight and kd^2/n is not a construction result '
+                 '(issue #2802)</div>')
 
     P.append('<div class=params>')
     params = [
@@ -2736,20 +2910,45 @@ def detail_page(e):
                      f'<div class=wit>{wit}</div></details>')
         ler = circ.get("ler")
         if ler:
-            # measured logical error rate: the prefactor d_circ cannot see.
-            # Values verified by independent re-measurement (ler_verify).
+            # measured logical error rate: the prefactor d_circ cannot see,
+            # one point per physical rate (issue #1278). The highest-rate
+            # point was verified by the PR gate; every other point carries
+            # the weekly post-merge receipt's verdict, or "pending".
+            status_text = {
+                "gate": "verified at PR time",
+                "verified": "verified post-merge",
+                "failed": "FAILED post-merge replication: does not count",
+                "unverifiable": "unverifiable within the post-merge budget: "
+                                "does not count",
+                "pending": "pending post-merge replication",
+            }
+            pts = e.get("ler_points") or {}
+            P.append(ler_curve_svg(pts))
+            P.append('<table class=lerpts><thead><tr><th>basis</th><th>p</th>'
+                     '<th>ler/round</th><th>95% CI</th><th>failures/shots</th>'
+                     '<th>status</th></tr></thead><tbody>')
             for s in ("X", "Z"):
-                blk = ler.get(s)
-                if not blk:
-                    continue
-                lo, hi = blk.get("ci95", ["?", "?"])
-                P.append(
-                    f'<div class=kv><b>ler/round ({s})</b> '
-                    f'{blk["ler_per_round"]:.3g} '
-                    f'<span class=claimed>95% CI [{lo:.3g}, {hi:.3g}] '
-                    f'&middot; {blk["failures"]}/{sci_int(blk["shots"])} '
-                    f'shots &middot; decoder {html.escape(blk["decoder"])} '
-                    f'at p={blk["p"]}</span></div>')
+                for q in pts.get(s, []):
+                    lo, hi = q.get("ci95", ["?", "?"])
+                    st = q["status"]
+                    extra = ""
+                    rec = q.get("receipt")
+                    if rec and rec.get("replica_shots"):
+                        extra = (f' ({rec["replica_failures"]}/'
+                                 f'{sci_int(rec["replica_shots"])} replica shots, '
+                                 f'{q.get("measured_at", "")[:10]})')
+                    P.append(
+                        f'<tr class="st-{st}"><td>{s}</td><td>{q["p"]:g}</td>'
+                        f'<td class=num>{q["ler_per_round"]:.3g}</td>'
+                        f'<td class=num>[{lo:.3g}, {hi:.3g}]</td>'
+                        f'<td class=num>{q["failures"]}/{sci_int(q["shots"])}</td>'
+                        f'<td>{status_text.get(st, st)}{html.escape(extra)}</td></tr>')
+            P.append('</tbody></table>')
+            dec = next((q["decoder"] for rows in pts.values() for q in rows), "")
+            P.append(f'<div class=kv><span class=claimed>decoder '
+                     f'{html.escape(dec)}; rates are compared across entries '
+                     f'only at equal p; a point whose per-shot failure fraction '
+                     f'would exceed 1/2 is not admitted</span></div>')
         else:
             P.append('<div class=kv style="color:var(--mut)">no measured '
                      'logical error rate yet; d_circ is a floor, and the '
@@ -2776,7 +2975,12 @@ def detail_page(e):
                 kind = {"permutation": "qubit permutation", "H": "H on every "
                         "qubit", "S": "S on every qubit",
                         "CX": "CX between two blocks (control unprimed, "
-                        "target primed)"}[g["gate"]]
+                        "target primed)",
+                        "match": "W<=2 diagonal layer"}[g["gate"]]
+                if g["gate"] == "match" and "clifford" in g:
+                    ent = "CZ" if g["clifford"] == "S" else "CZ#"
+                    kind = (f"{g['clifford']} on {g.get('support_size')} "
+                            f"qubits with {ent} on {g.get('pairs')} pairs")
                 if g["gate"] != "permutation" and \
                         not g.get("permutation_trivial", True):
                     kind += " with a qubit permutation"
@@ -3170,12 +3374,14 @@ def progress_panel(entries, best_geo_e):
 LB_DEFAULT_W = 8
 
 
-def contributors_panel(entries):
+def contributors_panel(entries, stabilizer=False):
     """A leaderboard of who submitted the codes on the board. Ranks GitHub-handle
     authors of contributed (non-baseline) codes by the best kd2/n among their
     codes, then by how many sit on a track frontier, then by how many they have
     on the board. The seeded literature authors are not contributors and are
-    excluded.
+    excluded. Rendered once per board over that board's entries, so the two
+    boards never share a ranking; `stabilizer` only changes the submission
+    hint in the Participate modal (a symplectic matrix, not H_X / H_Z).
 
     A toggle re-ranks the same contributors by best geometric efficiency g
     (issue #356), or by how many of their codes currently sit on a track
@@ -3358,6 +3564,9 @@ def contributors_panel(entries):
     cmd = (f"git clone {REPO_ROOT}\n"
            "cd qldpc-challenge\n"
            "./qldpc submit mycode.npz --authors @you")
+    hint = ("# bring your symplectic matrix S = (A | B) as mycode.npz "
+            "(key s, or a and b)" if stabilizer else
+            "# bring your H_X / H_Z as mycode.npz (keys hx, hz)")
     modal = (
         '<dialog id=participate class=modal>'
         '<form method=dialog><button class=modalx autofocus aria-label="close">'
@@ -3370,8 +3579,7 @@ def contributors_panel(entries):
         'copy</button></div>'
         f'<pre><code>git clone {REPO_ROOT}\n'
         'cd qldpc-challenge\n'
-        '<span class=cmt># bring your H_X / H_Z as mycode.npz (keys hx, hz)'
-        '</span>\n'
+        f'<span class=cmt>{hint}</span>\n'
         './qldpc submit mycode.npz --authors @you</code></pre></div>'
         '<p class=modalfoot>It finds the distance witness, runs the verifier, '
         'and opens the PR for you.</p>'
@@ -3789,6 +3997,7 @@ FAMILY_LABEL = {
     "balanced-product": "balanced product",
     "quantum-tanner": "quantum Tanner",
     "tile": "tile",
+    "pair-partition-cpm": "pair-partition CPM",
     "topological": "topological",
     "other": "other",
 }
@@ -3799,7 +4008,8 @@ FAMILY_TERM = {
     "bivariate-bicycle": "bivariate", "generalized-bicycle": "generalized",
     "2bga-coset": "2bga", "hypergraph-product": "hypergraph",
     "lifted-product": "lifted", "balanced-product": "balanced",
-    "quantum-tanner": "tanner", "tile": "tile", "topological": "topological",
+    "quantum-tanner": "tanner", "tile": "tile",
+    "pair-partition-cpm": "pair-partition", "topological": "topological",
     "other": "other",
 }
 
@@ -3859,6 +4069,16 @@ def cells_by_key(entries):
     return by_cell
 
 
+def cell_frontiers(entries):
+    """{cell key (cell_key): indices on that cell's Pareto frontier}. The one
+    per-cell frontier computation on the site: compute_records() (the star)
+    and the front page's frontier map both read it, so the map can never draw
+    a point the star does not mark (verify/board_frontier_audit.py exists
+    because hand-rolled copies of this relation drifted once)."""
+    return {key: {idxs[j] for j in pareto([entries[i] for i in idxs])}
+            for key, idxs in cells_by_key(entries).items()}
+
+
 def compute_records(entries):
     """Indices of codes on a Pareto frontier (over n, k, d, w) of any primary-track
     cell they belong to, or of the global frontier of their board. These are
@@ -3866,10 +4086,8 @@ def compute_records(entries):
     only stars where no other code in the SAME computed cell, on the same
     board (code type), beats it."""
     records = set()
-    for idxs in cells_by_key(entries).values():
-        te = [entries[i] for i in idxs]
-        for j in pareto(te):
-            records.add(idxs[j])
+    for front in cell_frontiers(entries).values():
+        records |= front
     for ct in sorted({e.get("code_type", "CSS") for e in entries}):
         idxs = [i for i, e in enumerate(entries) if e.get("code_type", "CSS") == ct]
         for j in pareto([entries[i] for i in idxs]):
@@ -3896,6 +4114,151 @@ RC_SERIES = [                       # label, weight cap, series color
     ("any w", 10**9, "#6d28d9"),    # CVD separation and contrast all pass
 ]
 
+# Frontier map (issue #3346): the records of one primary-track cell drawn at
+# (n, k), coloured by distance band. Colour is ONE hue stepped by lightness
+# (OKLCH hue 258, chroma 0.12, L 0.74 -> 0.29 in steps of 0.075), validated
+# as an ordinal ramp on the light surface: lightness monotone, every adjacent
+# step dL >= 0.06, light end 2.26:1 against the surface, hue spread 2 deg.
+# Ordering by lightness alone is what keeps the ramp readable under every
+# colour-vision deficiency -- a hue-cycled ramp would not be.
+D_BANDS = [(3, "d ≤ 3"), (5, "4–5"), (8, "6–8"), (12, "9–12"),
+           (20, "13–20"), (40, "21–40"), (10**9, "41+")]
+FR_RAMP = ["#7aacf6", "#6495dd", "#4e7ec4", "#3967ab", "#235193", "#0d3c7c",
+           "#002665"]
+# Marker radius by check weight: the cheap check is the prize, so it draws
+# the biggest dot. Weight is the cell filter and the size, never the colour
+# (cells nest, so one code sits in several weight boards at once).
+FR_RADIUS = [(4, 6.0), (6, 5.0), (8, 4.0), (10**9, 3.2)]
+FR_DEFAULT_CELL = ("unrestricted", "weight-any", "CSS")
+
+
+def d_band(d):
+    """Index of the D_BANDS band holding distance d."""
+    return next(i for i, (hi, _) in enumerate(D_BANDS) if d <= hi)
+
+
+def fr_radius(w):
+    return next(r for cap, r in FR_RADIUS if w <= cap)
+
+
+def frontier_cells(entries):
+    """The frontier map's cell list, in grid order: [(locality, weight class,
+    code type, label)] for every populated cell key, plus the index of the
+    default cell (the CSS global frontier, or the first cell when there is
+    no CSS board) and the per-entry list of cell indices on whose frontier
+    the entry sits. Membership comes from cell_frontiers(), never recomputed."""
+    fronts = cell_frontiers(entries)
+
+    def norm(key):
+        return (key[0], key[1], key[2] if len(key) == 3 else "CSS")
+
+    def order(key):
+        L, W, T = norm(key)
+        return (T != "CSS", T, LOCALITY_ORDER.index(L), WEIGHT_ORDER.index(W))
+
+    keys = sorted(fronts, key=order)
+    cells_out = []
+    for key in keys:
+        L, W, T = norm(key)
+        lab = f"{LOCALITY_LABEL[L]} · {WEIGHT_LABEL[W]}"
+        if T != "CSS":
+            lab += f" · {T}"
+        cells_out.append((L, W, T, lab))
+    # the board's global frontier: the CSS one on the main page, the one of
+    # whatever board was passed otherwise (each page charts one board)
+    default = next((i for i, c in enumerate(cells_out)
+                    if c[:3] == FR_DEFAULT_CELL), None)
+    if default is None:
+        default = next((i for i, c in enumerate(cells_out)
+                        if c[:2] == FR_DEFAULT_CELL[:2]), 0)
+    member = [[] for _ in entries]
+    for ci, key in enumerate(keys):
+        for i in fronts[key]:
+            member[i].append(ci)
+    return cells_out, default, member
+
+
+def _fr_ticks(log, lo, hi, maxv):
+    """Tick values for one frontier-map axis: 1-2-5 per decade inside the
+    log range, or a nice linear step giving at most 8 ticks."""
+    import math
+    if log:
+        return [m * 10 ** e for e in range(0, int(math.ceil(math.log10(max(maxv, 1)))) + 1)
+                for m in (1, 2, 5) if lo <= math.log10(m * 10 ** e) <= hi]
+    step = 10 ** math.floor(math.log10(max(maxv, 1) / 4))
+    for m in (1, 2, 5, 10):
+        if maxv / (step * m) <= 8:
+            step *= m
+            break
+    return list(range(0, int(maxv) + 1, int(step)))
+
+
+def frontier_map(rows, W=1040, H=400):
+    """Server render of the frontier map: the no-JS view of the default cell
+    (log-log axes, no time window). rows are the chart's per-entry data
+    dicts restricted to the cell's frontier; every point is an SVG <a> to
+    its code page, so the links work without JavaScript. The client renderer
+    (_RC_JS drawFrontier) draws every other state from the same rows."""
+    import math
+    pad_l, pad_r, pad_b, pad_t = 64, 24, 34, 14
+    nmin, nmax = min(r["n"] for r in rows), max(r["n"] for r in rows)
+    kmax = max(r["k"] for r in rows)
+    x0, x1 = math.log10(max(1, nmin)) - 0.05, math.log10(nmax) + 0.05
+    y0, y1 = -0.06, math.log10(max(2, kmax)) + 0.06
+    if x1 - x0 < 1e-9:
+        x1 = x0 + 1
+
+    def sx(n):
+        return pad_l + (math.log10(n) - x0) / (x1 - x0) * (W - pad_l - pad_r)
+
+    def sy(k):
+        return H - pad_b - (math.log10(k) - y0) / (y1 - y0) * (H - pad_t - pad_b)
+
+    grid = []
+    for t in _fr_ticks(True, x0, x1, nmax):
+        x = sx(t)
+        grid.append(f'<line x1="{x:.1f}" y1="{pad_t}" x2="{x:.1f}" y2="{H-pad_b}" '
+                    f'stroke="#eef2f7"/><text x="{x:.1f}" y="{H-pad_b+18}" '
+                    f'font-size="12" fill="#475569" text-anchor="middle">{t}</text>')
+    for t in _fr_ticks(True, y0, y1, kmax):
+        y = sy(t)
+        grid.append(f'<line x1="{pad_l}" y1="{y:.1f}" x2="{W-pad_r}" y2="{y:.1f}" '
+                    f'stroke="#eef2f7"/><text x="{pad_l-7}" y="{y:.1f}" dy="4" '
+                    f'font-size="12" fill="#475569" text-anchor="end">{t}</text>')
+    grid.append(f'<text transform="translate(14 {(pad_t+H-pad_b)/2:.0f}) rotate(-90)" '
+                'font-size="12.5" fill="#475569" text-anchor="middle">'
+                'Logical qubits (k)</text>')
+    grid.append(f'<text x="{(pad_l+W-pad_r)/2:.0f}" y="{H-2}" font-size="12.5" '
+                'fill="#475569" text-anchor="middle">Physical qubits (n)</text>')
+    pts = []
+    # big (cheap-check) dots first so the small ones stay on top
+    for r in sorted(rows, key=lambda r: (-fr_radius(r["w"]), r["d"])):
+        x, y, rad = sx(r["n"]), sy(r["k"]), fr_radius(r["w"])
+        col = FR_RAMP[d_band(r["d"])]
+        tip = (f'[[{r["n"]},{r["k"]},{r["d"]}]] · w={r["w"]} · kd²/n={r["eff"]} · '
+               f'{r["t"] or "undated"} · {"exact" if r["x"] else "upper bound"}')
+        slug = html.escape(r["slug"])
+        pts.append(f'<a href="codes/{slug}.html"><circle class=pt data-code="{slug}" '
+                   f'cx="{x:.1f}" cy="{y:.1f}" r="{rad}" fill="{col}" '
+                   'fill-opacity="0.92" stroke="#fff" stroke-width="1" '
+                   'pointer-events="none"/>'
+                   f'<circle class=hit data-code="{slug}" data-tip="{html.escape(tip)}" '
+                   f'cx="{x:.1f}" cy="{y:.1f}" r="9" fill="transparent"/></a>')
+    return (f'<svg viewBox="0 0 {W} {H}" role="img" style="width:100%;height:auto" '
+            'aria-label="Pareto-frontier records of the selected cell at (n, k), '
+            f'coloured by distance band">{"".join(grid)}{"".join(pts)}</svg>')
+
+
+def frontier_legend(count):
+    """The map's legend: the seven distance bands, the size key, the count."""
+    return ("".join(
+        f'<span class=ci data-band="{i}"><span class=cdot '
+        f'style="background:{FR_RAMP[i]}"></span>{html.escape(lab)}</span>'
+        for i, (_, lab) in enumerate(D_BANDS))
+        + '<span class=ci title="marker size: the cheaper the check, the bigger '
+          'the dot">&#9679; size = check weight (w &le; 4 largest)</span>'
+        + f'<span class=ci>{count} records</span>')
+
 
 # Client-side re-renderer for the record-progress chart: modes (record / all
 # submissions / by model), log/lin scale, and time windows. The server-rendered
@@ -3904,17 +4267,33 @@ RC_SERIES = [                       # label, weight cap, series color
 _RC_JS = """<script>(function(){
 var D=JSON.parse(document.getElementById('rcdata').textContent);
 var S=JSON.parse(document.getElementById('rcseries').textContent);
+var C=JSON.parse(document.getElementById('rccells').textContent);
 var plot=document.getElementById('rcplot');if(!plot)return;
 var init=plot.innerHTML, leg=document.getElementById('rclegend'), legInit=leg.innerHTML;
+var fplot=document.getElementById('frplot'),fleg=document.getElementById('frlegend'),fsub=document.getElementById('frsub');
 var MC=['#6d28d9','#0369a1','#b45309','#15803d','#be185d','#475569'];
-var st={m:'record',s:'log',w:'all',y:'eff'};
+// frontier map: same ramp / bands / radii as the server render (FR_RAMP, D_BANDS, FR_RADIUS)
+var RAMP=C.ramp,BANDS=C.bands,RAD=C.radius;
+function band(d){for(var i=0;i<BANDS.length;i++)if(d<=BANDS[i][0])return i;return BANDS.length-1;}
+function rad(w){for(var i=0;i<RAD.length;i++)if(w<=RAD[i][0])return RAD[i][1];return RAD[RAD.length-1][1];}
+var st={m:'record',s:'log',w:'all',y:'eff',l:C.def[0],c:C.def[1],t:C.def[2]};
+function setView(fr){
+ plot.style.display=fr?'none':'';leg.style.display=fr?'none':'';
+ fplot.style.display=fr?'':'none';fleg.style.display=fr?'':'none';if(fsub)fsub.style.display=fr?'':'none';
+ document.querySelectorAll('.rcfr').forEach(function(g){g.style.display=fr?'':'none';});
+ var yg=document.getElementById('rcygroup');if(yg)yg.style.display=fr?'none':'';
+}
 function esc(v){return String(v).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
 function mv(r){return st.y==='geo'?r.geo:r.eff;}
 function days(t){return Date.parse(t)/864e5;}
+function newest(){return Math.max.apply(null,D.filter(function(r){return r.t;}).map(function(r){return days(r.t);}));}
 function windowed(){
- if(st.w==='all')return D.slice();
- var now=Math.max.apply(null,D.map(function(r){return days(r.t);}));
- return D.filter(function(r){return now-days(r.t)<=+st.w;});
+ // the race is a time series: undated entries (none on the current board, but
+ // allowed) have no place on it; the frontier map draws them undimmed
+ var R=D.filter(function(r){return r.t;});
+ if(st.w==='all')return R;
+ var now=newest();
+ return R.filter(function(r){return now-days(r.t)<=+st.w;});
 }
 function runbest(rows){
  rows=rows.slice().sort(function(a,b){return a.t<b.t?-1:a.t>b.t?1:mv(a)-mv(b);});
@@ -3922,7 +4301,44 @@ function runbest(rows){
  rows.forEach(function(r){if(mv(r)>best){best=mv(r);out.push(r);}});
  return out;
 }
+function drawFrontier(){
+ var ci=-1;C.cells.forEach(function(c,i){if(c[0]===st.l&&c[1]===st.c&&c[2]===st.t)ci=i;});
+ var rows=D.filter(function(r){return r.fr.indexOf(ci)>=0;});
+ if(!rows.length){fplot.innerHTML='<div style="padding:40px;color:#64748b">no codes in this cell</div>';fleg.innerHTML='';return;}
+ var W=1040,H=400,pl=64,pr=24,pb=34,pt=14,lg=st.s==='log';
+ var ns=rows.map(function(r){return r.n;}),nmin=Math.min.apply(null,ns),nmax=Math.max.apply(null,ns);
+ var kmax=Math.max.apply(null,rows.map(function(r){return r.k;}));
+ var x0=lg?Math.log10(Math.max(1,nmin))-0.05:0,x1=lg?Math.log10(nmax)+0.05:nmax*1.04;
+ var y0=lg?-0.06:0,y1=lg?Math.log10(Math.max(2,kmax))+0.06:kmax*1.06;
+ if(x1-x0<1e-9)x1=x0+1;if(y1-y0<1e-9)y1=y0+1;
+ function fx(n){var v=lg?Math.log10(n):n;return pl+(v-x0)/(x1-x0)*(W-pl-pr);}
+ function fy(k){var v=lg?Math.log10(k):k;return H-pb-(v-y0)/(y1-y0)*(H-pt-pb);}
+ function ticks(lo,hi,maxv){var o=[];
+  if(lg){for(var e=0;e<=Math.ceil(Math.log10(Math.max(maxv,1)));e++)[1,2,5].forEach(function(m){var t=m*Math.pow(10,e),l=Math.log10(t);if(l>=lo&&l<=hi)o.push(t);});}
+  else{var s=Math.pow(10,Math.floor(Math.log10(Math.max(maxv,1)/4)));[1,2,5,10].some(function(m){if(maxv/(s*m)<=8){s*=m;return true;}});for(var v=0;v<=maxv;v+=s)o.push(v);}
+  return o;}
+ var g='';
+ ticks(x0,x1,nmax).forEach(function(t){var x=fx(t);g+='<line x1="'+x+'" y1="'+pt+'" x2="'+x+'" y2="'+(H-pb)+'" stroke="#eef2f7"/><text x="'+x+'" y="'+(H-pb+18)+'" font-size="12" fill="#475569" text-anchor="middle">'+t+'</text>';});
+ ticks(y0,y1,kmax).forEach(function(t){if(lg&&t<1)return;var y=fy(t);g+='<line x1="'+pl+'" y1="'+y+'" x2="'+(W-pr)+'" y2="'+y+'" stroke="#eef2f7"/><text x="'+(pl-7)+'" y="'+y+'" dy="4" font-size="12" fill="#475569" text-anchor="end">'+t+'</text>';});
+ g+='<text transform="translate(14 '+((pt+H-pb)/2)+') rotate(-90)" font-size="12.5" fill="#475569" text-anchor="middle">Logical qubits (k)</text>';
+ g+='<text x="'+((pl+W-pr)/2)+'" y="'+(H-2)+'" font-size="12.5" fill="#475569" text-anchor="middle">Physical qubits (n)</text>';
+ var now=st.w==='all'?0:newest(),body='';
+ // big (cheap-check) dots first so the small ones stay on top
+ rows.slice().sort(function(a,b){return rad(b.w)-rad(a.w)||a.d-b.d;}).forEach(function(r){
+  var x=fx(r.n),y=fy(r.k),rr=rad(r.w),col=RAMP[band(r.d)];
+  var dim=st.w!=='all'&&!(r.t&&now-days(r.t)<=+st.w);
+  var tp=esc('[['+r.n+','+r.k+','+r.d+']] · w='+r.w+' · kd²/n='+r.eff+' · '+(r.t||'undated')+' · '+(r.x?'exact':'upper bound'));
+  body+='<a href="codes/'+esc(r.slug)+'.html"><circle class=pt data-code="'+esc(r.slug)+'" cx="'+x+'" cy="'+y+'" r="'+rr+'" fill="'+col+'" fill-opacity="'+(dim?0.18:0.92)+'" stroke="#fff" stroke-width="1" pointer-events="none"/>'
+   +'<circle class=hit data-code="'+esc(r.slug)+'" data-tip="'+tp+'" cx="'+x+'" cy="'+y+'" r="9" fill="transparent"/></a>';});
+ fplot.innerHTML='<svg viewBox="0 0 '+W+' '+H+'" style="width:100%;height:auto" role="img" aria-label="Pareto-frontier records of the selected cell at (n, k), coloured by distance band">'+g+body+'</svg>';
+ var L=BANDS.map(function(b,i){return '<span class=ci data-band="'+i+'"><span class=cdot style="background:'+RAMP[i]+'"></span>'+esc(b[1])+'</span>';}).join('');
+ L+='<span class=ci title="marker size: the cheaper the check, the bigger the dot">&#9679; size = check weight (w &le; 4 largest)</span>';
+ if(st.w!=='all')L+='<span class=ci>dimmed = added more than '+st.w+' days ago</span>';
+ fleg.innerHTML=L+'<span class=ci>'+rows.length+' records</span>';
+}
 function draw(){
+ if(st.m==='frontier'){setView(true);drawFrontier();return;}
+ setView(false);
  if(st.m==='record'&&st.s==='log'&&st.w==='all'&&st.y==='eff'){plot.innerHTML=init;leg.innerHTML=legInit;return;}
  var W=1040,H=300,pl=64,pr=(st.m==='model'?182:118),pb=30,pt=14;
  var data=windowed(); if(st.m!=='record')data=data.filter(function(r){return r.sub;});
@@ -4016,10 +4432,13 @@ function draw(){
 }
 document.querySelectorAll('.rcbtn').forEach(function(b){
  b.addEventListener('click',function(){
-  var k=b.dataset.m?'m':(b.dataset.s?'s':(b.dataset.y?'y':'w'));
-  st[k]=b.dataset.m||b.dataset.s||b.dataset.y||b.dataset.w;
+  // m mode / s scale / y metric / w window / l locality / c weight class / t code type
+  var k=['m','s','y','w','l','c','t'].filter(function(q){return b.dataset[q]!==undefined;})[0];
+  if(!k)return;
+  st[k]=b.dataset[k];
   b.parentElement.querySelectorAll('.rcbtn').forEach(function(x){x.classList.remove('active');});
   b.classList.add('active');draw();});});
+setView(false);
 })();</script>"""
 
 
@@ -4142,19 +4561,52 @@ def record_chart(entries):
     # Data + client-side renderer for the alternate views (all submissions,
     # per-model) and the scale/window controls; the server-rendered SVG above
     # stays as the no-JS fallback and the initial view.
+    # Every entry rides along (undated ones too: the race skips them, the
+    # frontier map draws them). fr = the cells on whose frontier the entry
+    # sits, by index into rccells -- the star's own per-cell computation, so
+    # the client never re-derives a frontier.
+    fr_cells, fr_default, fr_member = frontier_cells(entries)
     data = [{"t": e["date"], "eff": e["eff"], "geo": e["geo"], "n": e["n"],
              "k": e["k"], "d": e["d"], "w": e["w"], "slug": e["slug"],
              "model": (e["model"] or "human"),
              "ref": geo_reference(e),
-             "sub": e["origin"] != "baseline"}
-            for e in entries if e["date"]]
+             "sub": e["origin"] != "baseline",
+             "x": e["tier"] == "exact",
+             "fr": fr_member[i]}
+            for i, e in enumerate(entries)]
     rcseries = [[lab, cap, col] for lab, cap, col in RC_SERIES]
+    rccells = {"cells": [list(c) for c in fr_cells],
+               "def": list(fr_cells[fr_default][:3]) if fr_cells else list(FR_DEFAULT_CELL),
+               "ramp": FR_RAMP, "bands": [list(b) for b in D_BANDS],
+               "radius": [list(r) for r in FR_RADIUS]}
+    fr_rows = [r for r in data if fr_default in r["fr"]] if fr_cells else []
+    fr_plot = (frontier_map(fr_rows) if fr_rows else
+               '<div style="padding:40px;color:#64748b">no codes in this cell</div>')
+    fr_legend = frontier_legend(len(fr_rows))
+    dL, dW, dT = rccells["def"]
+    types = sorted({c[2] for c in fr_cells})
+
+    def cell_btns(attr, opts, label_of, cur):
+        return "".join(
+            f'<button class="rcbtn{" active" if o == cur else ""}" {attr}={o}>'
+            f'{html.escape(label_of(o))}</button>' for o in opts)
+    cell_controls = (
+        '<span class="rcgroup rcfr" style="display:none" title="locality cell">'
+        + cell_btns("data-l", LOCALITY_ORDER, lambda o: LOCALITY_LABEL[o], dL)
+        + '</span><span class="rcgroup rcfr" style="display:none" title="check-weight cell">'
+        + cell_btns("data-c", WEIGHT_ORDER, lambda o: WEIGHT_LABEL[o], dW)
+        + '</span>'
+        + ('<span class="rcgroup rcfr" style="display:none" title="board">'
+           + cell_btns("data-t", types, lambda o: o, dT) + '</span>'
+           if len(types) > 1 else ''))
     controls = (
         '<div class=rcbar>'
         '<span class=rcgroup>'
         '<button class="rcbtn active" data-m=record>Record</button>'
         '<button class=rcbtn data-m=all>All submissions</button>'
-        '<button class=rcbtn data-m=model>By model</button></span>'
+        '<button class=rcbtn data-m=model>By model</button>'
+        '<button class=rcbtn data-m=frontier title="every record of one '
+        'primary-track cell at (n, k), coloured by distance">Frontier</button></span>'
         '<span class=rcgroup>'
         '<button class="rcbtn active" data-s=log>Log</button>'
         '<button class=rcbtn data-s=lin>Lin</button></span>'
@@ -4162,10 +4614,11 @@ def record_chart(entries):
         '<button class="rcbtn active" data-w=all>All</button>'
         '<button class=rcbtn data-w=90>90D</button>'
         '<button class=rcbtn data-w=30>30D</button></span>'
+        + cell_controls +
         # metric toggle (issue #276), pinned to the right end of the bar: f is
         # defined only for codes that ship a verified layout, so that view
         # restricts to them.
-        '<span class=rcgroup style="margin-left:auto">'
+        '<span class=rcgroup id=rcygroup style="margin-left:auto">'
         '<button class="rcbtn active" data-y=eff '
         'title="operational efficiency kd&sup2;/n">kd&sup2;/n</button>'
         '<button class=rcbtn data-y=geo title="geometric efficiency '
@@ -4184,8 +4637,21 @@ def record_chart(entries):
             '<span class=ci title="board-relative: among the seeded literature '
             'baselines and challenge entries listed here">&#9675; new record'
             '</span></div>'
+            # Frontier map (issue #3346). Rendered for the default cell so it
+            # shows, below the race, without JavaScript; the script hides it
+            # behind the Frontier mode button and redraws it per cell.
+            f'<div class="plot frplot" id=frplot>{fr_plot}</div>'
+            f'<div class=chartlegend id=frlegend>{fr_legend}</div>'
+            '<p class=rcsub id=frsub>Frontier: every record of the selected '
+            'primary-track cell at (n, k) &mdash; the same per-cell Pareto '
+            'frontier over (n, k, d, w) that awards the star, not a second '
+            'computation. Colour is the distance band and size the check '
+            'weight (cheaper checks draw bigger); the time windows dim older '
+            'entries. Switch cells to see what a locality or weight class '
+            'reaches.</p>'
             + json_data_script("rcdata", data)
             + json_data_script("rcseries", rcseries)
+            + json_data_script("rccells", rccells)
             + _RC_JS +
             '</section>')
 
@@ -4350,24 +4816,31 @@ def ler_frontier_panel(entries, lrec):
     if not lrec:
         return ""
     measured = [e for e in entries if e["ler"] is not None]
-    settings = sorted({e["ler_key"] for e in measured})
+    settings = sorted({(p, e["ler_key"][1]) for e in measured
+                       for p in (e.get("ler_by_p") or {})}, reverse=True)
     rows = []
     for e in sorted((entries[i] for i in lrec),
                     key=lambda e: (e["ler"], e["n"], -e["k"])):
-        ler = e["doc"]["circuit"]["ler"]
+        gp = e["ler_key"][0] if e["ler_key"] else None
         sides = " &middot; ".join(
-            f'{s} {ler[s]["ler_per_round"]:.3g}' for s in ("X", "Z") if s in ler)
+            f'{s} {rows_[0]["ler_per_round"]:.3g}'
+            for s, rows_ in e["ler_points"].items() if rows_)
+        sides += f' at p={gp:g}' if gp is not None else ""
+        if len(e.get("ler_by_p") or {}) > 1:
+            sides += f' &middot; {len(e["ler_by_p"])} rates verified'
         circ = (f' &middot; d_circ &le; {e["d_circ"]}'
                 if e["d_circ"] is not None else "")
         rows.append(
             f'<li><a class="mono lnkd" href="codes/{e["slug"]}.html">'
             f'[[{e["n"]},{e["k"]},{e["d"]}]]</a>'
-            f'<span class=lerv title="worse of the two per-round rates">'
+            f'<span class=lerv title="worse of the two per-round rates at the '
+            f'highest measured p">'
             f'{e["ler"]:.3g}</span>'
             f'<span class=lfam>{sides}{circ} &middot; w={e["w"]}</span>'
             f'<span class=lwho>{authors_compact(e["authors_list"])}</span></li>')
-    where = "; ".join(f'p = {p:g}, decoder {html.escape(dec)}'
-                      for p, dec in settings)
+    where = "; ".join(f'p = {p:g}' for p, _ in settings)
+    decs = sorted({dec for _, dec in settings if dec})
+    where += " with decoder " + ", ".join(html.escape(d) for d in decs) if decs else ""
     return ('<section class="latest lerfront" id=lerfront>'
             '<h2 class=track>Logical error rate frontier '
             f'<span class=tcount>&middot; {len(rows)} of {len(measured)} '
@@ -4375,8 +4848,12 @@ def ler_frontier_panel(entries, lrec):
             '<p class=ptsub>Pareto frontier over (n, k, LER): no other '
             'measured code has at most the qubits, at least the logical '
             'qubits, and at most the per-round logical error rate, with one '
-            'strict. LER is the worse of the X and Z rates, measured on the '
-            f'committed memory circuits at {where} and re-measured by CI. '
+            'strict, compared only among entries verified at the same p. '
+            'LER is the worse of the X and Z rates, measured on the '
+            f'committed memory circuits at {where} and re-measured by CI: '
+            'the highest-rate point at PR time, the rest weekly after merge '
+            '(each point on an entry page shows which). The number shown is '
+            'the rate at the highest p the entry was measured at. '
             'Distance and check weight do not enter: this frontier is '
             'independent of the (n, k, d, w) frontier that awards the '
             'record star, and the rows below carry the <span class=lerchip>'
@@ -4596,6 +5073,12 @@ def board_table(entries, records, lrec=frozenset()):
                        f'{m["count"]} modules, {m["cross_module_checks"]} '
                        f'cross-module checks, at most {m["max_ports"]} ports '
                        'per module">modular</span>')
+        if e.get("relabel_of"):
+            out.append('<span class="tchip relabel" title="declared Clifford '
+                       f'relabeling of {html.escape(e["relabel_of"])}: same n, k '
+                       'and code space as that entry, the distance bought with '
+                       'check weight; kd^2/n here is not a construction '
+                       'result">relabel</span>')
         return "".join(out)
 
     # the X/Z asymmetry column only exists where there are sides: the
@@ -4731,9 +5214,10 @@ def board_table(entries, records, lrec=frozenset()):
                 f'">&#9881;{e["d_circ"]}</span>')
                if e["d_circ"] is not None else "")
             + (f'<span class=lerchip title="LER record: Pareto-best on (n, k, '
-               f'measured logical error rate {e["ler"]:.3g}/round) among '
-               'codes with a measured rate; independent of the distance '
-               'record star">LER record</span>' if i in lrec else "")
+               f'measured logical error rate) at some physical rate it was '
+               f'verified at ({e["ler"]:.3g}/round at p={e["ler_key"][0]:g}); '
+               'independent of the distance record star">LER record</span>'
+               if i in lrec else "")
             + f'</td><td class="typecell col-type" data-label="type">{chips(e)}</td>'
             f'<td class="num col-n" data-label="n">{e["n"]}</td>'
             f'<td class="num col-k" data-label="k">{e["k"]}</td>'
@@ -4846,7 +5330,6 @@ def page_footer():
         '<a href="faq.html">FAQ</a>'
         '<a href="research-log.html">Research log</a>'
         '<a href="references.html">References</a>'
-        '<a href="qec_challenge.pdf">Whitepaper</a>'
         '</nav></div>'
         '<div class=footbar>&copy; 2026 &middot; Built by '
         '<a href="https://unitary.foundation">Unitary Foundation</a> '
@@ -4877,8 +5360,8 @@ def board_legend(asym=True):
             'parameter set exists in the literature; see provenance notes</span>'
             '<span><span class=lerchip style="margin-left:0">LER record</span> '
             'Pareto-best on (n, k, measured logical error rate) among the '
-            'codes with a measured rate; independent of the (n, k, d, w) '
-            'record star</span>'
+            'codes verified at the same physical rate; independent of the '
+            '(n, k, d, w) record star</span>'
             '<span class=collegend><b>columns:</b> '
             '<b>n</b> physical qubits &middot; <b>k</b> logical qubits '
             '&middot; <b>d</b> distance (smallest undetectable error'
@@ -4904,15 +5387,22 @@ def board_legend(asym=True):
 def stabilizer_page(entries):
     """Render the general (non-CSS) stabilizer leaderboard (issue #2131).
 
-    The same computed grid, filters, and table as the CSS board, over the
-    entries typed code_type "stabilizer" only, so the two boards never
-    compare. What differs is stated up front: one Pauli-weight distance, no
-    X/Z sides, no circuit tier yet, dedup up to local Hadamards against the
-    CSS board.
+    The same headline cards, contributor leaderboard, computed grid, filters,
+    and table as the CSS board, over the entries typed code_type "stabilizer"
+    only, so the two boards never compare: a contributor's rank here counts
+    only their stabilizer codes, and on the CSS board only their CSS ones.
+    What differs is stated up front: one Pauli-weight distance, no X/Z sides,
+    no circuit tier yet, and no code that is CSS up to a local Clifford.
     """
     records = compute_records(entries)
     lrec = ler_frontier(entries)
     n_exact = sum(1 for e in entries if e["tier"] == "exact")
+    # g needs a verified layout; the formula and GEO_MIN_D are the CSS
+    # board's, computed over the generator supports (geo_score)
+    geo_pool = [e for e in entries
+                if e["geo"] is not None and e["d"] >= GEO_MIN_D]
+    best_geo_e = max(geo_pool, key=lambda e: (e["geo"], -e["n"]),
+                     default=None)
     P = [head("Stabilizer board · QEC Challenge",
               page_properties={"page_type": "leaderboard_stabilizer"})]
     P.append(page_hero(
@@ -4921,6 +5411,8 @@ def stabilizer_page(entries):
         'the CSS board. <a href="index.html">Back to the CSS board.</a>',
         ("index.html", "CSS board")))
     P.append('<div class=wrap>')
+    if entries:
+        P.append(progress_panel(entries, best_geo_e))
     P.append(
         '<section class=stabintro>'
         '<p>A general stabilizer code has one binary symplectic check matrix '
@@ -4928,9 +5420,10 @@ def stabilizer_page(entries):
         '<span class=mono>A<sub>i</sub></span> and Z on '
         '<span class=mono>B<sub>i</sub></span>, Y where both. A CSS code is '
         'the special case where every row is pure X or pure Z; here every code '
-        'has at least one mixed generator (a code that is CSS up to a Hadamard '
-        'on some qubits is filed as a duplicate of its CSS image, not listed '
-        'twice). These codes are ranked on their own board because the '
+        'has at least one mixed generator, and stays mixed under every '
+        'single-qubit Clifford (a code that is CSS up to a Hadamard or an S '
+        'on some qubits is rejected in favor of its CSS image, which belongs '
+        'on the CSS board). These codes are ranked on their own board because the '
         'quantities the CSS board reads per side have no side here:</p>'
         '<table><tr><th></th><th>CSS board</th><th>this board</th></tr>'
         '<tr><td>checks</td><td class=mono>H_X, H_Z</td>'
@@ -4966,6 +5459,9 @@ def stabilizer_page(entries):
                  'general stabilizer code submitted under <code>codes/</code> '
                  'opens this board</div></section>')
     else:
+        # who set the records before the records themselves, as on the CSS
+        # board; the panel ranks this board's contributors only
+        P.append(contributors_panel(entries, stabilizer=True))
         P.append(primary_tracks_grid(entries, records, code_type="stabilizer"))
         P.append(board_controls(entries, records))
         P.append('<div class=explorer>')
@@ -5005,8 +5501,7 @@ def build():
               page_properties={"page_type": "leaderboard"})]
     P.append(page_hero(
         'QEC Challenge',
-        'Find better quantum LDPC codes. '
-        '<a href="whitepaper.html">Read the whitepaper.</a>',
+        'Find better quantum LDPC codes.',
         ("stabilizer.html", "Stabilizer board")))
     P.append('<div class=wrap>')
     P.append(progress_panel(entries, best_geo_e))
@@ -5110,19 +5605,6 @@ def build():
         f.write(research_log_page(all_entries, load_fieldnotes()))
     with open(os.path.join(DOCS, "404.html"), "w", encoding="utf-8") as f:
         f.write(not_found_page())
-    # Wrapper so the whitepaper opens with the site favicon and a proper tab
-    # title (a raw PDF tab shows the browser's PDF-viewer icon instead).
-    with open(os.path.join(DOCS, "whitepaper.html"), "w", encoding="utf-8") as f:
-        f.write(
-            '<!doctype html><html lang=en><head><meta charset=utf-8>'
-            '<meta name=viewport content="width=device-width,initial-scale=1">'
-            '<title>The QEC Challenge whitepaper</title>'
-            '<link rel=icon type="image/svg+xml" href="favicon.svg">'
-            + plausible_snippet({"page_type": "whitepaper"}) +
-            '<style>html,body{margin:0;height:100%}'
-            'embed{width:100%;height:100%}</style></head><body>'
-            '<embed src="qec_challenge.pdf" type="application/pdf">'
-            '</body></html>')
     write_code_artifacts(all_entries)
     check_analytics_coverage()
 

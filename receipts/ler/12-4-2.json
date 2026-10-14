@@ -1,0 +1,203 @@
+{
+ "claim_digest": "823dbf12c996a61a8c5424ef5be7e776ee127c3055f70e08a3cba8191fe0482b",
+ "head_sha": "e0c02e754297b9adc699df3f8377ece1d240dc08",
+ "measured_at": "2026-10-12T10:27:57+00:00",
+ "ok": true,
+ "points": {
+  "X": {
+   "0.001": {
+    "claimed_p_shot": 0.0493,
+    "detectable_factor": 1.248,
+    "p": 0.001,
+    "replica_failures": 566,
+    "replica_p_shot": 0.056605660566056606,
+    "replica_shots": 9999,
+    "runs": [
+     {
+      "failures": 167,
+      "seed": 1592598037,
+      "shots": 3333
+     },
+     {
+      "failures": 207,
+      "seed": 1088055204,
+      "shots": 3333
+     },
+     {
+      "failures": 192,
+      "seed": 1652813175,
+      "shots": 3333
+     }
+    ],
+    "sigma": 0.0030617594193493055,
+    "status": "verified"
+   },
+   "0.002": {
+    "claimed_p_shot": 0.0997,
+    "detectable_factor": 1.17,
+    "p": 0.002,
+    "replica_failures": 1012,
+    "replica_p_shot": 0.10121012101210121,
+    "replica_shots": 9999,
+    "runs": [
+     {
+      "failures": 336,
+      "seed": 1608005276,
+      "shots": 3333
+     },
+     {
+      "failures": 348,
+      "seed": 1106202413,
+      "shots": 3333
+     },
+     {
+      "failures": 328,
+      "seed": 1672922622,
+      "shots": 3333
+     }
+    ],
+    "sigma": 0.0042370838661594705,
+    "status": "verified"
+   },
+   "0.005": {
+    "claimed_p_shot": 0.2674,
+    "detectable_factor": 1.094,
+    "p": 0.005,
+    "replica_failures": 2607,
+    "replica_p_shot": 0.2607260726072607,
+    "replica_shots": 9999,
+    "runs": [
+     {
+      "failures": 840,
+      "seed": 1608005276,
+      "shots": 3333
+     },
+     {
+      "failures": 930,
+      "seed": 1106202413,
+      "shots": 3333
+     },
+     {
+      "failures": 837,
+      "seed": 1672922622,
+      "shots": 3333
+     }
+    ],
+    "sigma": 0.006259505345338147,
+    "status": "verified"
+   },
+   "0.01": {
+    "claimed_p_shot": 0.4846,
+    "detectable_factor": 1.058,
+    "p": 0.01,
+    "replica_failures": 4946,
+    "replica_p_shot": 0.49464946494649464,
+    "replica_shots": 9999,
+    "runs": [
+     {
+      "failures": 1638,
+      "seed": 1608005276,
+      "shots": 3333
+     },
+     {
+      "failures": 1683,
+      "seed": 1106202413,
+      "shots": 3333
+     },
+     {
+      "failures": 1625,
+      "seed": 1672922622,
+      "shots": 3333
+     }
+    ],
+    "sigma": 0.007067889775469608,
+    "status": "verified"
+   }
+  },
+  "Z": {
+   "0.001": {
+    "claimed_p_shot": 0.0501,
+    "detectable_factor": 1.246,
+    "p": 0.001,
+    "replica_failures": 553,
+    "replica_p_shot": 0.05530553055305531,
+    "replica_shots": 9999,
+    "runs": [
+     {
+      "failures": 166,
+      "seed": 1592598037,
+      "shots": 3333
+     },
+     {
+      "failures": 188,
+      "seed": 1088055204,
+      "shots": 3333
+     },
+     {
+      "failures": 199,
+      "seed": 1652813175,
+      "shots": 3333
+     }
+    ],
+    "sigma": 0.0030852024159679944,
+    "status": "verified"
+   },
+   "0.002": {
+    "claimed_p_shot": 0.1046,
+    "detectable_factor": 1.166,
+    "p": 0.002,
+    "replica_failures": 1087,
+    "replica_p_shot": 0.10871087108710871,
+    "replica_shots": 9999,
+    "runs": [
+     {
+      "failures": 365,
+      "seed": 1608005276,
+      "shots": 3333
+     },
+     {
+      "failures": 376,
+      "seed": 1106202413,
+      "shots": 3333
+     },
+     {
+      "failures": 346,
+      "seed": 1672922622,
+      "shots": 3333
+     }
+    ],
+    "sigma": 0.004328129466879221,
+    "status": "verified"
+   },
+   "0.005": {
+    "claimed_p_shot": 0.2645,
+    "detectable_factor": 1.094,
+    "p": 0.005,
+    "replica_failures": 2680,
+    "replica_p_shot": 0.268026802680268,
+    "replica_shots": 9999,
+    "runs": [
+     {
+      "failures": 906,
+      "seed": 1608005276,
+      "shots": 3333
+     },
+     {
+      "failures": 893,
+      "seed": 1106202413,
+      "shots": 3333
+     },
+     {
+      "failures": 881,
+      "seed": 1672922622,
+      "shots": 3333
+     }
+    ],
+    "sigma": 0.0062377797005071615,
+    "status": "verified"
+   }
+  }
+ },
+ "receipt_version": "1",
+ "slug": "12-4-2"
+}

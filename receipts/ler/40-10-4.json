@@ -1,0 +1,122 @@
+{
+ "claim_digest": "2cc31e2a19fac6a0750e747a83c7e219c39db0c9e75314d943d00ce8475239bb",
+ "head_sha": "e0c02e754297b9adc699df3f8377ece1d240dc08",
+ "measured_at": "2026-10-12T11:19:03+00:00",
+ "ok": true,
+ "points": {
+  "X": {
+   "0.001": {
+    "claimed_p_shot": 0.0207,
+    "detectable_factor": 1.389,
+    "p": 0.001,
+    "replica_failures": 211,
+    "replica_p_shot": 0.021102110211021104,
+    "replica_shots": 9999,
+    "runs": [
+     {
+      "failures": 61,
+      "seed": 1592598037,
+      "shots": 3333
+     },
+     {
+      "failures": 80,
+      "seed": 1088055204,
+      "shots": 3333
+     },
+     {
+      "failures": 70,
+      "seed": 1652813175,
+      "shots": 3333
+     }
+    ],
+    "sigma": 0.002013580079205577,
+    "status": "verified"
+   },
+   "0.002": {
+    "claimed_p_shot": 0.1008,
+    "detectable_factor": 1.169,
+    "p": 0.002,
+    "replica_failures": 947,
+    "replica_p_shot": 0.09470947094709471,
+    "replica_shots": 9999,
+    "runs": [
+     {
+      "failures": 317,
+      "seed": 1608005276,
+      "shots": 3333
+     },
+     {
+      "failures": 301,
+      "seed": 1106202413,
+      "shots": 3333
+     },
+     {
+      "failures": 329,
+      "seed": 1672922622,
+      "shots": 3333
+     }
+    ],
+    "sigma": 0.004257790328826494,
+    "status": "verified"
+   }
+  },
+  "Z": {
+   "0.001": {
+    "claimed_p_shot": 0.0209,
+    "detectable_factor": 1.387,
+    "p": 0.001,
+    "replica_failures": 196,
+    "replica_p_shot": 0.0196019601960196,
+    "replica_shots": 9999,
+    "runs": [
+     {
+      "failures": 71,
+      "seed": 1592598037,
+      "shots": 3333
+     },
+     {
+      "failures": 67,
+      "seed": 1088055204,
+      "shots": 3333
+     },
+     {
+      "failures": 58,
+      "seed": 1652813175,
+      "shots": 3333
+     }
+    ],
+    "sigma": 0.0020230775201077284,
+    "status": "verified"
+   },
+   "0.002": {
+    "claimed_p_shot": 0.0925,
+    "detectable_factor": 1.177,
+    "p": 0.002,
+    "replica_failures": 931,
+    "replica_p_shot": 0.0931093109310931,
+    "replica_shots": 9999,
+    "runs": [
+     {
+      "failures": 307,
+      "seed": 1608005276,
+      "shots": 3333
+     },
+     {
+      "failures": 303,
+      "seed": 1106202413,
+      "shots": 3333
+     },
+     {
+      "failures": 321,
+      "seed": 1672922622,
+      "shots": 3333
+     }
+    ],
+    "sigma": 0.004097510161238426,
+    "status": "verified"
+   }
+  }
+ },
+ "receipt_version": "1",
+ "slug": "40-10-4"
+}

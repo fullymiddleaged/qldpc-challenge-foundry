@@ -23,9 +23,10 @@ import qldpc  # noqa: E402
 def _cached_board():
     """Load the board once for the module.
 
-    load_entries() re-verifies every code and costs about 15 s, and these tests
-    call the command four times. Caching it keeps the CI job honest about what
-    it is paying for; the logic under test is cmd_targets, not the loader.
+    load_entries() runs the board's structural pass over every code -- minutes
+    on today's board, not seconds -- and these tests call the command four
+    times. Caching it keeps the CI job honest about what it is paying for; the
+    logic under test is cmd_targets, not the loader.
     """
     from build import load_entries
     entries = load_entries()

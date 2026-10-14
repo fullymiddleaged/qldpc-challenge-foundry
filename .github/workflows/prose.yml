@@ -63,3 +63,18 @@ jobs:
           else
             echo "base branch has no verify/check_prose.py yet; skipping"
           fi
+      # verify.yml skips prose-only PRs entirely, and its paths filter does not
+      # name notes/ or circuits/ either, so the tree sweep could not see the
+      # change that orphans most often comes from: a note filed under a slug
+      # that is not an entry. That PR merged green and went red on the next
+      # push to main, and every later PR inherited the failure (PR #3064).
+      # Here it is the base branch's own copy, stdlib-only, and the sweep of
+      # the whole tree takes about a tenth of a second.
+      - name: tree consistency (an artifact may not outlive its entry)
+        working-directory: trusted
+        run: |
+          if [ -f verify/check_tree_consistency.py ]; then
+            python3 verify/check_tree_consistency.py --root ../submitted
+          else
+            echo "base branch has no verify/check_tree_consistency.py yet; skipping"
+          fi

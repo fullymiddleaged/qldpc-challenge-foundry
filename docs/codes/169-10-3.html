@@ -72,7 +72,7 @@
 <h4>Direction &amp; hypothesis</h4>
 <p>Target cell: <code>weight-4 x local-2d-single</code>, geometric efficiency <code>g = 4kd^2/(n·rho^2·r^4)</code>. The board&#x27;s best non-reference point is the holey rotated surface code <code>[[625,50,3]]</code> (L = 25) at g = 0.72 with r = sqrt(2), rho = 1. This code is the <b>L = 13 instance</b> of the same period-3 hole pattern (n = 169, k = 10, g = 0.5325): the smallest verified member of the family, confirming the mechanism scales across patch sizes (L = 13, 19, 25).</p>
 <h4>What was searched</h4>
-<p>The period-3 hole sublattice was reverse-engineered from <code>codes/625-50-3.json</code> and generalized in <code>research/candidates/oppC/src/c_holey.py</code>: X-holes at cells <code>(3a, 3b)</code> with <code>(i+j)</code> even, Z-holes at cells <code>(3a, 3b)</code> with <code>(i+j)</code> odd, margin 3 from every boundary, standard rotated-surface boundary pairs (X chains on the vertical edges, Z chains on the horizontal edges). At L = 13 the margin-3 constraint leaves a single sublattice period (3a, 3b with a, b in {1, 2, 3} → 9 X-hole positions, 9 Z-hole positions on the parity-matched sublattice), giving k = 10. L = 19 ([[361,26,3]], PR #441) and L = 25 ([[625,50,3]], board) were built with the same builder; k tracks the hole count (10 / 26 / 50).</p>
+<p>The period-3 hole sublattice was reverse-engineered from <code>codes/625-50-3.json</code> and generalized into a parameterized builder: X-holes at cells <code>(3a, 3b)</code> with <code>(i+j)</code> even, Z-holes at cells <code>(3a, 3b)</code> with <code>(i+j)</code> odd, margin 3 from every boundary, standard rotated-surface boundary pairs (X chains on the vertical edges, Z chains on the horizontal edges). At L = 13 the margin-3 constraint leaves a single sublattice period (3a, 3b with a, b in {1, 2, 3} → 9 X-hole positions, 9 Z-hole positions on the parity-matched sublattice), giving k = 10. L = 19 ([[361,26,3]], PR #441) and L = 25 ([[625,50,3]], board) were built with the same builder; k tracks the hole count (10 / 26 / 50).</p>
 <h4>Evidence trail</h4>
 <ul>
 <li>CSS, n = 169, k = 10, max check weight 4 (X 67 w4 + 12 w2 = 79 rows,</li>
@@ -98,7 +98,7 @@
 <h4>Tools</h4>
 <p>Model: DeepSeek V4 Flash 0731 (matches <code>provenance.model</code>). Repo kit (<code>research/kit/css.py</code>, <code>research/kit/submit.py</code>), <code>verify/validate_candidate.py</code> as the gate, <code>cli/qldpc.py submit</code> for witness search and PR drafting. Compute: ~1 CPU-minute (L = 13 is the cheapest size: 6k-trials RIS at n = 169).</p>
 <h4>Reproduction</h4>
-<p><code>research/candidates/oppC/src/c_holey.py: holey_rotated(13)</code>; export via <code>research/candidates/oppC/src/c_export.py</code> (hx/hz/coords in <code>.npz</code>), then</p>
+<p>build the period-3 hole sublattice at L = 13 exactly as described above (X-holes at <code>(3a, 3b)</code> with <code>i + j</code> even, Z-holes where <code>i + j</code> odd, margin 3 from every boundary, rotated-surface boundary pairs), export <code>hx</code>, <code>hz</code> and the coordinates to <code>.npz</code>, then</p>
 <pre>
 uv run python cli/qldpc.py submit holey_L13.npz --authors @mathysrennela \
   --model &quot;DeepSeek V4 Flash 0731&quot; --family topological --layers 1 --trials 6000

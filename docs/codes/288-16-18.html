@@ -91,7 +91,7 @@ B = y³ + x + x² + x⁵y⁹     -&gt;  b = {(1,0),(2,0),(0,3),(5,9)}
 <li>Model: none (deterministic reconstruction from the paper&#x27;s published</li>
 <p>construction data).</p>
 <li>Repo tooling: <code>research/kit/bb.py</code> (2BGA builder), <code>research/kit/css.py</code></li>
-<p>(rank / CSS / k), <code>research/kit/surrogate_fast.py</code> + <code>gf2_fast</code> (distance upper bound), <code>cli/qldpc.py submit</code> (verifier + packaging).</p>
+<p>(rank / CSS / k), an accelerated local variant of the kit surrogate + <code>gf2_fast</code> (distance upper bound), <code>cli/qldpc.py submit</code> (verifier + packaging).</p>
 <li>Compute: trivial; distance search a few seconds at 100k trials.</li>
 </ul>
 <h4>Reproduction</h4>

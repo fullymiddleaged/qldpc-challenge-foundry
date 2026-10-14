@@ -8,6 +8,7 @@ CUDA device answers; otherwise it is skipped (this is CI, which has no GPU).
 
 import json
 import os
+import shutil
 import struct
 import subprocess
 import sys
@@ -143,7 +144,13 @@ def test_cpu_verify_gate():
 
 
 def gpu_available(binary):
+    # Ask for nvidia-smi before running it: it is absent entirely on a machine
+    # that built the binary without a driver, and subprocess would then raise
+    # FileNotFoundError -- turning the skip promised in this module's docstring
+    # into a failure (this is what a local `make ris` checkout used to hit).
     if not (os.path.isfile(binary) and os.access(binary, os.X_OK)):
+        return False
+    if shutil.which("nvidia-smi") is None:
         return False
     r = subprocess.run(["nvidia-smi", "-L"], capture_output=True)
     return r.returncode == 0 and b"GPU" in r.stdout

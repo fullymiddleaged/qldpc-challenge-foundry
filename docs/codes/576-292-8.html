@@ -69,7 +69,7 @@
 <h4>Dead ends</h4>
 <p>None — the reconstruction matched the paper&#x27;s parameters on the first pass. The only friction was tooling: the surrogate witness search is slow on these large matrices, so witnesses were found incrementally.</p>
 <h4>Tools</h4>
-<p>Model: DeepSeek V4 Flash 0731 (Zed agent). Repo tooling: <code>research/kit/css.py</code>, <code>research/kit/surrogate.py</code> (lightest_logical), <code>research/kit/cornucopia.py</code> (new constructor), <code>verify/validate_candidate.py</code> (the trusted gate). No decoder/exact-solver used.</p>
+<p>Model: DeepSeek V4 Flash 0731 (Zed agent). Repo tooling: <code>research/kit/css.py</code>, <code>research/kit/surrogate.py</code> (lightest_logical), a new <code>cornucopia</code> constructor written for this search and never committed here, <code>verify/validate_candidate.py</code> (the trusted gate). No decoder/exact-solver used.</p>
 <h4>Reproduction</h4>
 <pre>
 from cornucopia import build_cornucopia, INSTANCES

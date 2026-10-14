@@ -56,6 +56,18 @@
 <div class=kv><b>weight class</b> weight &gt; 8 <span class=claimed>(computed)</span></div>
 </section>
 <section class=blk><h3>How this code was found</h3><div class=kv style="color:var(--mut)">the research note submitted with this code &middot; <a href="https://github.com/unitaryfoundation/qldpc-challenge/blob/main/notes/666-150-36.md">raw markdown</a> &middot; <a href="../research-log.html">all notes</a></div><div class=notebody><h3>[[666,150,36]]: distance revision of the board&#x27;s [[666,150,66]] entry</h3>
+<h4>Construction</h4>
+<p>Lift-333 cyclic generalized-bicycle CSS code on <code>Z_333</code> with <code>H_X = [circ(a) | circ(b)]</code> and <code>H_Z = [circ(b)^T | circ(a)^T]</code>, so <code>n = 666</code> and both blocks are 333 wide. Check-matrix ranks are 258 per side, so <code>k = 666 - 258 - 258 = 150</code>; maximum check weight 30.</p>
+<p>The <code>[[666,150,66]]</code> entry&#x27;s circulant supports, read off the committed check matrix (<code>codes/666-150-36.json</code>), are</p>
+<pre>
+a(x) = 1 + x^6 + x^22 + x^44 + x^59 + x^78 + x^87 + x^91 + x^98
+       + x^105 + x^116 + x^147 + x^154 + x^165 + x^169 + x^186
+       + x^195 + x^204 + x^213 + x^220 + x^224 + x^236 + x^242
+       + x^244 + x^263 + x^275 + x^296 + x^317 + x^330 + x^332
+b(x) = x^6 + x^22 + x^44 + x^87 + x^98 + x^105 + x^116 + x^186
+       + x^195 + x^224 + x^242 + x^244 + x^296 + x^330
+</pre>
+<p>The two lift-333 entries still on the board at <code>k = 150</code> share this construction, and <code>notes/666-150-48.md</code> carries the sibling searches on two further support pairs at the same lift, both since refuted off the board.</p>
 <h4>Revision history</h4>
 <p>[[666,150,36]] supersedes the board&#x27;s [[666,150,66]] entry. The code, its checks, and its original provenance are unchanged; only the distance block is corrected. The entry is a cyclic generalized-bicycle code on Z_333 with H_X = [circ(a) | circ(b)] and H_Z = [circ(b)^T | circ(a)^T]. Structural witnesses exhibit a weight-36 X logical and a weight-36 Z logical: on both sides, the Z_111 quotient code (both generator polynomials reduced modulo x^111 - 1) has a weight-12 logical whose norm-word lift, multiplication by 1 + x^111 + ... + x^222, is a weight-36 logical of the full code. The headline falls from kd^2/n = 981.08 to 291.89. Each lighter witness is carried in the entry; the other side keeps its original witness where it was not refuted. Distance remains an upper bound, not an exact claim.</p>
 <h4>Evidence</h4>

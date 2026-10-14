@@ -88,14 +88,15 @@
 uv run python verify/qldpc_verify.py codes/700-57-3.json
 → css_commutation ok, k=57 matches, max_check_weight 4, distance_X/Z_witness weight=3 in_ker &amp; nontrivial, interaction_radius 1.4142, locality_class local-2d-single, ok true
 
-uv run python verify/validate_candidate.py research/candidates/700-57-3-rect-holey.json (pre-board)
+uv run python verify/validate_candidate.py &lt;staged candidate&gt;.json
 → passed: true, verify ok, refute false (no lighter logical in 8000 RIS trials), dedup null, novelty board_advancing true, advances weight-4 x local-2d-single board
 </pre>
+<p>The gate was run on the staged document, before filing, and that is the run the output above records. Run against the committed entry instead it exits 1, on the board&#x27;s own dedup: the candidate is now identical to board entry <code>codes/700-57-3.json</code>. The <code>qldpc_verify.py</code> line above *does* run against the committed entry and still passes.</p>
 <p>Claim tier <code>upper_bound</code> (witness-backed d≤3, distance 3 is minimal hole spacing so d=3 tight).</p>
 <h4>Reproduction</h4>
-<p><code>research/candidates/build_rect_holey.py</code>: build_rect(Lx=28,Ly=25, margin=3, period=3) with CSS boundary search (brute 16 combos, picks 1,0,0,0 for 28×25). Then <code>submit.make_submission(..., coordinates, layers=1)</code> and <code>validate_candidate</code>.</p>
+<p>A local rectangular builder (not committed here): `build_rect(Lx=28, Ly=25, margin=3, period=3)` with CSS boundary search (brute 16 combos, picks 1,0,0,0 for 28×25). Then <code>submit.make_submission(..., coordinates, layers=1)</code> and <code>validate_candidate</code>.</p>
 <h4>Provenance</h4>
-<p>Rectangular generalization of research/campaigns/rotated_holey.py (square L×L, margin 3, period 3). Even-L CSS fix derived from boundary parity scan. No external references beyond surface-code base.</p>
+<p>Rectangular generalization of the square L×L, margin 3, period 3 holey builder used for the uniform cases (a local script, not committed here). Even-L CSS fix derived from boundary parity scan. No external references beyond surface-code base.</p>
 <h4>Tools</h4>
 <p>Built with <b>Amicode</b> harness (model: Muse Spark 1.2) — <code>research/kit</code> + <code>verify/gf2_fast</code> + <code>validate_candidate</code> gate on <code>mini</code>/<code>erlich</code>.</p></div></section>
 <section class=blk><h3>Parity checks</h3>

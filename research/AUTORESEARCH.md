@@ -39,8 +39,12 @@ imports its siblings by bare name (`from bb import build_bb`).
   thought — that is the surrogate fooling you, not a gate bug.
 
 ```
-uv run python verify/validate_candidate.py candidate.json   # exit 0 iff passed
+uv run --extra research python research/kit/coordination.py gate candidate.json   # exit 0 iff passed
 ```
+
+That is `verify/validate_candidate.py` run unchanged, with its verdict also written to
+`candidate.verdict.json` beside the candidate. Calling the gate script directly gives the same
+verdict on stdout and keeps nothing (issue #2781).
 
 or in-process (add `verify/` to the path first):
 `import sys; sys.path.insert(0, "verify"); from validate_candidate import validate_candidate`.
@@ -65,8 +69,11 @@ bound the search below, and its `stopping` conditions, not the budget alone,
 end the run. It cannot weaken the gate. Without one, nothing below changes.
 
 0. **Read the shared record first**: `./qldpc recent` (new codes, research
-   notes, fieldnotes), then the `fieldnotes/` entries touching your intended
-   family — blocked routes and calibration findings live there, and repeating
+   notes, fieldnotes) and `./qldpc screened --family <family>` (which members
+   were already screened, at what depth, and what the gate said: the staging
+   directory is gitignored, so this is the only committed record that a
+   family was tried and dropped), then the `fieldnotes/` entries touching
+   your intended family — blocked routes and calibration findings live there, and repeating
    them wastes the budget. Recent literature is part of that record:
    [`literature/README.md`](literature/README.md) is the arXiv watch, and its
    ledger says which new papers a human read and what they concluded
@@ -81,6 +88,11 @@ end the run. It cannot weaken the gate. Without one, nothing below changes.
 5. **Package** with `submit.make_submission`, then **validate** with the gate — keep only
    `passed: true`.
 6. **Stage** survivors for review; loop until the budget is spent, then report.
+
+Recording is not step 7, it is what happens *during* the loop: `kit/campaign.py`'s
+`record_screen` is the only thing that writes a screening depth, and without a `summary.json` at
+the end none of it reaches `codes/`-adjacent committed state, so the next session repeats the
+search. See [`campaigns/README.md`](campaigns/README.md) and the `kit/campaign.py` row below.
 
 To watch the whole loop run once (build → package → the real verifier in-process):
 
@@ -163,6 +175,37 @@ Building one code is step one; *discovering* a good one means sweeping a family.
 a generic funnel: generate candidates → screen each cheaply → rank by efficiency and Pareto
 frontier.
 
+**Calibrate the generator against a known board entry before you sweep it.** A generator
+pointed at the wrong parameters still returns well-formed `n`, `k` and `w`, so a sweep of the
+wrong family is structurally indistinguishable from a real negative — it just reports numbers
+that mean something else. Rebuild one entry you can check and assert it matches:
+
+```python
+import json
+import numpy as np
+from boundary_engine import build_planar, S_F_TILE4, S_G_TILE4_MAIN
+
+HX, HZ, _ = build_planar(21, 22, S_F_TILE4, S_G_TILE4_MAIN)   # [[924,18,31]]
+board = json.load(open("codes/924-18-31.json"))
+built = {tuple(np.nonzero(r)[0].tolist()) for r in np.asarray(HX, dtype=bool)}
+assert built == {tuple(r) for r in board["checks"]["X"]}
+```
+
+Compare the **check matrices, not `(n, k, w)`**. Those three are the wrong instrument here:
+`n` and `k` are fixed by the lattice and `w` by the bulk weight, so none of them responds to
+half the parameters. At the 21×22 lattice above, swapping the B-support for a wrong one still
+reports `(924, 18, 8)` — while sharing only 38 of the board entry's 475 X check rows. An `assert`
+on `(n, k, w)` passes on the wrong code, which is the failure this step exists to catch.
+
+The construction string of the matching `codes/<n>-<k>-<<d>>.json` names the parameters that
+produced it. Read it before inventing your own — for most families the board entry *is* the
+calibration target, and only a handful of entries record their parameters at all, so this is
+worth doing once and reusing. Prefer the module's named constants (`S_F_TILE4`,
+`S_G_TILE4_MAIN`, …) to literals: the supports **are** the family, and a different pair is a
+different code rather than a variant of this one. Name every pair the board records, and scope
+each name to the entries that actually attest it — a support set that is constant across one
+paper's entries is not constant across the function's.
+
 ```python
 from search import screen, pareto_frontier, sample_bb, update_leaderboard
 records = screen(sample_bb(400, seed=7), min_k=4, min_d=4, trials=250)
@@ -182,6 +225,31 @@ has the same shape. `backend="fast"` requires `make fast`; `threads=` controls i
 The `trials` value is backend-specific: NumPy iterations and fast RIS samples are
 not comparable screening budgets. All screening values remain upper bounds, and
 finalists must still pass the validation gate.
+
+**Check a sampler's reach before you sweep it.** Each of the four samplers above carries its
+ceiling at the end of its docstring, and the binding one is usually the *check weight*, not `n`.
+Measured over 3000 draws each at their defaults:
+
+| sampler | max `n` | max check weight |
+|---|---|---|
+| `sample_bb` | 240 | 6 |
+| `sample_dihedral` | 320 | 8 |
+| `sample_metacyclic` | 320 | 8 |
+| `sample_kasai_affine` | 684 | 8 |
+
+Every one of the board's 25 most efficient entries has a check weight of at least 12, and they sit
+at `n` between 630 and 682. So the sweep above — `sample_bb` at 250 trials — cannot reach the
+efficiency frontier in any cell, and a large sweep of it will spend its budget producing records
+that are dominated on arrival. For the weight-6 `unrestricted` cell the frontier runs from `n`
+12 out to 960 with a best `kd²/n` of 30.48, and its *competitive* region starts around `n >= 400`,
+well past what `sample_bb` builds.
+
+Raise `weight=` on a 2BGA sampler to lift the check-weight cap, or widen `l_range`/`m_range` on
+`sample_bb`; `weight` is the number of monomials per side, so the check weight is `2 * weight`.
+`sample_kasai_affine` is the one sampler whose `n` already reaches the frontier's band, and it
+needs only `weight` raised to compete there. Which of these pays off is a research question, not a
+mechanical one — the recent high-weight entries came from targeted defining sets rather than
+rejection sampling, so read `fieldnotes/` for your family before spending a large sweep.
 
 ### 3b. Spend the ladder wisely: the escalation gate (optional)
 
@@ -204,7 +272,7 @@ brief = rung_brief(n, k, rungs=[(20_000, 22), (100_000, 20)],
 # make the jev_decide call from brief["jev_request"] (the agent harness does
 # this; the kit itself stays offline), then enforce it:
 decision = apply_verdict(brief, verdict)
-append_journal(decision, brief, path="research/candidates/escalation.jsonl")
+append_journal(decision, brief, path=os.path.join(staging_dir(), "escalation.jsonl"))
 ```
 
 - `rung_brief` computes the facts deterministically from the ladder (best
@@ -225,6 +293,33 @@ Skipping the gate is always sound — it changes where trial budget goes, never
 what can be claimed. To evaluate it, run one campaign with the gate and one
 without, and compare trials-spent-to-abandon against the flat-settled point
 (the 2026-09-20 metric) on the same families.
+
+### 3c. Above check weight 8: sample the ideal, not the support
+
+Every one of the board's 25 most efficient entries is a cyclic generalized-bicycle code,
+`H_X = [circ(a) | circ(b)]` over `Z_m` with `m` near 340 and check weight 12 to 32, and none of
+them came from random supports. For that family `k = 2 deg gcd(a, b, x^m - 1)`, so a random pair
+of supports has `gcd` 1 or `x + 1` and encodes `k = 0` or `2`: at check weight 12 on `Z_315`,
+`Z_330`, and `Z_341`, 150 of 180 random draws had `k = 2` and none had `k` above 12, and
+`fieldnotes/2026-08-15-dead-ends-and-leads.md` records the same at prime orders 251 to 347 and
+weights 8 to 14. Raising `weight=` on a rejection sampler therefore buys check weight and nothing
+else; the ceiling is not the weight, it is that random supports do not share a divisor.
+
+The frontier entries fix the divisor first. `sample_cyclic_gb` does that: an odd `m`, a divisor
+`g` of `x^m - 1` whose degree puts `2 deg g` inside `k_band`, and `a`, `b` drawn as sparse
+multiples of `g`, so `k` is designed rather than hoped for.
+
+```python
+from search import screen, sample_cyclic_gb
+records = screen(sample_cyclic_gb(200, m_range=(330, 345), weight=(12, 16), k_band=(120, 200),
+                                  seed=7), min_k=100, min_d=20, trials=2000, backend="fast")
+```
+
+The factorization of `x^m - 1` is done in `kit/gf2poly.py` over GF(2), so the kit stays
+numpy-only; `research/cyclic_gb.py` is the full designed-divisor search stack (ideal enumeration,
+fertile-ideal selection, deep confirmation) and needs sympy. Read it, and the construction strings
+of the `Z_341` and `Z_337` entries, before spending a large sweep here: the frontier codes came
+from many ideals and many words per ideal, not from one draw.
 
 ## 4. Package a submission
 
@@ -249,7 +344,7 @@ Stage the result under this session's own directory rather than a shared flat na
 
 ```python
 from coordination import staging_dir, unique_path
-out = staging_dir()                            # research/candidates/<run_id>/
+out = staging_dir()                            # this run's own staging directory
 save_submission(doc, unique_path(f"{out}/{n}-{k}-{d}.json", doc))
 ```
 
@@ -258,6 +353,49 @@ one in hand. Several sessions stage at once and the flat `<n>-<k>-<d>.json` conv
 of them the same filename, so the second write used to delete the first one's witness. Re-writing
 the same candidate is not a collision, and `unique_path` gives a second candidate with the same
 parameters its own name.
+
+Two sessions aiming at the same board cell is a cost, not a correctness problem, but it is a
+wasted ladder, so say where you are going before you start one:
+
+```bash
+./qldpc targets --claim weight-6/unrestricted --campaign <id> --ttl 180
+./qldpc targets                        # live claims are marked on their cell
+./qldpc targets --release weight-6/unrestricted
+```
+
+The claim is a note to other sessions and nothing more. It lives in a gitignored directory beside
+the staging area, `verify/` never reads it, no gate consults it, and it expires — a session
+that was killed an hour ago cannot squat on a cell by never releasing it. Crucially it is not a
+lock: two sessions may hold one cell simultaneously, and the second write reports the claim it
+displaced rather than refusing, because refusing would be enforcing something, and the gate is
+the only thing here entitled to enforce anything. Read the claim, then decide.
+
+It is held by the session, not by the process: one shell, one session, so the sequence above
+works from a terminal without exporting anything (`QLDPC_RUN_ID` pins it for a harness). The
+cell name is `<weight>/<locality>`, checked against the board's own axis names — a name that is
+not a cell is refused with the valid ones rather than written as a claim nobody can find.
+
+A recipe makes the search replayable. `search.screen` takes `(spec, HX, HZ)` triples; a spec
+carrying `constructor` (`<module>.<function>` under `research/kit`) and `params` (its keyword
+arguments) is a recipe `research/kit/rebuild.py` can run, and
+`submit.write_repro_manifest(doc, slug, spec, repro_dir="repro")` turns it into the
+`repro/<slug>.json` that `qldpc reproduce --construction` re-derives the entry from
+(`repro/144-12-12.json` is the worked example). Without a recipe the manifest says
+`not_reproducible`, which is the honest default, not a failure.
+
+For a small CSS candidate (n <= 90, screened d <= 8) try `escalation.exact_first(HX, HZ, d)`
+before the first deep rung: the certifier closes those in seconds, and `d =` beats a ladder's
+`d <=`. Anything but `outcome == "exact"` leaves the ladder as it was.
+
+Before any of this, `./qldpc brief --cell <weight>/<locality> --family <tag>` prints one bounded
+snapshot: the cell's frontier and bar, what the registry says was screened for the family, what
+landed recently, and the fieldnotes that touch it (`--json` for the record).
+
+`make_submission` runs the witness search itself and records it: each side's
+`witness_provenance` carries `found_by` (the authors as `@handles`, or `found_by=` when the
+operators came from someone else), the date, `found_at_samples` and `survived_samples` equal to
+`trials`, the tool, and the seed. That block is what a later refuter has to beat, and
+`verify/check_authorship.py` reads credit from it, so the document declares schema `0.2`.
 
 `family` is a filterable Layer-2 tag, never ranked. You do **not** declare which tracks you
 enter: the verifier computes primary-track membership (the weight and locality classes) from `H`
@@ -271,19 +409,24 @@ Run `validate_candidate` on the packaged doc (see **The one rule** above). Keep 
 `passed: true`. The verdict's `gates` are your evidence; its `labels` are what you show the
 human. This — not the surrogate, not your own judgment — is what decides whether you have a find.
 
-Deep confirmation is the most expensive step in the loop, so do not pay twice for the same answer:
+The random distance search inside the gate is the expensive part, so do not pay twice for the
+same answer:
 
 ```python
-from coordination import validate_cached
-verdict, reused = validate_cached(doc)         # the gate, or its own last word
+from coordination import validate_cached, gate_and_record
+verdict, reused = validate_cached(doc)         # gate now, refutation reused
+verdict, out = gate_and_record(path)           # the same, from a staged file, verdict kept beside it
 ```
 
-`validate_cached` calls `verify/validate_candidate.py` exactly as you would and caches what it
-returned under the candidate's content hash, in the gitignored `research/candidates/.verdicts/`.
-An entry is served only while the validator source and the board it was judged against are both
-unchanged, since `dedup` and `novelty` are claims about `codes/` at a point in time and not about
-the candidate alone. Nothing in the cache is evidence, and deleting it costs compute rather than
-correctness.
+`validate_cached` calls `verify/validate_candidate.py` exactly as you would, every time. What it
+reuses is `gates.refute`, which reads the candidate and nothing else and costs 8.3 s of the 8.4 s
+a warm validation takes. `dedup` and `novelty` are claims about `codes/` at a point in time, so
+they are recomputed on every call and `reused: True` does not mean `board_advancing` is old. An
+entry is served only while the validator source is unchanged, a refutation once found is never
+downgraded by a later run that missed it, and the reuse is subtractive: it can turn a pass into a
+failure and never the other way around. The cache lives in the gitignored
+the staging directory's `.verdicts/` folder. Nothing in it is evidence, and deleting it costs compute rather
+than correctness.
 
 ## 5b. A win only on d: audit the peer before you package
 
@@ -310,8 +453,8 @@ So measure both numbers at one budget before spending anything on packaging:
 
 ```bash
 uv run --frozen python research/audits/leader_audit.py pair \
-    research/candidates/<n>-<k>-<d>.json --trials 2000000 --seeds 51 52 \
-    --pair-depth 64 --witness-dir /tmp/pair
+    "$STAGING"/<n>-<k>-<d>.json --trials 2000000 --seeds 51 52 \
+    --pair-depth 64 --witness-dir <dir-for-witnesses>
 ```
 
 The peers are chosen automatically — every board entry with the same n, k and max check
@@ -322,7 +465,7 @@ is an instrument artifact, not a distance difference. One of four decisions come
 | decision | meaning | do this next |
 |---|---|---|
 | `drop: ...` | your own claim came down at its own budget | drop the candidate; the ladder was right, the packaging would have been wrong |
-| `redirect: ...` | the board peer came down | the submission is the peer's **distance revision** — a valid contribution on its own (`../CONTRIBUTING.md`) |
+| `redirect: ...` | the board peer came down | persist the witness first (it is the most expensive object in the loop), then file the peer's **distance revision**: a correction to that entry, not a new submission, per [Filing a distance revision](audits/README.md#filing-a-distance-revision) |
 | `credible: ...` | both claims held at matched depth | the gain survives; package it (step 4) |
 | `inconclusive: ...` | neither claim was reached | no information at all; go deeper or stop, and never report it as corroboration |
 
@@ -350,6 +493,18 @@ decoder_distance(HX, HZ, trials=200000)  # BP+OSD: independent upper-bound evide
 
 These need extra deps (`scipy`, `ldpc`): `uv run --with scipy --with ldpc python your_script.py`.
 The constructors, surrogate, search, and packaging stay numpy-only.
+
+**The `research` extra is a separate thing from those two.** Anything that touches a JSON schema —
+`kit/campaign.py` (`load_campaign`, `write_summary`) and `kit/census_css.py` — needs
+`jsonschema`, which ships in the `research` extra and not in the default one:
+
+```
+uv run --extra research python your_script.py
+```
+
+That is the same invocation CI uses for the test suite. Without it `load_campaign` fails with
+`CampaignError: jsonschema is required to validate a campaign`, which reads like a broken kit
+rather than a missing flag.
 
 ## Pitfalls (these are why the gate exists)
 
@@ -388,17 +543,31 @@ should not have to re-learn.
 
 ## Output & housekeeping
 
-- For each staged candidate, also draft its **research note** (`notes/TEMPLATE.md` format):
-  the human will submit it beside the code, and your sweep counts, ladder traces (including
-  collapses), and dead ends are exactly its required content — capture them while they are
-  cheap to capture. Findings that are *not* attached to a candidate (blocked routes,
-  calibration results) belong in a drafted `fieldnotes/` entry instead. Record the
-  ladder as rungs rather than as prose: `kit/promote.py` renders the note, the
-  `codes/` document, and the PR body from that one record once a human authorizes
-  the submission, so the ladder is transcribed once instead of three times.
+- **Capture the evidence; draft the note only where it will be submitted.** Your sweep
+  counts, ladder traces (including collapses), and dead ends are required content either
+  way — capture them while they are cheap to capture. Where they go depends on the mode:
+
+  - *Unattended, stage-only* (the default this document governs): record them in the
+    run's **manifest**, not in a drafted note. One note per staged candidate is the
+    largest generative step in the loop and most of those candidates are never
+    promoted, so the notes are written and never read. Worse, a note drafted against
+    a staging path cannot cite its own evidence: the staging tree is gitignored
+    and `verify/check_prose.py` rejects it. The manifest carries the snapshot,
+    resolved parameters, seeds, screening counts, dead ends and survivor verdicts,
+    so nothing is lost by deferring the prose. `kit/promote.py` renders the note, the
+    `codes/` document and the PR body from that one record once a human authorizes a
+    submission, so the ladder is transcribed once rather than three times.
+  - *Contributor-driven* (an agent a contributor is driving interactively, per
+    `../CONTRIBUTING.md`, "Contribute with an LLM"): draft the **research note**
+    (`notes/TEMPLATE.md` format) beside the candidate, because that path submits.
+
+  Findings not attached to any candidate (blocked routes, calibration results) belong
+  in a drafted `fieldnotes/` entry in either mode. Record the ladder as rungs rather
+  than as prose.
 - Write each surviving candidate's **submission JSON + its full validator verdict** to a staging
-  folder (`coordination.staging_dir()` gives this run its own one under `research/candidates/`),
-  and print a short ranked summary:
+  folder (`coordination.staging_dir()` gives this run its own one under the staging root;
+  `coordination.gate_and_record(path)` writes the verdict as `<path>.verdict.json`, which is
+  the artifact this bullet asks for), and print a short ranked summary:
   `[[n,k,d]]`, cell, efficiency `kd²/n`, board-advancing?, and the honest labels.
 - **Persist any new constructor code you wrote** and a brief decision journal, so the run is
   reproducible and a good `sample_<family>` can later graduate into `research/`.
@@ -410,17 +579,26 @@ should not have to re-learn.
 | File | What it gives you |
 |---|---|
 | `kit/css.py` | `compute_k`, `verify_css`, and the re-exported GF(2) core (`rref`, `rank`, `kernel_basis`, `logical_basis`, ...) shared with the verifier |
+| `kit/campaign.py` | `Ledger`, `load_campaign`, `write_summary`, `write_manifest`: the campaign contract and the **screening registry**. `record_screen` is what writes a screening depth and `record_verdict` what says how it ended — the two calls that make a run visible to the next session. Needs the `research` extra (it validates against `schema/campaign.schema.json`); see [`campaigns/README.md`](campaigns/README.md) |
+| `kit/gf2poly.py` | GF(2) polynomials as ints: `factor_squarefree` (x^m - 1 over GF(2), no sympy), `designed_divisor`, `sparse_multiples`, `cyclic_gb`, `designed_k`; the designed-divisor route behind `search.sample_cyclic_gb` (section 3c) |
 | `kit/bb.py` | `build_bb`, `poly_matrix`, `KNOWN` (known BB codes to start from) |
 | `kit/group_algebra.py` | `build_2bga` + group builders: `perm_group`, `cyclic_product`, `dihedral`, `metacyclic`, `sym`, `alt` |
 | `kit/coset.py` | `build_coset` + `subgroup_closure`, `left_cosets`, `normalizer` |
 | `kit/surrogate.py` | `distance_rand`, `lightest_logical` (witnesses), `mixed_volume` (k upper bound) |
-| `kit/search.py` | `screen`, `pareto_frontier`, `update_leaderboard` (the funnel) + samplers: `sample_bb`, `sample_dihedral`, `sample_metacyclic`, `sample_kasai_affine` |
-| `kit/escalation.py` | `rung_brief`, `apply_verdict`, `append_journal` — the rung-boundary escalation gate (step 3b): deterministic ladder facts + fenced judgment-model verdict; advisory only, never repo evidence |
-| `kit/submit.py` | `make_submission`, `save_submission`, `validate` |
-| `kit/coordination.py` | `run_id`, `staging_dir`, `unique_path`, `validate_cached`: collision-safe staging and verdict reuse when several sessions run at once |
+| `kit/search.py` | `screen`, `pareto_frontier`, `update_leaderboard` (the funnel) + samplers: `sample_bb`, `sample_dihedral`, `sample_metacyclic`, `sample_kasai_affine` (all capped at check weight 8 by default), `sample_cyclic_gb` (designed k, check weight 24 to 32; section 3c) |
+| `kit/escalation.py` | `rung_brief`, `apply_verdict`, `append_journal`, `exact_first` (certify small CSS candidates before the first deep rung) — the rung-boundary escalation gate (step 3b): deterministic ladder facts + fenced judgment-model verdict; advisory only, never repo evidence |
+| `kit/submit.py` | `make_submission`, `save_submission`, `validate`, `write_repro_manifest` (the `repro/<slug>.json` recipe for `qldpc reproduce`) |
+| `kit/rebuild.py` | runs a `{constructor, params}` recipe and prints the verifier's fingerprint; the construction stage of `qldpc reproduce` |
+| `kit/coordination.py` | `run_id`, `session_id`, `staging_dir`, `unique_path`, `validate_cached`: collision-safe staging and refutation reuse when several sessions run at once (`session_id` is the shell a claim belongs to, `run_id` the process that wrote it). `claim`, `release`, `read_claim`, `live_claims`, `prune_claims`: advisory, expiring cell claims (`qldpc targets --claim`) — a note to other sessions, never a lock, and never read by `verify/` |
 | `kit/promote.py` | `promote`, `promote_all`, `script_for`: the submission tail for a candidate the gate already passed. Renders `codes/<slug>.json`, `notes/<slug>.md`, and the PR body from one evidence record, runs the gate and `check_prose` in order, and returns one JSON report. Writes files; never runs git or gh |
 | `kit/distance.py` | `exact_distance` (MILP, `d=`), `decoder_distance` (BP+OSD) — needs the `research` extra |
-| `kit/census_css.py` | exhaustive small CSS-code census up to qubit permutations and global X/Z swap; exact distance uses the trusted SAT certifier and needs the `research` extra |
+| `kit/census_css.py` | exhaustive small CSS-code census up to qubit permutations and global X/Z swap, through n = 8 with the nauty canonicalizer (pynauty, in the `research` extra; n <= 6 without it); exact distance uses the trusted SAT certifier |
+| `kit/products.py` | classical combining products: `hypergraph_product`, `lifted_product`, `balanced_product` + a sampler each; the lifted/balanced ones cover the multi-block protographs `kit/lp_protograph.py` specializes |
+| `kit/lp_protograph.py` | general lifted-product codes with matrix protographs, plus the SCE-paper protograph catalog (arXiv:2606.24808, Supplemental S7) |
+| `kit/annihilator.py` | the single-block annihilator attack on two-block CSS entries (issue #2706): write `H = [A \| B]` and search the kernel of either block alone for a low-weight vector. A way to re-price an existing entry, not a way to build one |
+| `kit/doubling.py` | free Z2 double-cover ("doubling") for bivariate bicycle codes: the `s=2` complement to `spectral.cover_k`, which handles odd covers only |
+| `kit/spectral.py` | spectral (Frobenius-orbit) screening for semisimple BB codes, from arXiv:2608.27565, restricted to the binary semisimple case: `cover_k` and the odd-cover machinery |
+| `kit/phantom.py` | the phantom-code construction of arXiv:2609.16542 — `build_phantom_outer` and the rest of the three consolidated pieces |
 | `local2d/planar.py` | fast greedy open-boundary builder, exact planar distance (scipy MILP), `grid_coordinates` for the bilayer layout |
 | `local2d/boundary_engine.py` | the general open-boundary construction (`build_planar`), `reduce_weights`, `graft_r1`/`graft_r1_safe` (qubit removal) |
 | `local2d/transfer.py` | `distance_slope`: predict d(L) scaling from (f, g) before building large lattices |

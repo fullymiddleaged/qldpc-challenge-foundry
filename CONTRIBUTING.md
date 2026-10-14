@@ -31,8 +31,13 @@ arrays or scipy sparse). The tool:
   two-block schedule for bicycle-type codes, a layout zigzag for surface
   patches, a generic sequential schedule otherwise), searches their detector
   error models for `d_circ` witnesses, and runs `verify/circuit_verify.py`
-  on them; a code the generator cannot schedule within the tier's caps is
-  submitted without circuits and the reason is printed; and
+  on them; a code the generator cannot schedule within the tier's caps
+  (n <= 200, 135,000 error mechanisms per memory DEM at `rounds >= d`, 12 MB
+  per circuit file; the caps and the decision behind them are explained at
+  `MAX_CIRCUIT_N` and `MAX_DEM_MECHANISMS` in `verify/circuit_verify.py`) is
+  submitted without circuits and the reason is printed (for an entry already
+  on the board, `research/circuit_backfill.py <slug>` runs the same path and
+  commits the tier with its own `contributed_by`); and
 - writes `codes/<n>-<k>-<d>.json` plus `circuits/<n>-<k>-<d>/` and prints
   the steps to open the PR.
 
@@ -55,8 +60,24 @@ Useful flags:
   the `.dem` files are derived with the pinned stim and the witnesses searched
   for you. `--no-circuit` submits the code tier only. `d_circ` is penalty-only:
   a circuit can discount an entry, never inflate it, and the value the CLI
-  reports is what the board will show;
+  reports is what the board will show. A measured logical error rate is a
+  separate, optional step after the circuits exist:
+  `python verify/ler_measure.py codes/<slug>.json --p 0.005 0.001` samples
+  each committed memory circuit at the requested physical rates (the grid is
+  0.01, 0.005, 0.002, 0.001) with the pinned decoder and writes the points
+  into `circuit.ler`. Claim the highest rate at which your code is not
+  saturated as well as any lower rates you can afford: CI replicates the
+  highest-rate point at PR time and leaves the rest to a weekly post-merge
+  run whose receipts the board shows per point (schema/SCHEMA.md);
 - `--open-pr` create the branch, commit, push, and open the PR for you;
+- `--json` print exactly one JSON record on stdout (stage, slug, paths,
+  title, body file, branch, the remaining commands, the PR URL, or an
+  error with a class and a stage) and move the human output to stderr,
+  so a script drives the tool without parsing prose; with `--dry-run` the
+  record carries the full submission under `doc`;
+- `--base-ref origin/main` start the submission branch from that ref and
+  return to your current branch afterwards, so a loop of `--open-pr` runs
+  from one checkout opens one independent PR per code;
 - `--anonymous` explicitly proceed without an `@handle` (the submission will
   not be bound to a GitHub account);
 - `--dry-run` build and verify without writing.
@@ -97,15 +118,33 @@ entry. What changes, and what does not:
 - The refutation gate runs the same random-information-set search scored by
   Pauli weight, and the accelerated pass searches the symplectic doubling
   `H'_X = (A | B)`, `H'_Z = (B | A)`, re-scoring every find by Pauli weight.
+  The orbit-fold pass folds Pauli vectors on the orbits of the symmetries it
+  detects (Pauli labels preserved) and also runs the search in random
+  single-qubit Pauli frames, so a `Y`-heavy logical that the symplectic form
+  counts as two bits per qubit is seen at its true Pauli weight.
 - A code whose every generator is pure `X` or pure `Z` is a CSS code, and a
   submission that types one `stabilizer` is rejected.
-- A CSS board code with a Hadamard on some of its qubits is a stabilizer
-  code with the same parameters. The verifier looks for such a qubit subset;
-  when it finds one, the CSS code it maps to is compared with the board and a
-  match is recorded as a duplicate of that entry, not as a new code.
+- So is a code that becomes one under single-qubit Cliffords: a CSS code
+  with a Hadamard (or an S, or any local Clifford) on some of its qubits is a
+  stabilizer code with the same parameters and nothing more. The verifier
+  solves for such Cliffords (`stabilizer_code_is_not_locally_css`) and, when
+  they exist, rejects the entry naming the qubits and which generators become
+  X-type; submit that CSS image as `H_X` / `H_Z` instead, where the CSS
+  board's own dedup applies to it.
 - Stabilizer codes rank on a separate leaderboard. Novelty, dominance, and
   records are computed among stabilizer codes only; a stabilizer code never
   dominates or is dominated by a CSS entry.
+- A Clifford acting on blocks of two or more qubits maps a board entry to a
+  stabilizer code with the same `n`, `k`, and code space whose distance was
+  bought with check weight; the verifier cannot detect that case, only the
+  single-qubit one. If your code is such an image, declare it:
+  `provenance.clifford_relabel_of: "<parent slug>"` (and
+  `clifford_block_size` if you want the block size recorded). The verifier
+  checks the parent exists with the same `n` and `k` and refuses
+  `novelty: new_parameters` beside it; the board marks the entry so its
+  `kd^2/n` is read as a relabeling. Say the same in the note. An undeclared
+  relabeling that is found later is corrected as a provenance defect
+  (issue #2802).
 - Not yet available: the circuit tier, since the memory experiments are per
   basis, so `circuit` is not accepted on such an entry; and exact
   certification, since the certifier minimizes Hamming weight per side, so an
@@ -142,8 +181,10 @@ instead).
 heuristic that fails outside its regime, a calibration finding — PR it as a
 stand-alone [fieldnote](fieldnotes/README.md), no code required. Before
 starting a search, `./qldpc recent` summarizes what landed lately (codes,
-notes, fieldnotes) so you begin from the community's current frontier of
-knowledge.
+notes, fieldnotes, and committed campaign summaries) so you begin from the
+community's current frontier of knowledge, and `./qldpc screened --family
+<family>` says which members of a family were already screened and how they
+went.
 
 Then open a pull request adding only your file under `codes/` (plus its
 `notes/` file) — **one new code
@@ -165,6 +206,20 @@ correct distance has no lighter logical to find and passes every time; an
 over-claimed one may slip past one seed and get caught on a re-run, at merge, or
 by the weekly board sweep, in which case the code is removed. The seed is printed
 so any failure reproduces.
+
+Before the random search, the gate reads the code's symmetries off its check
+matrices (block-circulant shifts in either qubit layout, two-dimensional
+shifts, affine multipliers) and searches for the lightest logical that is
+constant on the orbits of each cyclic subgroup, in the folded code. This is
+the shape random information sets almost never sample: on the board's cyclic
+generalized-bicycle entries the lightest logicals were unions of cosets of a
+shift subgroup (every 14th qubit of each block), and 54 filed distances were
+over-stated that way before the pass existed (audit of 2026-10-08). A fold
+find is lifted and re-checked on the full matrices before it counts, so an
+unrelated symmetry can only cost time. If your construction has a symmetry
+the detector does not see, running `verify/heuristic_distance.py` with
+`pynauty` installed (the `research` extra) adds the full Tanner-graph
+automorphism group; the CI gate runs without it.
 
 Public CI also enforces resource limits before dense verifier matrices are
 allocated. A submission is admissible when all of these hold:
@@ -199,6 +254,74 @@ minutes, whichever comes first), so a code at the blocklength cap still gets
 essentially the full target while the CI job stays bounded; the receipt's
 `fast_trials` records how many trials were actually searched. The cap is
 raise-only and rises as the tooling improves.
+
+## Correcting a distance already on the board
+
+Everything above is about adding a **new** code. Lowering the claimed distance
+of a code that is already on the board is a different, and welcome, kind of
+contribution, and it goes in by a different route.
+
+The matrices do not change, so it is a correction to the existing entry rather
+than a submission of your own. Rename the entry to its new `[[n,k,d]]`, lower
+the side that came down, and store the witness that lowered it with its
+`witness_provenance`. Leave everything else alone:
+`verify/check_authorship.py` lets a non-author change the distance claim and
+append a sentence to `provenance.notes`, and refuses any other change to
+`provenance.*`, because the construction is the original author's.
+
+Do not run it through the new-candidate path. A code whose checks match a
+board entry fingerprints as a duplicate there, which is correct, since it is
+not a new code. `verify/validate_candidate.py` will say so and name the entry
+you are revising.
+
+`research/audits/README.md`, "Filing a distance revision", has the step list
+and worked examples.
+
+## One code, one entry
+
+Two files whose check matrices generate the same stabilizer group up to a
+relabeling of the qubits are one code, and the board lists a code once. The
+`-b` suffix on a slug is for a different code that happens to share
+`[[n,k,d]]` with an earlier entry; it is not a route for filing a second
+presentation of a code that is already on the board.
+
+The gate's WL-signature collision is a flag, not a verdict. The question is
+settled when someone exhibits the permutation, as issue #2643 did for four
+pairs, and from then on the pair is a duplicate and this applies:
+
+- The entry that stays is the one that earns more: a layout that reaches a
+  locality class the other cannot, an exact certificate, a circuit. When
+  neither earns more, the earlier filing stays.
+- Whatever the removed entry carried that the survivor lacks moves onto the
+  survivor: a layout as `locality` with `locality.contributed_by`, a lighter
+  witness as a distance revision (the section above). The finder of the
+  equivalence and the author of the removed entry are named in the
+  survivor's note or in a fieldnote. A removal is a transfer of credit, not
+  an erasure; the removed file stays in history under its blob hash.
+- Anyone may open the removal PR. It touches `codes/` and `notes/` only, and
+  `verify/check_authorship.py` lets a deletion through because a removed
+  file carries no claim to bind. The permutation goes into
+  `research/audits/permutation_equivalences.json`, where
+  `research/audits/permutation_equivalence.py` re-checks it from the cited
+  blobs, so the claim stays verifiable after the file is gone.
+
+## Recording that a code is published
+
+An entry that turns out to be isomorphic to a published code, or whose
+`[[n,k,d]]` is listed in a published table, carries `novelty:
+known_parameters` and names the source in `provenance.references`. That is
+the schema's own definition of `known_parameters` ("the parameter set exists
+in the literature even if this entry improves weight, layout, or
+construction details"), so no new label is needed. `origin` is unaffected:
+a code whose matrices were reconstructed here from a parameters-only table
+stays `origin: submission` with the table in its references, because origin
+records how the entry arrived and novelty records what the literature holds.
+
+Recording a match withdraws a claim rather than making one, so anyone may
+file it: `verify/check_authorship.py` lets a non-author set `novelty` to
+`known_parameters` and append to `provenance.references`, and nothing else.
+The computed source for these matches is `research/provenance/derived.json`
+(issue #1204).
 
 ## Contribute with an LLM
 
@@ -242,8 +365,13 @@ codes. Goal: find a CSS qLDPC code that advances a frontier, and submit it.
 
 3. Screen each candidate fast: k = n - rank(H_X) - rank(H_Z), CSS commutation
    (H_X H_Z^T = 0 over GF(2)), max check weight, and an RIS distance UPPER
-   bound from research/. Keep only codes that beat the board's frontier for
-   their track on (n, k, d) and kd^2/n.
+   bound from research/. Keep only codes that are **non-dominated in their own
+   cell**: no entry in that cell beats them on all of (n lower, k higher,
+   d higher, w lower) with at least one strict. That is the whole novelty
+   rule -- `TRACKS.md` defines the cell grid, and the gate reports it as
+   `gates.novelty.board_advancing`. Do not screen on `kd^2/n`: it is a
+   sortable headline figure per cell and is not part of the frontier, so a
+   candidate can clear the frontier at a `kd^2/n` well below the cell's best.
 
 4. Before trusting a candidate, RE-VERIFY its distance with far more RIS trials
    (100k+). Low-trial surrogates return inflated upper bounds that collapse

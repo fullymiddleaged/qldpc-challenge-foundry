@@ -69,14 +69,14 @@ H_X = [A | B] , H_Z = [B^T | A^T]  with A,B ∈ F2[C40] as above
 <li><code>validate_candidate</code> → <code>passed:true</code>, <code>exact_duplicate null</code>, <code>wl_equivalent null</code>, <code>board_advancing:false</code> (dominated by <code>[[80,9,8]]</code> in <code>weight-8 × unrestricted</code> — expected, the cell is dense), <code>literature novelty unverified</code>. Family first-mover is the novelty, not Pareto.</li>
 </ul>
 <h4>Reproduction</h4>
-<p><code>research/candidates/tanner_hunt.py</code> (and <code>tanner_quick.py</code> reproducer) on erlich <code>~/qldpc-challenge</code> + mini <code>~/armonia/repos/qldpc-challenge</code>:</p>
+<p>A local hunter (<code>tanner_hunt.py</code>) with a <code>tanner_quick.py</code> reproducer, written for this search and not committed here:</p>
 <pre>
 from products import hypergraph_product, lifted_product
 # here: lifted_product with group C40, a/b as above, w=8
 doc = make_submission(HX,HZ, name=&quot;[[80,8,8]] quantum-tanner&quot;, construction=&quot;quantum-tanner LP order 40 a=[9,12,17,25] b=[14,19,36,37]&quot;, authors=[&quot;aarontrowbridge&quot;], family=&quot;quantum-tanner&quot;, confidence=&quot;upper_bound&quot;)
 validate_candidate(doc) → passed
 </pre>
-<p>Staged: <code>research/candidates/tanner-80-8-8.json</code> (also <code>tanner-80-8-8-1.json</code> duplicate with different <code>a/b</code>).</p>
+<p>Staged: now <code>codes/80-8-8.json</code> (a second draft with different <code>a/b</code> was staged alongside it and never filed).</p>
 <h4>Relation to board</h4>
 <p>First <code>quantum-tanner</code> entry — filter <code>family=quantum-tanner</code> now has 1 code (was 0). Not Pareto-advancing in <code>weight-8 × unrestricted</code> (dense, needs <code>k≥9</code> or <code>d≥9</code> at <code>n=80</code> to advance), but opens the family for larger Tanner hunts (<code>n=200-600</code> with same LP).</p>
 <h4>Tools</h4>

@@ -107,9 +107,26 @@ font-family:'Space Mono',ui-monospace,monospace}
 .census span{font-size:12px;color:var(--mut)}
 .lb{margin:18px 0 8px;border:1px solid var(--ln);border-radius:14px;
 background:#fff;overflow:hidden}
-.lbhead{display:flex;justify-content:space-between;align-items:center;gap:16px;
-flex-wrap:wrap;
+/* A grid, not a wrapping flex row (issue #2723). The hero card's width is
+   data: it is as wide as "[[n,k,d]] . d . w . @handle" for whichever code is
+   best at the selected weight cap, and flex line-breaking decides on each
+   item's max-content size, so moving the weight slider flipped the header
+   between one line and two and parked the card under the title. Fixed
+   columns for the slider, the toggle, and the card; the title column takes
+   the slack and wraps its own text, so the row structure never depends on
+   the data. */
+.lbhead{display:grid;grid-template-columns:minmax(0,1fr) auto auto 230px;
+grid-template-areas:"title slider toggle hero";align-items:center;
+column-gap:16px;row-gap:10px;
 padding:16px 20px;background:var(--soft);border-bottom:1px solid var(--ln)}
+.lbhead>.lbwf{grid-area:slider;justify-self:start}
+.lbhead>.rcgroup{grid-area:toggle;justify-self:start}
+.lbheroes>.lbscore{grid-area:hero;justify-self:end;margin-right:0}
+/* below this the four columns leave the title no readable width: two
+   deliberate rows instead, title and card, then slider and toggle */
+@media(max-width:940px){
+.lbhead{grid-template-columns:minmax(0,1fr) auto auto;
+grid-template-areas:"title title hero" "slider toggle toggle"}}
 .lbh{font-size:16px;margin:0;font-family:'Space Mono',ui-monospace,monospace;
 text-transform:uppercase;letter-spacing:.03em}
 .lbsub{margin:4px 0 0;font-size:13px;color:var(--mut);
@@ -120,9 +137,9 @@ text-transform:uppercase;letter-spacing:.03em}
    which is exactly the bug. 38ch + the .lbscore cap clear the row at 1024px;
    below 38ch of viewport the block just fills the container. */
 max-width:38ch}
-/* the title wrapper is the actual flex item; without min-width:0 its
-   min-content locks the row even when .lbsub wraps */
-.lbhead>div{min-width:0}
+/* the title wrapper is the grid item; min-width:0 lets the 1fr column
+   shrink below the subtitle's min-content and wrap it */
+.lbhead>div{grid-area:title;min-width:0}
 .lbcta{flex:0 0 auto;font-size:13px;font-weight:700;color:#fff;
 font-family:'Space Mono',ui-monospace,monospace;
 background:var(--ac);border:none;border-radius:8px;padding:8px 14px;
@@ -171,8 +188,8 @@ a.lbm[href]:hover b{text-decoration:underline;color:var(--ac)}
 /* a metric with no target (e.g. no eligible g at the active weight cap) is an
    anchor without an href, so it must not read as a link */
 a.lbm:not([href]){cursor:default}
-/* the heroes wrapper exists only so the weight slider can swap both cards at
-   once; it must not become a flex item of its own inside .lbhead */
+/* the heroes wrapper exists only so the weight slider can swap all cards at
+   once; it must not become a grid item of its own inside .lbhead */
 .lbheroes{display:contents}
 /* One stop per integer weight. 120px is the widest track that still leaves the
    header on one row in BOTH metric modes (the "best g" card is the wider of
@@ -313,6 +330,11 @@ border-radius:10px;font-size:13px;color:var(--mut)}
 .rcwrap{margin:26px 0 4px}
 .rcwrap .plot{padding:10px 12px 6px}
 .rcsub{font-size:13px;color:var(--mut);margin:2px 0 10px;max-width:760px}
+/* frontier map (issue #3346): stacked under the race without JS, swapped in
+   by the Frontier mode button with it; points are SVG links */
+.rcwrap .frplot{margin-top:8px}
+.rcwrap .frplot a{text-decoration:none}
+.rcwrap .frplot circle.hit{cursor:pointer}
 /* phones: scroll the wide chart instead of scaling its text away */
 @media(max-width:680px){.rcwrap .plot{overflow-x:auto;
 -webkit-overflow-scrolling:touch}
@@ -355,6 +377,19 @@ font-variant-numeric:tabular-nums}
 padding:3px 6px;border-radius:5px;background:#ecfdf5;color:#065f46;
 border:1px solid #a7f3d0;vertical-align:2px;white-space:nowrap}
 .lerv{font-variant-numeric:tabular-nums;font-weight:600;min-width:5.5em}
+.lercurve{display:block;max-width:100%;height:auto;margin:6px 0 2px}
+.lercurve .grid{stroke:var(--line,#ddd);stroke-width:1}
+.lercurve .tick{font-size:10px;fill:var(--mut)}
+.lercurve polyline{fill:none;stroke-width:1.5}
+.lercurve .lx{stroke:#1f77b4} .lercurve .lz{stroke:#d62728}
+.lercurve circle.lx{fill:#1f77b4} .lercurve circle.lz{fill:#d62728}
+.lercurve circle.st-pending,.lercurve circle.st-unverifiable{fill:#fff}
+.lercurve circle.st-failed{fill:#000}
+table.lerpts{border-collapse:collapse;font-size:12px;margin:4px 0 8px}
+table.lerpts th,table.lerpts td{padding:2px 8px;border-bottom:1px solid var(--line,#ddd);text-align:left}
+table.lerpts td.num{font-variant-numeric:tabular-nums}
+table.lerpts tr.st-pending td,table.lerpts tr.st-unverifiable td{color:var(--mut)}
+table.lerpts tr.st-failed td{color:#b00}
 .novelty{display:inline-block;margin-left:7px;font-size:10px;line-height:1;
 padding:3px 6px;border-radius:5px;background:#fef3c7;color:#92400e;
 border:1px solid #fde68a;vertical-align:2px;white-space:nowrap}
@@ -371,6 +406,7 @@ margin:2px 4px 2px 0;border-radius:999px;background:var(--soft);color:var(--mut)
 border:1px solid var(--ln);white-space:normal}
 .tchip.loc{background:#eef2ff;color:#3730a3;border-color:#c7d2fe}
 .tchip.mod{background:#ecfdf5;color:#065f46;border-color:#a7f3d0}
+.tchip.relabel{background:#fff7ed;color:#9a3412;border-color:#fdba74}
 .tchip.stab{background:#fdf4ff;color:#86198f;border-color:#f0abfc;
 vertical-align:middle;font-family:'Manrope',sans-serif}
 .xboard{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;
