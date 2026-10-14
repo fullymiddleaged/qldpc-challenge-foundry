@@ -68,4 +68,5 @@ def test_refine_tightens_and_drops_what_is_then_beaten():
 def test_relabelled_gross_code_is_caught_as_a_board_twin():
     relabelled = build_bb(BBGenome(12, 6, ((0, 1), (0, 2), (3, 0)), ((0, 3), (2, 0), (7, 0))))
     assert BBGenome(12, 6, ((0, 1), (0, 2), (3, 0)), ((0, 3), (2, 0), (7, 0))).canonical_key() != GROSS.canonical_key()
-    assert hunt.board_twin(144, relabelled.signature()) == "144-12-12"
+    # 144-12-12-b is our bilayer layout of the same gross code, so either entry is a correct twin.
+    assert hunt.board_twin(144, relabelled.signature()) in {"144-12-12", "144-12-12-b"}

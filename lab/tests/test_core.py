@@ -78,13 +78,16 @@ def _independent_candidate_check(npz_path):
     return n, k, w, radius, int(counts.max()), float(gaps.min())
 
 
-def test_record_candidates_meet_bilayer_rules():
+def test_record_candidates_meet_board_rules():
     manifest = json.load(open(ROOT / "results/candidates/manifest.json"))
     for name, info in manifest.items():
         n, k, w, radius, per_site, gap = _independent_candidate_check(ROOT / f"results/candidates/{name}.npz")
         pn, pk, _ = (int(x) for x in info["params"].strip("[]").split(","))
         assert (n, k) == (pn, pk), name
-        assert w <= 6 and radius <= 7.0 and per_site <= 2 and gap >= 1.0, name
+        # Bilayer BB codes are weight 6 at radius 7.0; single-layer tile codes are weight 8 at radius 4.0.
+        layers = info["layers"]
+        assert w <= (6 if layers == 2 else 8) and radius <= (7.0 if layers == 2 else 4.0), name
+        assert per_site <= layers and gap >= 1.0, name
 
 
 def test_layout_finder_on_small_code():
