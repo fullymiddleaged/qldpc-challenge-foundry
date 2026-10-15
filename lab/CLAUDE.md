@@ -47,6 +47,7 @@ Our own research code for **quantum LDPC codes** (bivariate bicycle / BB family 
 5. **Leaderboard rules:** interaction radius = max over checks of the largest pairwise distance between that check's *data* qubits; bilayer cap 7.0 (single layer 4.0); ≤ `layers` qubits per site; distinct sites ≥ 1 apart; n ≤ 700; ≤ 600 coordinates. Pareto dominance on (n↓, k↑, d↑, w↓) within a (locality, weight) cell. Non-records are accepted.
 6. **One JSON per PR**, each on its own branch cut from `upstream/main` (`submit.py` does this). Follow upstream `AGENTS.md` for the PR body and research note: every path cited must exist in the PR's own tree, so `lab/...` paths can't be cited there.
 7. **Long jobs** (MILP proofs, multi-hour searches): run in the background with a log file (`nohup … > log 2>&1 &`) or on Colab; never block the session on them.
+   **CPU-heavy distance work runs in WSL** (RIS ladders, grafts, the challenge CLI at large n): WSL sees all 8 cores, and upstream's C++ RIS (`gf2_fast`) builds only there (no compiler on Windows), so Windows pure-Python RIS is ~1000× slower (user decision, 16 Oct 2026). Launch with `wsl.exe -e bash -lc 'cd /mnt/c/... && nohup … &'`; never `pkill -f` a pattern that appears in your own launch command.
 8. Before claiming any number in docs or PRs, re-run the check that produces it.
 
 ## Style
