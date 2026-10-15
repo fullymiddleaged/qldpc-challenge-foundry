@@ -503,10 +503,11 @@
   },
   "construction": "Tile code (Steffan, Choe, Breuckmann, Pereira, Eberhardt, arXiv:2504.09171) with box B = 3 on a 12 x 12 bulk, open boundaries as in the paper; X-tile {h00,h01,h11,h22,v02,v10,v20,v21}, Z-tile by their condition T2: the tile of codes/288-8-15.json and codes/338-8-16.json, here [[392,8,17]]. Reduced to n = 360 by 32 row-space grafts, the move @dorakingx introduced on this board (notes/280-8-15.md): S a sum of at most three checks, the qubit disentangled by a CNOT fan-out and deleted, at unchanged k, check weight 8 and radius 4, each graft screened by RIS at 20k + 2 x 200k trials. Surviving qubits keep their single-layer sites on the 45-degree rotated lattice, interaction radius 4.000.",
   "not_our_code": false,
-  "status": "submit",
+  "status": "submitted",
   "status_reason": "a637 scale-up 15 Oct 2026: weight-8 x local-2d-single record; d<= by fresh-seed RIS ladder to 5M (user decision 15 Oct)",
   "ladder_npz": "cand/a637_12x12_g2.npz",
-  "ladder_log": "results/hunt/a637_scale/ladder.jsonl"
+  "ladder_log": "results/hunt/a637_scale/ladder.jsonl",
+  "pr": 3577
  },
  "tile_404_8_18_a637_graft": {
   "params": "[[404,8,18]]",
