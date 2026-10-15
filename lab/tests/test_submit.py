@@ -57,6 +57,16 @@ def test_doc_from_dry_run_parses_the_json_after_the_marker():
         raise AssertionError("expected ValueError")
 
 
+def test_doc_from_dry_run_reads_the_json_mode_result_object():
+    assert submit.doc_from_dry_run(json.dumps({"stage": "dry-run", "doc": {"n": 1}})) == {"n": 1}
+    try:
+        submit.doc_from_dry_run(json.dumps({"stage": "verify", "error": {"message": "verification failed"}}))
+    except ValueError as e:
+        assert "verification failed" in str(e)
+    else:
+        raise AssertionError("expected ValueError")
+
+
 def test_gate_verdict():
     assert submit.gate_verdict({"passed": True, "labels": []}) is None
     assert "refuted" in submit.gate_verdict({"passed": False, "labels": ["refuted (over-claimed distance)"]})
@@ -109,7 +119,9 @@ def test_claim_mismatch():
 def test_real_candidates_marked_submit_have_matching_proofs():
     manifest = submit.json.loads((ROOT / "results/candidates/manifest.json").read_text(encoding="utf-8"))
     for name, info in manifest.items():
-        if info.get("status") == "submit":
+        if info.get("status") == "submit" and info.get("ladder_log"):      # d<= claim (user decision 15 Oct 2026)
+            assert submit.ladder_refusal(info, ROOT / info["ladder_log"]) is None, name
+        elif info.get("status") == "submit":
             assert submit.proof_refusal(name, info, submit.PROOFS) is None, name
 
 
@@ -137,3 +149,39 @@ def test_proof_refusal_handles_tile_genomes(tmp_path):
     proof["genome"] = {**tile, "l": 12}
     (tmp_path / "distance_proof_338_8_16.json").write_text(json.dumps(proof))
     assert "different genome" in submit.proof_refusal("t", info, tmp_path)
+
+
+def _ladder(tmp_path, rungs):
+    log = tmp_path / "ladder.jsonl"
+    log.write_text("".join(json.dumps({"npz": "cand/c.npz", "trials": t, "seed": s, "d_ub": d}) + "\n"
+                           for t, s, d in rungs), encoding="utf-8")
+    return log
+
+
+def test_ladder_refusal_accepts_a_full_ladder_at_the_claimed_d(tmp_path):
+    info = {"params": "[[392,8,17]]", "ladder_npz": "cand/c.npz"}
+    log = _ladder(tmp_path, [(20000, 1, 17), (1000000, 2, 17), (5000000, 3, 17)])
+    assert submit.ladder_refusal(info, log) is None
+
+
+def test_ladder_refusal_on_short_or_thin_ladders_and_wrong_d(tmp_path):
+    info = {"params": "[[392,8,17]]", "ladder_npz": "cand/c.npz"}
+    assert "rung" in submit.ladder_refusal(info, _ladder(tmp_path, [(20000, 1, 17), (5000000, 2, 17)]))
+    assert "largest rung" in submit.ladder_refusal(info, _ladder(tmp_path, [(20000, 1, 17), (200000, 2, 17), (1000000, 3, 17)]))
+    assert "weight 16" in submit.ladder_refusal(info, _ladder(tmp_path, [(20000, 1, 17), (200000, 2, 16), (5000000, 3, 17)]))
+    assert "weight 18" in submit.ladder_refusal(info, _ladder(tmp_path, [(20000, 1, 18), (200000, 2, 18), (5000000, 3, 18)]))
+    assert "no ladder_npz" in submit.ladder_refusal({"params": "[[392,8,17]]"}, tmp_path / "x")
+    assert "no ladder log" in submit.ladder_refusal(info, tmp_path / "missing.jsonl")
+
+
+def test_ladder_refusal_counts_only_this_codes_rungs(tmp_path):
+    log = _ladder(tmp_path, [(20000, 1, 17), (200000, 2, 17), (5000000, 3, 17)])
+    assert "0 rung" in submit.ladder_refusal({"params": "[[392,8,17]]", "ladder_npz": "cand/other.npz"}, log)
+
+
+def test_wsl_path_and_command():
+    assert submit.wsl_path(r"C:\vscode\x y\a.npz") == "/mnt/c/vscode/x y/a.npz"
+    assert submit.wsl_path("cli/qldpc.py") == "cli/qldpc.py"
+    cmd = submit.wsl_uv_run(Path(r"C:\w t"), ["cli/qldpc.py", r"D:\a.npz", "--dry-run"])
+    assert cmd[:4] == ["wsl.exe", "-e", "bash", "-lc"]
+    assert cmd[4].startswith("cd '/mnt/c/w t' && ") and "python cli/qldpc.py /mnt/d/a.npz --dry-run" in cmd[4]

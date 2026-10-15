@@ -82,6 +82,48 @@ def proof_refusal(name: str, info: dict, proofs_dir: Path) -> str | None:
     return None
 
 
+def ladder_refusal(info: dict, log: Path, min_trials: int = 5_000_000, min_rungs: int = 3) -> str | None:
+    """Reason the candidate's RIS ladder (scripts/ris_ladder.py) does not back its claimed d as an upper bound, or
+    None. The manifest's "ladder_npz" names the code's rows in the log; it needs at least min_rungs fresh-seed rungs,
+    one of at least min_trials, and the lightest logical any rung found must be exactly the claimed d. This backs a
+    d<= board claim only (user decision 15 Oct 2026); it is not a proof."""
+    _, _, d = params(info)
+    key = info.get("ladder_npz")
+    if not key:
+        return "manifest entry has no ladder_npz"
+    if not log.exists():
+        return f"no ladder log {log}"
+    rungs = [r for r in (json.loads(x) for x in log.read_text(encoding="utf-8").splitlines() if x.strip())
+             if r["npz"] == key]
+    if len({r["seed"] for r in rungs}) < min_rungs:
+        return f"{key}: {len(rungs)} rung(s) in {log.name}, need {min_rungs} with distinct seeds"
+    if max(r["trials"] for r in rungs) < min_trials:
+        return f"{key}: largest rung {max(r['trials'] for r in rungs)} trials, need {min_trials}"
+    if (low := min(r["d_ub"] for r in rungs)) != d:
+        return f"{key}: the ladder's lightest logical has weight {low}, the manifest claims d={d}"
+    return None
+
+
+def wsl_path(p: str | Path) -> str:
+    """C:\\a\\b -> /mnt/c/a/b; anything that is not an absolute Windows path is returned unchanged."""
+    s = str(p)
+    if len(s) > 2 and s[1] == ":" and s[2] in "\\/":
+        return f"/mnt/{s[0].lower()}/" + s[3:].replace("\\", "/")
+    return s
+
+
+def wsl_uv_run(wt: Path, args: list[str]) -> list[str]:
+    """`uv run python <args>` in the worktree under WSL, where gf2_fast is built, so qldpc's witness search reaches
+    the distances the ladder measured. The challenge needs Python >= 3.12 (WSL's system python is 3.10), so uv runs
+    a managed 3.12 with gf2_fast built for it once:
+        uv run --python 3.12 --with pybind11 --with setuptools python verify/setup_gf2_fast.py build_ext             --build-lib ~/build/gf2_fast312 --build-temp /tmp/gf2tmp312
+    The WSL env lives outside the worktree so it never collides with the Windows .venv."""
+    inner = ("cd {} && UV_PROJECT_ENVIRONMENT=$HOME/.venvs/qldpc-wsl PYTHONPATH=$HOME/build/gf2_fast312 PYTHONUTF8=1 "
+             "$HOME/.local/bin/uv run --python 3.12 --quiet python {}").format(shlex.quote(wsl_path(wt)),
+                                                                 shlex.join(wsl_path(a) for a in args))
+    return ["wsl.exe", "-e", "bash", "-lc", inner]
+
+
 def claim_mismatch(doc: dict, d: int) -> str | None:
     """Reason the distance qldpc would submit differs from the proven one, or None."""
     got = doc.get("distance", {}).get("d")
@@ -118,7 +160,16 @@ def qldpc_args(info: dict, npz: Path, handle: str, *, family: str, model: str, h
 
 
 def doc_from_dry_run(stdout: str) -> dict:
-    """The submission doc that `qldpc submit --dry-run --json` prints after its "would write" line."""
+    """The submission doc from `qldpc submit --dry-run --json`: the current CLI prints one JSON object on stdout with
+    the doc under "doc"; older ones printed it after a "would write" line."""
+    try:
+        res = json.loads(stdout)
+    except json.JSONDecodeError:
+        res = None
+    if isinstance(res, dict):
+        if isinstance(res.get("doc"), dict):
+            return res["doc"]
+        raise ValueError(f"no submission doc in the dry-run result: {res.get('error') or res.get('stage')}")
     marker = stdout.find("--dry-run: would write")
     start = stdout.find("\n{", marker)
     if marker < 0 or start < 0:
@@ -161,6 +212,10 @@ def main(argv=None):
     ap.add_argument("--circuits", action="store_true", help="let the challenge tool run its circuit simulation (slow)")
     ap.add_argument("--for-real", action="store_true", help="branch, commit, push and open the PR (default: dry run)")
     ap.add_argument("--force", action="store_true", help="ignore a hold / do_not_submit status")
+    ap.add_argument("--upper-bound", type=Path, metavar="LADDER_JSONL",
+                    help="submit a d<= claim backed by this RIS ladder log instead of an exact proof")
+    ap.add_argument("--wsl", action="store_true",
+                    help="run the challenge CLI and gate in WSL, where gf2_fast is built (needed at large n)")
     args = ap.parse_args(argv)
 
     manifest_path = Path(args.manifest)
@@ -168,8 +223,13 @@ def main(argv=None):
         info = json.load(f)[args.name]
     if reason := refusal(args.name, info, args.force):
         sys.exit(reason)
-    # our aim is proven distances: no finished MILP proof of this genome at this d, no submission
-    if reason := proof_refusal(args.name, info, PROOFS):
+    # our aim is proven distances: no finished proof of this genome at this d, no submission, unless the user
+    # chose an upper-bound claim for this code and a full fresh-seed ladder backs it
+    if args.upper_bound:
+        reason = ladder_refusal(info, args.upper_bound.resolve())
+    else:
+        reason = proof_refusal(args.name, info, PROOFS)
+    if reason:
         sys.exit(f"refusing: {reason}")
 
     npz = (manifest_path.parent / f"{args.name}.npz").resolve()
@@ -199,9 +259,12 @@ def main(argv=None):
     common = dict(family=args.family, model=args.model, has_layout=has_layout, note=note)
 
     # gate: upstream's trusted validator on the exact doc qldpc would write (no circuits: they don't affect it)
+    def uv_run(script_args: list[str]) -> list[str]:
+        return wsl_uv_run(wt, script_args) if args.wsl else [uv, "run", "--quiet", "python", *script_args]
+
     cmd = qldpc_args(info, npz, args.handle, **common, circuits=False, for_real=False, json_doc=True)
-    print(f"$ uv run python cli/qldpc.py {shlex.join(cmd)}", flush=True)
-    dry = subprocess.run([uv, "run", "--quiet", "python", "cli/qldpc.py", *cmd], cwd=wt, env=env,
+    print(f"$ uv run python cli/qldpc.py {shlex.join(cmd)}" + ("  (in WSL)" if args.wsl else ""), flush=True)
+    dry = subprocess.run(uv_run(["cli/qldpc.py", *cmd]), cwd=wt, env=env,
                          capture_output=True, text=True, encoding="utf-8")
     if dry.returncode:
         print(dry.stdout, dry.stderr, sep="\n")
@@ -213,7 +276,7 @@ def main(argv=None):
         doc_path = Path(tmp) / f"{args.name}.json"
         doc_path.write_text(json.dumps(doc), encoding="utf-8")
         print(f"$ uv run python verify/validate_candidate.py {doc_path}", flush=True)
-        val = subprocess.run([uv, "run", "--quiet", "python", "verify/validate_candidate.py", str(doc_path)],
+        val = subprocess.run(uv_run(["verify/validate_candidate.py", str(doc_path)]),
                              cwd=wt, env=env, capture_output=True, text=True, encoding="utf-8")
     try:
         verdict = json.loads(val.stdout)
@@ -227,7 +290,10 @@ def main(argv=None):
         print(f"warning: {reason} (a --for-real run would stop here)", flush=True)
 
     cmd = qldpc_args(info, npz, args.handle, **common, circuits=args.circuits, for_real=args.for_real)
-    r = sh([uv, "run", "--quiet", "python", "cli/qldpc.py", *cmd], cwd=wt, check=False, env=env)
+    if args.wsl and args.for_real:
+        sys.exit("--wsl stops after the gate: write the file with `qldpc submit ... --out codes` under WSL in "
+                 f"{wt}, then commit, push and open the PR by hand (git and gh are set up on Windows only).")
+    r = sh(uv_run(["cli/qldpc.py", *cmd]), cwd=wt, check=False, env=env)
     if not args.for_real:
         print(f"\nDry run only (checked against upstream/main in {wt}). Re-run with --for-real to open the PR.")
     sys.exit(r.returncode)
