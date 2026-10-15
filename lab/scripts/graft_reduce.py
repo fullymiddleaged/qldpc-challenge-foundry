@@ -18,6 +18,7 @@ import os
 import pathlib
 import sys
 import time
+import zlib
 
 import numpy as np
 
@@ -37,6 +38,8 @@ def main(argv=None) -> None:
     p.add_argument("--screen-trials", type=int, default=20000)
     p.add_argument("--confirm-trials", type=int, default=200000)
     p.add_argument("--confirm-rounds", type=int, default=2)
+    p.add_argument("--final-trials", type=int, default=1000000,
+                   help="at the fixpoint, two passes of this many trials; on failure roll back to the last state that passes")
     p.add_argument("--out", type=pathlib.Path, help="output .npz (log beside it); default <npz stem>_graft.npz")
     p.add_argument("--threads", type=int, default=os.cpu_count())
     a = p.parse_args(argv)
@@ -48,14 +51,19 @@ def main(argv=None) -> None:
     hx, hz, coords = z["hx"].astype(np.uint8), z["hz"].astype(np.uint8), z["coords"].astype(float)
     out = a.out or src.with_name(src.stem + "_graft.npz")
     logf = out.with_suffix(".log")
-    seed = [0]
+    calls = [0]
 
-    def dist_ok(nx, nz) -> bool:
-        for t in (a.screen_trials, *[a.confirm_trials] * a.confirm_rounds):
-            seed[0] += 1
-            if gf2_fast.distance_rand_parallel(nx, nz, trials=t, seed=seed[0], threads=a.threads) < a.d:
+    def passes(nx, nz, budgets) -> bool:
+        # hashed seeds: consecutive small seeds (1, 2, 3, ...) explored poorly and passed a d-losing graft at n = 512
+        for t in budgets:
+            calls[0] += 1
+            s = zlib.crc32(f"{src.name}|graft|{calls[0]}".encode()) & 0x7FFFFFFF
+            if gf2_fast.distance_rand_parallel(nx, nz, trials=t, seed=s, threads=a.threads) < a.d:
                 return False
         return True
+
+    def dist_ok(nx, nz) -> bool:
+        return passes(nx, nz, (a.screen_trials, *[a.confirm_trials] * a.confirm_rounds))
 
     t0 = time.time()
     with logf.open("w", encoding="utf-8") as f:
@@ -66,7 +74,13 @@ def main(argv=None) -> None:
             f.flush()
 
         log(f"source {src.name}: n={hx.shape[1]} k={graft.k_of(hx, hz)} d>={a.d} w<={a.w} radius<={a.radius}")
-        rx, rz, rc, idx = graft.reduce(hx, hz, coords, a.w, a.radius, dist_ok, a.terms, log)
+        states = [(hx, hz, coords, np.arange(hx.shape[1]))]
+        graft.reduce(hx, hz, coords, a.w, a.radius, dist_ok, a.terms, log, on_step=lambda *st: states.append(st))
+        log(f"fixpoint after {len(states) - 1} grafts; final check {a.final_trials} trials x 2")
+        best = graft.last_good(len(states), lambda i: passes(*states[i][:2], (a.final_trials,) * 2))
+        if best < len(states) - 1:
+            log(f"final check failed: rolled back to graft {best} of {len(states) - 1}")
+        rx, rz, rc, idx = states[best]
         np.savez_compressed(out, hx=rx, hz=rz, coords=rc, idx=idx)
         log(f"fixpoint: n={rx.shape[1]} k={graft.k_of(rx, rz)}; wrote {out.name}")
 

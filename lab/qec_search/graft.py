@@ -67,10 +67,23 @@ def apply(ha: np.ndarray, hb: np.ndarray, support, subset, a: int):
     ha[g] = s
     meet = [int(r) for r in np.nonzero(ha[:, a])[0] if r != g]
     ha[meet] ^= s
-    keep = np.array([c for c in range(ha.shape[1]) if c != a])
-    rows = np.array([r for r in range(ha.shape[0]) if r != g])
+    keep = np.array([c for c in range(ha.shape[1]) if c != a], dtype=int)
+    rows = np.array([r for r in range(ha.shape[0]) if r != g], dtype=int)
     touched = [int(np.searchsorted(rows, r)) for r in meet]
     return ha[np.ix_(rows, keep)], hb[:, keep], keep, touched
+
+
+def last_good(n_states: int, ok: Callable[[int], bool]) -> int:
+    """Largest i < n_states with ok(i), by binary search, taking state 0 (the source) as good. Assumes a graft chain
+    that loses distance stays below it, so it calls ok about log2(n_states) times."""
+    lo, hi = 0, n_states - 1
+    while lo < hi:
+        mid = (lo + hi + 1) // 2
+        if ok(mid):
+            lo = mid
+        else:
+            hi = mid - 1
+    return lo
 
 
 def radius(row: np.ndarray, coords: np.ndarray) -> float:
@@ -103,9 +116,9 @@ def candidates(hx: np.ndarray, hz: np.ndarray, coords: np.ndarray, w_cap: int, r
 
 
 def reduce(hx: np.ndarray, hz: np.ndarray, coords: np.ndarray, w_cap: int, r_cap: float,
-           dist_ok: Callable[[np.ndarray, np.ndarray], bool], max_terms: int = 3, log=print):
-    """Apply grafts to a fixpoint, taking the first that passes at each step. Returns (hx, hz, coords, original
-    indices of the surviving qubits)."""
+           dist_ok: Callable[[np.ndarray, np.ndarray], bool], max_terms: int = 3, log=print, on_step=None):
+    """Apply grafts to a fixpoint, taking the first that passes at each step; on_step(hx, hz, coords, idx) sees each
+    accepted state. Returns (hx, hz, coords, original indices of the surviving qubits)."""
     idx = np.arange(hx.shape[1])
     while True:
         for side, nx, nz, keep, size in candidates(hx, hz, coords, w_cap, r_cap, max_terms):
@@ -113,6 +126,8 @@ def reduce(hx: np.ndarray, hz: np.ndarray, coords: np.ndarray, w_cap: int, r_cap
                 gone = int(idx[np.setdiff1d(np.arange(len(idx)), keep)][0])
                 log(f"graft {side} |S|={size}: qubit {gone} removed, n {hx.shape[1]} -> {nx.shape[1]}")
                 hx, hz, coords, idx = nx, nz, coords[keep], idx[keep]
+                if on_step:
+                    on_step(hx, hz, coords, idx)
                 break
         else:
             return hx, hz, coords, idx

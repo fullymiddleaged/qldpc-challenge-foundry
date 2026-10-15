@@ -76,3 +76,20 @@ def test_reduce_keeps_k_weight_radius_and_distance(small_tile):
     assert max(rx.sum(1).max(), rz.sum(1).max()) <= 8
     assert max(graft.radius(r, rc) for r in np.vstack([rx, rz])) <= 4.0 + 1e-9
     assert CSSCode(hx=rx, hz=rz, name="g", meta={}).distance_upper_bound(trials=500) >= d
+
+
+def test_last_good_finds_the_last_passing_state_by_bisection():
+    for n_states in range(1, 12):
+        for first_bad in range(1, n_states + 1):
+            seen = []
+            ok = lambda i: seen.append(i) or i < first_bad          # noqa: E731
+            assert graft.last_good(n_states, ok) == min(first_bad, n_states) - 1
+            assert len(seen) <= max(1, n_states.bit_length())
+
+
+def test_reduce_reports_every_accepted_state(small_tile):
+    hx, hz, coords = small_tile
+    states = []
+    rx, _, _, idx = graft.reduce(hx, hz, coords, w_cap=8, r_cap=4.0, dist_ok=lambda *_: True, log=lambda *_: None,
+                                 on_step=lambda *st: states.append(st))
+    assert len(states) == hx.shape[1] - rx.shape[1] and np.array_equal(states[-1][3], idx)
