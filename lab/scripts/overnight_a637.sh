@@ -23,7 +23,8 @@ FULL=20000,200000,1000000,5000000
 ladder 20000000 $H/cand/a637_12x12_g2.npz $H/cand/a637_13x13_g2.npz
 graft 14 20
 ladder $FULL $H/cand/a637_14x14_g3.npz
+# above n ~ 500 grafts mostly lose distance (512: rolled back from 500 to 511), so the plain codes' 20M rungs go first
+ladder 20000000 $H/cand/a637_15x15.npz $H/cand/a637_16x16.npz $H/cand/a637_17x17.npz
 graft 15 21
 ladder $FULL $H/cand/a637_15x15_g3.npz
-ladder 20000000 $H/cand/a637_15x15.npz $H/cand/a637_16x16.npz $H/cand/a637_17x17.npz
 echo OVERNIGHT_DONE
