@@ -1,0 +1,69 @@
+{
+ "code": "[[404,8,18]]",
+ "result": "open: proven d >= 16 within 21600 s per cube",
+ "d": 18,
+ "method": "DistQLDPC (MaxCDCL MaxSAT, arXiv:2606.12445) via qec_search.distqldpc: each CSS side posed alone with a complete logical basis; optimum per side (both sides)",
+ "sides": {
+  "X": {
+   "exact": null,
+   "lb": 16,
+   "ub": 18
+  },
+  "Z": {
+   "exact": null,
+   "lb": 16,
+   "ub": 18
+  }
+ },
+ "date": "2026-10-17",
+ "genome": {
+  "tile": [
+   [
+    "h",
+    0,
+    0
+   ],
+   [
+    "h",
+    0,
+    1
+   ],
+   [
+    "h",
+    1,
+    1
+   ],
+   [
+    "h",
+    2,
+    2
+   ],
+   [
+    "v",
+    0,
+    2
+   ],
+   [
+    "v",
+    1,
+    0
+   ],
+   [
+    "v",
+    2,
+    0
+   ],
+   [
+    "v",
+    2,
+    1
+   ]
+  ],
+  "B": 3,
+  "l": 13,
+  "m": 13,
+  "graft_from_n": 450
+ },
+ "candidate": "tile_404_8_18_a637_graft",
+ "reproduce": "np.load('results/candidates/tile_404_8_18_a637_graft.npz') (hx, hz) then qec_search.distqldpc.solve_many"
+}
