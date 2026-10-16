@@ -1,0 +1,69 @@
+{
+ "code": "[[360,8,17]]",
+ "result": "minimum distance proven exact",
+ "d": 17,
+ "method": "DistQLDPC (MaxCDCL MaxSAT, arXiv:2606.12445) via qec_search.distqldpc: each CSS side posed alone with a complete logical basis; optimum per side (both sides)",
+ "sides": {
+  "X": {
+   "exact": 17,
+   "lb": 17,
+   "ub": 17
+  },
+  "Z": {
+   "exact": 17,
+   "lb": 17,
+   "ub": 17
+  }
+ },
+ "date": "2026-10-16",
+ "genome": {
+  "tile": [
+   [
+    "h",
+    0,
+    0
+   ],
+   [
+    "h",
+    0,
+    1
+   ],
+   [
+    "h",
+    1,
+    1
+   ],
+   [
+    "h",
+    2,
+    2
+   ],
+   [
+    "v",
+    0,
+    2
+   ],
+   [
+    "v",
+    1,
+    0
+   ],
+   [
+    "v",
+    2,
+    0
+   ],
+   [
+    "v",
+    2,
+    1
+   ]
+  ],
+  "B": 3,
+  "l": 12,
+  "m": 12,
+  "graft_from_n": 392
+ },
+ "candidate": "tile_360_8_17_a637_graft",
+ "reproduce": "np.load('results/candidates/tile_360_8_17_a637_graft.npz') (hx, hz) then qec_search.distqldpc.solve_many"
+}
