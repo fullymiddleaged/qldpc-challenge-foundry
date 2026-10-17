@@ -1,0 +1,4 @@
+# Clawness: only the shared lessons log is tracked; everything else is per-machine session state
+*
+!.gitignore
+!memory.md
